@@ -1,0 +1,21 @@
+{
+  "name": "safqa-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build --filter=!safqa-monorepo",
+    "dev": "turbo run dev --filter=!safqa-monorepo",
+    "lint": "turbo run lint --filter=!safqa-monorepo",
+    "clean": "turbo run clean",
+    "db:generate": "pnpm --filter @safqa/backend run db:generate",
+    "db:migrate": "pnpm --filter @safqa/backend run db:migrate",
+    "db:studio": "pnpm --filter @safqa/backend run db:studio"
+  },
+  "devDependencies": {
+    "turbo": "^1.13.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
