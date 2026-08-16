@@ -1,5 +1,10 @@
 @charset "UTF-8";
 
+/* ─── TAILWIND CSS ─────────────────────────────────────────────────────────── */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ─── SAFQA DESIGN SYSTEM TOKENS (Tier 1 & 2) ────────────────────────────── */
 
 :root {

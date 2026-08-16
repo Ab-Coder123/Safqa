@@ -5,8 +5,8 @@ import { Header } from '../../components/layout/header';
 import { Footer } from '../../components/layout/footer';
 import { MobileNav } from '../../components/layout/mobile-nav';
 import { ProductCard } from '../../components/marketplace/product-card';
-import { Button, Badge, EmptyState, Skeleton } from '../../components/ui';
-import { Search, Sparkles, Filter } from 'lucide-react';
+import { Button, EmptyState, Skeleton } from '../../components/ui';
+import { Search, Filter, Sparkles } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -69,129 +69,146 @@ export default function MarketplacePage() {
     fetchProducts();
   };
 
+  const maxW: React.CSSProperties = {
+    maxWidth: '1200px',
+    width: '100%',
+    margin: '0 auto',
+    padding: '0 1.5rem',
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] transition-colors">
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--background)', color: 'var(--foreground)', direction: 'rtl' }}>
       <Header />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section */}
-        <div className="relative rounded-2xl bg-gradient-to-r from-[var(--primary)] to-emerald-800 text-white p-8 sm:p-12 mb-10 overflow-hidden shadow-lg">
-          <div className="relative z-10 max-w-2xl">
-            <Badge variant="secondary" className="mb-4 bg-white/20 text-white backdrop-blur-md border-none">
-              <Sparkles className="w-3.5 h-3.5 ms-1" /> سوق صفقة المباشر
-            </Badge>
-            <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight mb-3">
-              تصفح أحدث الإعلانات والصفقات المتاحة
-            </h1>
-            <p className="text-sm sm:text-base text-white/90 mb-6 leading-relaxed">
-              ابحث عن المنتجات الحقيقية المستعملة والجديدة وتواصل مباشرة مع أصحابها.
-            </p>
+      <main style={{ flex: 1 }}>
+        <div style={maxW}>
+          {/* ── Hero Banner ── */}
+          <div style={{ position: 'relative', borderRadius: '20px', background: 'linear-gradient(135deg, var(--primary), #065f46)', color: '#fff', padding: '2.5rem', marginTop: '2rem', marginBottom: '2rem', overflow: 'hidden', boxShadow: 'var(--shadow-lg)' }}>
+            {/* Watermark */}
+            <div style={{ position: 'absolute', left: '-20px', bottom: '-20px', opacity: 0.08, color: '#fff', fontSize: '6rem', fontWeight: 900, pointerEvents: 'none', userSelect: 'none', lineHeight: 1 }}>
+              صفقة
+            </div>
 
-            {/* Quick Search */}
-            <form onSubmit={handleSearch} className="flex items-center gap-2 bg-white rounded-xl p-1.5 shadow-md max-w-lg">
-              <input
-                type="text"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="ما الذي تبحث عنه اليوم؟"
-                className="flex-1 px-4 py-2 text-sm text-[var(--foreground)] bg-transparent focus:outline-none placeholder:text-gray-400"
-              />
-              <Button type="submit" size="sm" className="shrink-0 gap-1 font-bold">
-                <Search className="w-4 h-4" />
-                بحث
-              </Button>
-            </form>
+            <div style={{ position: 'relative', zIndex: 1, maxWidth: '600px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.3rem 0.75rem', borderRadius: '20px', backgroundColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)', fontSize: '0.75rem', fontWeight: 700, marginBottom: '1rem' }}>
+                <Sparkles size={14} />
+                سوق صفقة المباشر
+              </div>
+
+              <h1 style={{ fontSize: '1.8rem', fontWeight: 900, lineHeight: 1.25, marginBottom: '0.75rem' }}>
+                تصفح أحدث الإعلانات والصفقات المتاحة
+              </h1>
+
+              <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.88)', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+                ابحث عن المنتجات الحقيقية المستعملة والجديدة وتواصل مباشرة مع أصحابها.
+              </p>
+
+              {/* Search Bar */}
+              <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#fff', borderRadius: '12px', padding: '6px', boxShadow: 'var(--shadow-md)', maxWidth: '480px' }}>
+                <input
+                  type="text"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="ما الذي تبحث عنه اليوم؟"
+                  style={{ flex: 1, padding: '0.5rem 0.75rem', fontSize: '0.875rem', color: 'var(--foreground)', backgroundColor: 'transparent', border: 'none', outline: 'none', direction: 'rtl' }}
+                />
+                <Button type="submit" size="sm">
+                  <Search size={14} style={{ marginLeft: '4px' }} />
+                  بحث
+                </Button>
+              </form>
+            </div>
           </div>
 
-          <div className="absolute -left-10 -bottom-10 opacity-10 text-white pointer-events-none select-none text-9xl font-extrabold">
-            صفقة
-          </div>
-        </div>
+          {/* ── Filters ── */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.75rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 700, color: 'var(--muted-foreground)' }}>
+                <Filter size={14} />
+                الحالة:
+              </span>
+              {conditions.map((c) => (
+                <Button
+                  key={c.key}
+                  size="sm"
+                  variant={condition === c.key ? 'primary' : 'outline'}
+                  onClick={() => {
+                    setCondition(c.key);
+                    setPage(1);
+                  }}
+                >
+                  {c.label}
+                </Button>
+              ))}
+            </div>
 
-        {/* Filters & Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-bold text-[var(--muted-foreground)] flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5" /> الحالة:
-            </span>
-            {conditions.map((c) => (
+            {result && (
+              <p style={{ fontSize: '0.78rem', color: 'var(--muted-foreground)' }}>
+                عرض <strong style={{ color: 'var(--foreground)' }}>{result.data.length}</strong> من إجمالي{' '}
+                <strong style={{ color: 'var(--foreground)' }}>{result.total}</strong> إعلان
+              </p>
+            )}
+          </div>
+
+          {/* ── Product Grid ── */}
+          {loading ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem', borderRadius: '14px', border: '1px solid var(--border)', backgroundColor: 'var(--card)' }}>
+                  <Skeleton style={{ aspectRatio: '4/3', width: '100%', borderRadius: '10px' }} />
+                  <Skeleton style={{ height: '14px', width: '75%' }} />
+                  <Skeleton style={{ height: '14px', width: '50%' }} />
+                </div>
+              ))}
+            </div>
+          ) : !result?.data || result.data.length === 0 ? (
+            <EmptyState
+              icon="🛍️"
+              title="لم نجد إعلانات مطابقة"
+              description="جرب البحث بكلمات مختلفة أو تغيير خيارات التصفية لعرض المزيد من الإعلانات."
+              actionLabel="إعادة ضبط البحث"
+              onAction={() => {
+                setQ('');
+                setCondition('ALL');
+                setPage(1);
+              }}
+            />
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
+              {result.data.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+
+          {/* ── Pagination ── */}
+          {result && result.totalPages > 1 && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginTop: '3rem', marginBottom: '2rem' }}>
               <Button
-                key={c.key}
+                variant="outline"
                 size="sm"
-                variant={condition === c.key ? 'primary' : 'outline'}
-                onClick={() => {
-                  setCondition(c.key);
-                  setPage(1);
-                }}
-                className="rounded-full text-xs"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => p - 1)}
               >
-                {c.label}
+                ← السابق
               </Button>
-            ))}
-          </div>
 
-          {result && (
-            <p className="text-xs text-[var(--muted-foreground)]">
-              عرض <span className="font-bold text-[var(--foreground)]">{result.data.length}</span> من إجمالي <span className="font-bold text-[var(--foreground)]">{result.total}</span> إعلان
-            </p>
+              <span style={{ fontSize: '0.78rem', color: 'var(--muted-foreground)', padding: '0 0.5rem' }}>
+                صفحة <strong style={{ color: 'var(--foreground)' }}>{page}</strong> من{' '}
+                <strong style={{ color: 'var(--foreground)' }}>{result.totalPages}</strong>
+              </span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= result.totalPages}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                التالي →
+              </Button>
+            </div>
           )}
         </div>
-
-        {/* Product Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="flex flex-col gap-3 p-4 rounded-xl border border-[var(--border)] bg-[var(--card)]">
-                <Skeleton className="aspect-[4/3] w-full rounded-lg" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-            ))}
-          </div>
-        ) : !result?.data || result.data.length === 0 ? (
-          <EmptyState
-            icon="🛍️"
-            title="لم نجد إعلانات مطابقة"
-            description="جرب البحث بكلمات مختلفة أو تغيير خيارات التصفية لعرض المزيد من الإعلانات."
-            actionLabel="إعادة ضبط البحث"
-            onAction={() => {
-              setQ('');
-              setCondition('ALL');
-              setPage(1);
-            }}
-          />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {result.data.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {result && result.totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-12">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              ← السابق
-            </Button>
-            <span className="text-xs text-[var(--muted-foreground)] px-3">
-              صفحة <strong className="text-[var(--foreground)]">{page}</strong> من <strong className="text-[var(--foreground)]">{result.totalPages}</strong>
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= result.totalPages}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              التالي →
-            </Button>
-          </div>
-        )}
       </main>
 
       <Footer />

@@ -3,630 +3,486 @@
 import React from 'react';
 import Link from 'next/link';
 import { useTheme } from '../components/theme-provider';
-import { Button, Badge, Card, CardContent } from '../components/ui';
 import {
-  ShieldCheck,
-  Zap,
-  Users,
-  Tag,
-  Headphones,
-  UserPlus,
-  Search,
-  MessageSquare,
-  ShoppingBag,
-  ArrowLeft,
-  Sun,
-  Moon,
-  Heart,
-  Lock,
-  CheckCircle2,
-  Share2,
-  Globe,
-  Send,
+  ShieldCheck, Zap, Users, Tag, Headphones,
+  UserPlus, Search, MessageSquare, ShoppingBag,
+  ArrowLeft, Sun, Moon, Heart, Lock,
+  CheckCircle2, Share2, Globe, Send,
 } from 'lucide-react';
+
+/* ──────────────────────────────────────────
+   Static preview dataset — matches Product
+   shape without creating new types
+────────────────────────────────────────── */
+const PREVIEW_PRODUCTS = [
+  {
+    id: 'prev-1',
+    title: 'تويوتا كورولا 2020',
+    price: 720000,
+    category: 'سيارات',
+    img: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400&auto=format&fit=crop',
+  },
+  {
+    id: 'prev-2',
+    title: 'ماك بوك اير M2',
+    price: 28500,
+    category: 'إلكترونيات',
+    img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&auto=format&fit=crop',
+  },
+  {
+    id: 'prev-3',
+    title: 'أريكة مودرن رمادية',
+    price: 4200,
+    category: 'أثاث ومنزل',
+    img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&auto=format&fit=crop',
+  },
+  {
+    id: 'prev-4',
+    title: 'ساعة كاسيو أصلية',
+    price: 1250,
+    category: 'ساعات وأزياء',
+    img: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=400&auto=format&fit=crop',
+  },
+  {
+    id: 'prev-5',
+    title: 'كرسي مكتب طبي',
+    price: 2800,
+    category: 'أثاث ومنزل',
+    img: 'https://images.unsplash.com/photo-1580481072645-022f9a6d8310?w=400&auto=format&fit=crop',
+  },
+];
+
+const HOW_IT_WORKS = [
+  { icon: <UserPlus size={28} />, step: '١', title: 'أنشئ حسابك', desc: 'سجل مجاناً في أقل من دقيقة وانضم لمجتمع صفقة.' },
+  { icon: <Search size={28} />, step: '٢', title: 'استكشف المنتجات', desc: 'تصفح آلاف الإعلانات الحقيقية التي تلبي احتياجاتك.' },
+  { icon: <MessageSquare size={28} />, step: '٣', title: 'تواصل وتفاوض', desc: 'تحدث مباشرة مع البائعين أو المشترين بكل سهولة.' },
+  { icon: <ShoppingBag size={28} />, step: '٤', title: 'إشترِ أو بعْ', desc: 'أنجز الصفقة بنجاح واستمتع بتجربة بيع وشراء سلسة.' },
+];
+
+const FEATURES = [
+  { icon: <ShieldCheck size={24} />, color: '#16a34a', bg: '#f0fdf4', title: 'آمن وموثوق', desc: 'نحافظ على أمان تجاربك عبر آليات التحقق ومراقبة المحتوى.' },
+  { icon: <Zap size={24} />, color: '#d97706', bg: '#fffbeb', title: 'سريع وسهل', desc: 'نشر الإعلانات والتواصل لا يستغرق سوى دقائق بضغطة زر.' },
+  { icon: <Users size={24} />, color: '#4f46e5', bg: '#eef2ff', title: 'أشخاص حقيقيون', desc: 'تواصل مباشر مع أعضاء حقيقيين في منطقتك ومجتمعك المحلي.' },
+  { icon: <Tag size={24} />, color: '#dc2626', bg: '#fef2f2', title: 'صفقات ممتازة', desc: 'اعثر على أفضل السلع بأفضل الأسعار بدون عمولات.' },
+  { icon: <Headphones size={24} />, color: '#0284c7', bg: '#f0f9ff', title: 'دعم متواصل', desc: 'فريق الإدارة جاهز ومستعد للإجابة على أي استفسار دائماً.' },
+];
 
 export default function LandingPage() {
   const { theme, setTheme } = useTheme();
 
-  // Static preview dataset matching Product shape for the Marketplace Preview section
-  const previewProducts = [
-    {
-      id: 'prev-1',
-      title: 'تويوتا كورولا 2020 فابريكا بالكامل',
-      price: 720000,
-      condition: 'USED_GOOD',
-      status: 'PUBLISHED',
-      created_at: new Date().toISOString(),
-      category: { name: 'سيارات' },
-      media: [{ url: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600&auto=format&fit=crop' }],
-    },
-    {
-      id: 'prev-2',
-      title: 'ماك بوك اير M2 سعة 256 جيجا كالجيد تماماً',
-      price: 285000,
-      condition: 'LIKE_NEW',
-      status: 'PUBLISHED',
-      created_at: new Date().toISOString(),
-      category: { name: 'إلكترونيات' },
-      media: [{ url: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop' }],
-    },
-    {
-      id: 'prev-3',
-      title: 'أريكة غرفة معيشة رمادية مودرن بحالة ممتازة',
-      price: 4200,
-      condition: 'USED_GOOD',
-      status: 'PUBLISHED',
-      created_at: new Date().toISOString(),
-      category: { name: 'أثاث ومنزل' },
-      media: [{ url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&auto=format&fit=crop' }],
-    },
-    {
-      id: 'prev-4',
-      title: 'ساعة كاسيو أصلية بالعلبة والضمان',
-      price: 1250,
-      condition: 'NEW',
-      status: 'PUBLISHED',
-      created_at: new Date().toISOString(),
-      category: { name: 'ساعات وأزياء' },
-      media: [{ url: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&auto=format&fit=crop' }],
-    },
-    {
-      id: 'prev-5',
-      title: 'كرسي مكتب دراسي وطبي مريح جداً',
-      price: 2800,
-      condition: 'LIKE_NEW',
-      status: 'PUBLISHED',
-      created_at: new Date().toISOString(),
-      category: { name: 'أثاث ومنزل' },
-      media: [{ url: 'https://images.unsplash.com/photo-1580481072645-022f9a6d8310?w=600&auto=format&fit=crop' }],
-    },
-  ];
+  const s = {
+    // Layout helpers
+    maxW: { maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' } as React.CSSProperties,
+    flex: (gap = '0') => ({ display: 'flex', gap, alignItems: 'center' } as React.CSSProperties),
+    grid: (cols: string, gap = '1.5rem') => ({ display: 'grid', gridTemplateColumns: cols, gap } as React.CSSProperties),
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] transition-colors selection:bg-[var(--primary)] selection:text-white font-sans">
-      {/* ─── PUBLIC MARKETING HEADER ────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-md transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--background)', color: 'var(--foreground)', direction: 'rtl' }}>
+
+      {/* ══════════════════════════════════
+          PUBLIC HEADER
+      ══════════════════════════════════ */}
+      <header style={{ position: 'sticky', top: 0, zIndex: 50, borderBottom: '1px solid var(--border)', backgroundColor: 'var(--card)', backdropFilter: 'blur(12px)' }}>
+        <div style={{ ...s.maxW, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px' }}>
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-bold text-xl shadow-md group-hover:scale-105 transition-transform">
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', boxShadow: 'var(--shadow-md)' }}>
               ص
             </div>
-            <span className="font-extrabold text-2xl tracking-tight text-[var(--foreground)]">
-              صفقة<span className="text-[var(--primary)]">.</span>
+            <span style={{ fontWeight: 800, fontSize: '1.4rem', color: 'var(--foreground)' }}>
+              صفقة<span style={{ color: 'var(--primary)' }}>.</span>
             </span>
           </Link>
 
-          {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-[var(--muted-foreground)]">
-            <Link href="/" className="text-[var(--primary)] font-bold transition-colors">
-              الرئيسية
-            </Link>
-            <a href="#how-it-works" className="hover:text-[var(--foreground)] transition-colors">
-              كيف يعمل
-            </a>
-            <a href="#features" className="hover:text-[var(--foreground)] transition-colors">
-              المميزات
-            </a>
-            <Link href="/categories" className="hover:text-[var(--foreground)] transition-colors">
-              التصنيفات
-            </Link>
-            <a href="#safety" className="hover:text-[var(--foreground)] transition-colors">
-              الأمان
-            </a>
-            <a href="#about" className="hover:text-[var(--foreground)] transition-colors">
-              من نحن
-            </a>
+          {/* Nav Links - hidden on mobile */}
+          <nav style={{ display: 'flex', gap: '1.75rem', alignItems: 'center' }}>
+            {[
+              { href: '/', label: 'الرئيسية', active: true },
+              { href: '#how-it-works', label: 'كيف يعمل', active: false },
+              { href: '#features', label: 'المميزات', active: false },
+              { href: '/categories', label: 'التصنيفات', active: false },
+              { href: '#safety', label: 'الأمان', active: false },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: item.active ? 700 : 500,
+                  color: item.active ? 'var(--primary)' : 'var(--muted-foreground)',
+                  textDecoration: item.active ? 'underline' : 'none',
+                  textUnderlineOffset: '4px',
+                  transition: 'color var(--transition-fast)',
+                }}
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           {/* Controls */}
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               title="تبديل المظهر"
+              style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted-foreground)', transition: 'all var(--transition-fast)' }}
             >
-              {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-700" />}
-            </Button>
+              {theme === 'dark' ? <Sun size={18} color="#fbbf24" /> : <Moon size={18} />}
+            </button>
 
-            <Link href="/login">
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                تسجيل الدخول
-              </Button>
+            <Link href="/login" style={{ padding: '0.45rem 1rem', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: 'var(--foreground)', textDecoration: 'none', border: '1px solid var(--border)', transition: 'background var(--transition-fast)' }}>
+              تسجيل الدخول
             </Link>
 
-            <Link href="/register">
-              <Button size="sm" className="font-bold gap-1.5 shadow-md">
-                ابدأ الآن
-                <ArrowLeft className="w-4 h-4" />
-              </Button>
+            <Link href="/register" style={{ padding: '0.5rem 1.25rem', borderRadius: '10px', fontSize: '0.875rem', fontWeight: 700, backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem', boxShadow: 'var(--shadow-md)', transition: 'background var(--transition-fast)' }}>
+              ابدأ الآن
+              <ArrowLeft size={16} />
             </Link>
           </div>
         </div>
       </header>
 
-      {/* ─── HERO SECTION ─────────────────────────────────────────────────── */}
-      <section className="relative pt-12 pb-20 lg:pt-20 lg:pb-28 overflow-hidden bg-gradient-to-b from-[var(--surface)] to-[var(--background)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left/RTL Main Copy Column */}
-            <div className="lg:col-span-6 flex flex-col items-start text-right">
-              <h1 className="heading-display text-4xl sm:text-5xl lg:text-6xl font-black text-[var(--foreground)] tracking-tight leading-[1.15] mb-6">
-                إشترِ. بعْ. <br />
-                <span className="text-[var(--primary)]">تواصل بسهولة.</span>
-              </h1>
+      {/* ══════════════════════════════════
+          HERO SECTION
+      ══════════════════════════════════ */}
+      <section style={{ padding: '5rem 0 4rem', backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ ...s.maxW, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          {/* Copy */}
+          <div>
+            <h1 style={{ fontSize: '3rem', fontWeight: 900, lineHeight: 1.15, color: 'var(--foreground)', marginBottom: '1.25rem' }}>
+              إشترِ. بعْ.<br />
+              <span style={{ color: 'var(--primary)' }}>تواصل بسهولة.</span>
+            </h1>
 
-              <p className="body-large text-[var(--muted-foreground)] mb-8 leading-relaxed max-w-xl">
-                صفقة هي المنصة الحديثة التي تسهل عليك عملية الشراء والبيع والتواصل المباشر مع الأشخاص من حولك بمنتهى السهولة والأمان بدون أي عمولات.
-              </p>
+            <p style={{ fontSize: '1.05rem', color: 'var(--muted-foreground)', lineHeight: 1.7, marginBottom: '2rem', maxWidth: '480px' }}>
+              صفقة هي المنصة الحديثة التي تسهل عليك البيع والشراء والتواصل المباشر مع الأشخاص من حولك بمنتهى السهولة والأمان بدون أي عمولات.
+            </p>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 mb-10 w-full sm:w-auto">
-                <Link href="/register" className="w-full sm:w-auto">
-                  <Button size="lg" className="w-full sm:w-auto font-extrabold text-base px-8 gap-2 shadow-lg hover:scale-[1.02] transition-transform">
-                    ابدأ الآن
-                    <ArrowLeft className="w-5 h-5" />
-                  </Button>
-                </Link>
+            {/* CTAs */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '2.5rem' }}>
+              <Link href="/register" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 2rem', borderRadius: '12px', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 800, fontSize: '1rem', textDecoration: 'none', boxShadow: 'var(--shadow-md)' }}>
+                ابدأ الآن
+                <ArrowLeft size={18} />
+              </Link>
 
-                <Link href="/products" className="w-full sm:w-auto">
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto font-bold text-base px-8 gap-2 border-[var(--border)] hover:bg-[var(--secondary)]">
-                    استكشف صفقة
-                  </Button>
-                </Link>
+              <Link href="/products" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 2rem', borderRadius: '12px', border: '2px solid var(--border)', color: 'var(--foreground)', fontWeight: 700, fontSize: '1rem', textDecoration: 'none', backgroundColor: 'var(--card)' }}>
+                استكشف صفقة
+              </Link>
+            </div>
+
+            {/* Trust Badges */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
+              {[
+                { icon: <ShieldCheck size={16} color="var(--primary)" />, title: 'آمن ومضمون', sub: 'سلامتك هي أولويتنا' },
+                { icon: <Zap size={16} color="var(--primary)" />, title: 'سهل الاستخدام', sub: 'تجربة بسيطة وسريعة' },
+                { icon: <Users size={16} color="var(--primary)" />, title: 'موثوق للمجتمع', sub: 'آلاف الأعضاء السعداء' },
+              ].map((b) => (
+                <div key={b.title}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.78rem', color: 'var(--foreground)', marginBottom: '0.2rem' }}>
+                    {b.icon} {b.title}
+                  </div>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--muted-foreground)' }}>{b.sub}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Phone Mockup */}
+          <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+            <div style={{ position: 'absolute', width: '280px', height: '280px', borderRadius: '50%', background: 'var(--primary)', opacity: 0.08, filter: 'blur(60px)', zIndex: 0 }} />
+
+            <div style={{ position: 'relative', width: '280px', borderRadius: '36px', border: '8px solid var(--border)', backgroundColor: 'var(--card)', padding: '12px', boxShadow: 'var(--shadow-lg)', zIndex: 1, transform: 'rotate(-2deg)' }}>
+              {/* Notch */}
+              <div style={{ width: '100px', height: '14px', backgroundColor: 'var(--foreground)', opacity: 0.8, borderRadius: '0 0 10px 10px', margin: '0 auto 12px' }} />
+
+              {/* App header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingInline: '6px', marginBottom: '10px' }}>
+                <span style={{ fontWeight: 800, fontSize: '0.8rem', color: 'var(--primary)' }}>صفقة</span>
+                <Search size={14} color="var(--muted-foreground)" />
               </div>
 
-              {/* Trust Badges Bar */}
-              <div className="pt-8 border-t border-[var(--border)]/60 grid grid-cols-3 gap-4 w-full text-right">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5 font-bold text-xs text-[var(--foreground)]">
-                    <ShieldCheck className="w-4 h-4 text-[var(--primary)] shrink-0" />
-                    آمن ومضمون
-                  </div>
-                  <span className="text-[11px] text-[var(--muted-foreground)]">سلامتك هي أولويتنا</span>
-                </div>
+              {/* Banner */}
+              <div style={{ padding: '10px 12px', borderRadius: '12px', background: 'linear-gradient(135deg, var(--primary), #065f46)', color: '#fff', marginBottom: '10px' }}>
+                <p style={{ fontSize: '0.6rem', opacity: 0.8, marginBottom: '2px' }}>عروض بالقرب منك</p>
+                <p style={{ fontSize: '0.72rem', fontWeight: 700 }}>اعثر على أفضل الصفقات اليوم</p>
+              </div>
 
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5 font-bold text-xs text-[var(--foreground)]">
-                    <Zap className="w-4 h-4 text-[var(--primary)] shrink-0" />
-                    سهل الاستخدام
-                  </div>
-                  <span className="text-[11px] text-[var(--muted-foreground)]">تجربة بسيطة وسريعة</span>
-                </div>
+              {/* Categories */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
+                {['🚗 سيارات', '📱 إلكترو.', '🛋️ أثاث', '👕 أزياء'].map(c => (
+                  <div key={c} style={{ padding: '5px 2px', borderRadius: '8px', backgroundColor: 'var(--surface)', textAlign: 'center', fontSize: '0.5rem', fontWeight: 600, color: 'var(--muted-foreground)' }}>{c}</div>
+                ))}
+              </div>
 
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5 font-bold text-xs text-[var(--foreground)]">
-                    <Users className="w-4 h-4 text-[var(--primary)] shrink-0" />
-                    موثوق للمجتمع
+              <p style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--foreground)', paddingInline: '4px', marginBottom: '6px' }}>إعلانات مميزة</p>
+
+              {/* Mini Product Cards */}
+              {[
+                { img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=120&auto=format&fit=crop', title: 'أريكة مودرن', price: '3,250 ج.م' },
+                { img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=120&auto=format&fit=crop', title: 'آيفون 14 Pro Max', price: '32,000 ج.م' },
+              ].map(p => (
+                <div key={p.title} style={{ display: 'flex', gap: '8px', padding: '7px', borderRadius: '10px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', marginBottom: '6px', alignItems: 'center' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, backgroundColor: 'var(--muted)' }}>
+                    <img src={p.img} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
-                  <span className="text-[11px] text-[var(--muted-foreground)]">آلاف الأعضاء السعداء</span>
+                  <div>
+                    <p style={{ fontSize: '0.58rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '2px' }}>{p.title}</p>
+                    <p style={{ fontSize: '0.6rem', fontWeight: 800, color: 'var(--primary)' }}>{p.price}</p>
+                  </div>
                 </div>
+              ))}
+            </div>
+
+            {/* Floating card top right */}
+            <div style={{ position: 'absolute', top: '-10px', right: '-10px', display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 12px', borderRadius: '16px', backgroundColor: 'var(--card)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)', maxWidth: '180px', zIndex: 2 }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, backgroundColor: 'var(--muted)' }}>
+                <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=120&auto=format&fit=crop" alt="sofa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--foreground)' }}>أريكة مودرن</p>
+                <p style={{ fontSize: '0.6rem', color: 'var(--muted-foreground)' }}>أثاث ومنزل</p>
+                <p style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--primary)' }}>3,250 ج.م</p>
               </div>
             </div>
 
-            {/* Right/RTL Hero Visual & Mockup Column */}
-            <div className="lg:col-span-6 relative flex justify-center items-center">
-              {/* Background Glow */}
-              <div className="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-[var(--primary)]/15 blur-3xl -z-10 animate-pulse" />
-
-              {/* Phone Mockup Frame */}
-              <div className="relative w-[280px] sm:w-[320px] rounded-[40px] border-8 border-[var(--card-foreground)]/10 bg-[var(--card)] p-3 shadow-2xl overflow-hidden transform lg:rotate-[-2deg]">
-                {/* Phone Notch */}
-                <div className="w-32 h-4 bg-slate-900 mx-auto rounded-b-xl mb-3" />
-
-                {/* Mock UI Content */}
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between px-2">
-                    <span className="font-extrabold text-sm text-[var(--primary)]">صفقة</span>
-                    <Search className="w-4 h-4 text-[var(--muted-foreground)]" />
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-gradient-to-r from-[var(--primary)] to-emerald-700 text-white">
-                    <p className="text-[10px] opacity-80">عروض بالقرب منك</p>
-                    <p className="text-xs font-bold mt-0.5">اعثر على أفضل الصفقات اليوم</p>
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-1 text-center text-[9px] font-semibold text-[var(--muted-foreground)]">
-                    <div className="p-1.5 rounded-lg bg-[var(--surface)]">🚗 سيارات</div>
-                    <div className="p-1.5 rounded-lg bg-[var(--surface)]">📱 إلكترونيات</div>
-                    <div className="p-1.5 rounded-lg bg-[var(--surface)]">🛋️ أثاث</div>
-                    <div className="p-1.5 rounded-lg bg-[var(--surface)]">👕 أزياء</div>
-                  </div>
-
-                  <div className="text-[10px] font-bold text-[var(--foreground)] px-1 mt-1">إعلانات مميزة</div>
-
-                  <div className="space-y-2">
-                    <div className="flex gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--surface)]">
-                      <div className="w-12 h-12 rounded-md bg-slate-300 shrink-0 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&auto=format&fit=crop" alt="sofa" className="w-full h-full object-cover" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-bold truncate text-[var(--foreground)]">أريكة مودرن بحالة جيدة</p>
-                        <p className="text-[9px] text-[var(--primary)] font-extrabold">3,250 ج.م</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--surface)]">
-                      <div className="w-12 h-12 rounded-md bg-slate-300 shrink-0 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&auto=format&fit=crop" alt="phone" className="w-full h-full object-cover" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-bold truncate text-[var(--foreground)]">آيفون 14 برو ماكس</p>
-                        <p className="text-[9px] text-[var(--primary)] font-extrabold">32,000 ج.م</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            {/* Floating card bottom left */}
+            <div style={{ position: 'absolute', bottom: '-20px', left: '-10px', display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 12px', borderRadius: '16px', backgroundColor: 'var(--card)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)', maxWidth: '195px', zIndex: 2 }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, backgroundColor: 'var(--muted)' }}>
+                <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=120&auto=format&fit=crop" alt="phone" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
-
-              {/* Floating Product Card Top Right */}
-              <div className="hidden sm:flex absolute -top-4 -right-4 p-3 rounded-2xl bg-[var(--card)] border border-[var(--border)] shadow-xl gap-3 items-center max-w-[200px] animate-fade-in">
-                <div className="w-12 h-12 rounded-xl bg-slate-200 overflow-hidden shrink-0">
-                  <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&auto=format&fit=crop" alt="Sofa" className="w-full h-full object-cover" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-[var(--foreground)] truncate">أريكة مودرن</p>
-                  <p className="text-[10px] text-[var(--muted-foreground)]">أثاث ومنزل</p>
-                  <p className="text-xs font-extrabold text-[var(--primary)] mt-0.5">3,250 ج.م</p>
-                </div>
-              </div>
-
-              {/* Floating Product Card Bottom Left */}
-              <div className="hidden sm:flex absolute -bottom-6 -left-4 p-3 rounded-2xl bg-[var(--card)] border border-[var(--border)] shadow-xl gap-3 items-center max-w-[210px] animate-fade-in">
-                <div className="w-12 h-12 rounded-xl bg-slate-200 overflow-hidden shrink-0">
-                  <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&auto=format&fit=crop" alt="iPhone" className="w-full h-full object-cover" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-[var(--foreground)] truncate">آيفون 14 برو ماكس</p>
-                  <p className="text-[10px] text-[var(--muted-foreground)]">إلكترونيات</p>
-                  <p className="text-xs font-extrabold text-[var(--primary)] mt-0.5">32,000 ج.م</p>
-                </div>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--foreground)' }}>آيفون 14 Pro Max</p>
+                <p style={{ fontSize: '0.6rem', color: 'var(--muted-foreground)' }}>إلكترونيات</p>
+                <p style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--primary)' }}>32,000 ج.م</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── SECTION 2: HOW IT WORKS ─────────────────────────────────────── */}
-      <section id="how-it-works" className="py-20 bg-[var(--card)] border-y border-[var(--border)] transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge variant="primary" className="mb-3">
-            HOW IT WORKS • كيف يعمل
-          </Badge>
-          <h2 className="heading-1 font-extrabold text-3xl sm:text-4xl text-[var(--foreground)] mb-3">
-            البيع والشراء بأسلوب بسيط ومباشر
-          </h2>
-          <p className="text-sm sm:text-base text-[var(--muted-foreground)] max-w-xl mx-auto mb-16">
+      {/* ══════════════════════════════════
+          HOW IT WORKS
+      ══════════════════════════════════ */}
+      <section id="how-it-works" style={{ padding: '5rem 0', backgroundColor: 'var(--card)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ ...s.maxW, textAlign: 'center' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.6rem' }}>HOW IT WORKS</p>
+          <h2 className="heading-1" style={{ color: 'var(--foreground)', marginBottom: '0.75rem' }}>البيع والشراء بأسلوب بسيط ومباشر</h2>
+          <p style={{ fontSize: '0.95rem', color: 'var(--muted-foreground)', marginBottom: '3.5rem', maxWidth: '480px', margin: '0 auto 3.5rem' }}>
             ابدأ رحلتك في خطوات معدودة وسريعة للانضمام لأسهل سوق في مصر
           </p>
 
-          {/* 4 Steps Flow Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-            {/* Step 1 */}
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-16 h-16 rounded-2xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-[var(--primary)] group-hover:text-white transition-all shadow-sm">
-                <UserPlus className="w-7 h-7" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
+            {HOW_IT_WORKS.map((item) => (
+              <div key={item.step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                <div style={{ width: '64px', height: '64px', borderRadius: '16px', backgroundColor: 'var(--accent)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
+                  {item.icon}
+                </div>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.35rem' }}>الخطوة {item.step}</span>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.6rem' }}>{item.title}</h3>
+                <p style={{ fontSize: '0.82rem', color: 'var(--muted-foreground)', lineHeight: 1.6 }}>{item.desc}</p>
               </div>
-              <span className="text-xs font-bold text-[var(--primary)] mb-1">الخطوة 1</span>
-              <h3 className="font-bold text-lg text-[var(--foreground)] mb-2">1. أنشئ حسابك</h3>
-              <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
-                سجل حسابك مجاناً في أقل من دقيقة وانضم فوراً إلى مجتمع صفقة.
-              </p>
-            </div>
-
-            {/* Step 2 */}
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-16 h-16 rounded-2xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-[var(--primary)] group-hover:text-white transition-all shadow-sm">
-                <Search className="w-7 h-7" />
-              </div>
-              <span className="text-xs font-bold text-[var(--primary)] mb-1">الخطوة 2</span>
-              <h3 className="font-bold text-lg text-[var(--foreground)] mb-2">2. استكشف المنتجات</h3>
-              <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
-                تصفح آلاف الإعلانات الحقيقية التي تلبي احتياجاتك ورغباتك اليومية.
-              </p>
-            </div>
-
-            {/* Step 3 */}
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-16 h-16 rounded-2xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-[var(--primary)] group-hover:text-white transition-all shadow-sm">
-                <MessageSquare className="w-7 h-7" />
-              </div>
-              <span className="text-xs font-bold text-[var(--primary)] mb-1">الخطوة 3</span>
-              <h3 className="font-bold text-lg text-[var(--foreground)] mb-2">3. تواصل وتفاوض</h3>
-              <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
-                تحدث مباشرة مع البائعين أو المشترين عبر الدردشة الفورية أو الواتساب.
-              </p>
-            </div>
-
-            {/* Step 4 */}
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-16 h-16 rounded-2xl bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-[var(--primary)] group-hover:text-white transition-all shadow-sm">
-                <ShoppingBag className="w-7 h-7" />
-              </div>
-              <span className="text-xs font-bold text-[var(--primary)] mb-1">الخطوة 4</span>
-              <h3 className="font-bold text-lg text-[var(--foreground)] mb-2">4. إشترِ أو بعْ</h3>
-              <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
-                أنجز الصفقة بنجاح واستمتع بتجربة بيع وشراء سلسة ومريحة.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ─── SECTION 3: WHY SAFQA? / BENEFITS ────────────────────────────── */}
-      <section id="features" className="py-20 bg-[var(--surface)] transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge variant="outline" className="mb-3 border-[var(--primary)] text-[var(--primary)]">
-            WHY SAFQA? • لماذا صفقة؟
-          </Badge>
-          <h2 className="heading-1 font-extrabold text-3xl sm:text-4xl text-[var(--foreground)] mb-3">
-            تجربة سوق أفضل وأكثر كفاءة للجميع
-          </h2>
-          <p className="text-sm sm:text-base text-[var(--muted-foreground)] max-w-xl mx-auto mb-14">
+      {/* ══════════════════════════════════
+          FEATURES / WHY SAFQA
+      ══════════════════════════════════ */}
+      <section id="features" style={{ padding: '5rem 0', backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ ...s.maxW, textAlign: 'center' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.6rem' }}>WHY SAFQA?</p>
+          <h2 className="heading-1" style={{ color: 'var(--foreground)', marginBottom: '0.75rem' }}>تجربة سوق أفضل وأكثر كفاءة للجميع</h2>
+          <p style={{ fontSize: '0.95rem', color: 'var(--muted-foreground)', marginBottom: '3.5rem', maxWidth: '480px', margin: '0 auto 3.5rem' }}>
             صممنا المنصة لتوفر لك السرعة والأمان والتواصل المباشر بدون تعقيدات
           </p>
 
-          {/* 5 Benefit Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            <Card className="hover:border-[var(--primary)] transition-all hover:shadow-md">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-4">
-                  <ShieldCheck className="w-6 h-6" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem' }}>
+            {FEATURES.map((f) => (
+              <div key={f.title} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem 1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: 'var(--shadow-sm)', transition: 'box-shadow var(--transition-fast)' }}>
+                <div style={{ width: '52px', height: '52px', borderRadius: '14px', backgroundColor: f.bg, color: f.color, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+                  {f.icon}
                 </div>
-                <h3 className="font-bold text-base text-[var(--foreground)] mb-2">آمن وموثوق</h3>
-                <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
-                  نحافظ على أمان تجاربك عبر آليات التحقق ومراقبة المحتوى.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:border-[var(--primary)] transition-all hover:shadow-md">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-4">
-                  <Zap className="w-6 h-6" />
-                </div>
-                <h3 className="font-bold text-base text-[var(--foreground)] mb-2">سريع وسهل</h3>
-                <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
-                  نشر الإعلانات والتواصل لا يستغرق سوى دقائق بضغطة زر.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:border-[var(--primary)] transition-all hover:shadow-md">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6" />
-                </div>
-                <h3 className="font-bold text-base text-[var(--foreground)] mb-2">أشخاص حقيقيون</h3>
-                <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
-                  تواصل مباشر مع أعضاء حقيقيين في منطقتك ومجتمعك المحلي.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:border-[var(--primary)] transition-all hover:shadow-md">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center mb-4">
-                  <Tag className="w-6 h-6" />
-                </div>
-                <h3 className="font-bold text-base text-[var(--foreground)] mb-2">صفقات ممتازة</h3>
-                <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
-                  اعثر على أفضل السلع والمنتجات المستعملة بأفضل الأسعار.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:border-[var(--primary)] transition-all hover:shadow-md sm:col-span-2 lg:col-span-1">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center mb-4">
-                  <Headphones className="w-6 h-6" />
-                </div>
-                <h3 className="font-bold text-base text-[var(--foreground)] mb-2">دعم متواصل</h3>
-                <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">
-                  فريق الإدارة جاهز ومستعد للإجابة وحل أي استفسار دائماً.
-                </p>
-              </CardContent>
-            </Card>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.5rem' }}>{f.title}</h3>
+                <p style={{ fontSize: '0.78rem', color: 'var(--muted-foreground)', lineHeight: 1.6 }}>{f.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ─── SECTION 4: MARKETPLACE PREVIEW ───────────────────────────────── */}
-      <section className="py-20 bg-[var(--card)] transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge variant="primary" className="mb-3">
-            EXPLORE SAFQA • استكشف صفقة
-          </Badge>
-          <h2 className="heading-1 font-extrabold text-3xl sm:text-4xl text-[var(--foreground)] mb-3">
-            المنتجات الأكثر طلباً الآن
-          </h2>
-          <p className="text-sm sm:text-base text-[var(--muted-foreground)] max-w-xl mx-auto mb-14">
+      {/* ══════════════════════════════════
+          MARKETPLACE PREVIEW
+      ══════════════════════════════════ */}
+      <section style={{ padding: '5rem 0', backgroundColor: 'var(--card)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ ...s.maxW, textAlign: 'center' }}>
+          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.6rem' }}>EXPLORE SAFQA</p>
+          <h2 className="heading-1" style={{ color: 'var(--foreground)', marginBottom: '0.75rem' }}>المنتجات الأكثر طلباً الآن</h2>
+          <p style={{ fontSize: '0.95rem', color: 'var(--muted-foreground)', marginBottom: '3rem', maxWidth: '480px', margin: '0 auto 3rem' }}>
             تصفح عينة من أحدث الإعلانات المعروضة على منصة صفقة
           </p>
 
-          {/* Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-right mb-10">
-            {previewProducts.map((p) => (
-              <Card key={p.id} className="overflow-hidden hover:border-[var(--primary)] transition-all h-full flex flex-col group">
-                <div className="relative aspect-[4/3] bg-slate-100 overflow-hidden">
-                  <img src={p.media[0].url} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  <span className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-bold rounded bg-black/60 text-white backdrop-blur-sm">
-                    {p.category.name}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem', textAlign: 'right' }}>
+            {PREVIEW_PRODUCTS.map((p) => (
+              <div key={p.id} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '14px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', transition: 'box-shadow var(--transition-fast)' }}>
+                {/* Image */}
+                <div style={{ position: 'relative', aspectRatio: '4/3', backgroundColor: 'var(--muted)' }}>
+                  <img src={p.img} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  <span style={{ position: 'absolute', top: '8px', right: '8px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '2px 7px', borderRadius: '20px', backdropFilter: 'blur(4px)' }}>
+                    {p.category}
                   </span>
-                  <button className="absolute top-2 left-2 w-7 h-7 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-slate-600 hover:text-rose-500">
-                    <Heart className="w-3.5 h-3.5" />
+                  <button style={{ position: 'absolute', top: '8px', left: '8px', width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.85)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
+                    <Heart size={13} color="#9ca3af" />
                   </button>
                 </div>
-                <CardContent className="p-3.5 flex-1 flex flex-col justify-between">
-                  <h4 className="font-bold text-xs text-[var(--foreground)] line-clamp-2 leading-snug group-hover:text-[var(--primary)] transition-colors mb-2">
-                    {p.title}
-                  </h4>
-                  <p className="text-sm font-black text-[var(--primary)]">
-                    {p.price.toLocaleString('ar-EG')} <span className="text-[10px] font-normal">ج.م</span>
+                {/* Info */}
+                <div style={{ padding: '0.85rem' }}>
+                  <p style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.4rem', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{p.title}</p>
+                  <p style={{ fontSize: '0.95rem', fontWeight: 900, color: 'var(--primary)' }}>
+                    {p.price.toLocaleString('ar-EG')} <span style={{ fontSize: '0.7rem', fontWeight: 400 }}>ج.م</span>
                   </p>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
-          <Link href="/products">
-            <Button size="lg" className="font-bold gap-2">
-              عرض جميع الإعلانات في المتجر
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
+          <Link href="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 2rem', borderRadius: '12px', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 700, textDecoration: 'none', boxShadow: 'var(--shadow-md)', fontSize: '0.95rem' }}>
+            عرض جميع الإعلانات في المتجر
+            <ArrowLeft size={16} />
           </Link>
         </div>
       </section>
 
-      {/* ─── SECTION 5: TRUST & SAFETY ────────────────────────────────────── */}
-      <section id="safety" className="py-20 bg-[var(--surface)] transition-colors border-t border-[var(--border)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-[var(--card)] rounded-3xl border border-[var(--border)] p-8 sm:p-12 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Security Badge Icon Container */}
-            <div className="lg:col-span-4 flex justify-center">
-              <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] flex items-center justify-center border-4 border-[var(--primary)]/20 shadow-inner">
-                <ShieldCheck className="w-20 h-20 sm:w-24 sm:h-24" />
-                <div className="absolute bottom-2 right-2 w-10 h-10 rounded-full bg-[var(--primary)] text-white flex items-center justify-center shadow-md">
-                  <Lock className="w-5 h-5" />
+      {/* ══════════════════════════════════
+          TRUST & SAFETY
+      ══════════════════════════════════ */}
+      <section id="safety" style={{ padding: '5rem 0', backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ ...s.maxW }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem', alignItems: 'center', backgroundColor: 'var(--card)', borderRadius: '24px', border: '1px solid var(--border)', padding: '3rem 2.5rem', boxShadow: 'var(--shadow-md)' }}>
+            {/* Icon Section */}
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div style={{ position: 'relative', width: '140px', height: '140px', borderRadius: '50%', backgroundColor: 'var(--accent)', border: '4px solid var(--primary)', opacity: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)' }}>
+                <ShieldCheck size={70} color="var(--primary)" />
+                <div style={{ position: 'absolute', bottom: '4px', right: '4px', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-md)' }}>
+                  <Lock size={17} color="var(--primary-foreground)" />
                 </div>
               </div>
             </div>
 
-            {/* Text & Bullet Checks */}
-            <div className="lg:col-span-8 text-right">
-              <Badge variant="outline" className="mb-3 border-emerald-600 text-emerald-600">
-                TRUST & SAFETY • الأمان والخصوصية
-              </Badge>
-              <h2 className="heading-1 font-extrabold text-2xl sm:text-3xl text-[var(--foreground)] mb-3">
-                سلامتك وأمانك هي أولويتنا الأولى
-              </h2>
-              <p className="text-xs sm:text-sm text-[var(--muted-foreground)] leading-relaxed mb-6">
+            {/* Text */}
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#16a34a', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>TRUST & SAFETY</p>
+              <h2 className="heading-2" style={{ color: 'var(--foreground)', marginBottom: '0.75rem' }}>سلامتك وأمانك هي أولويتنا الأولى</h2>
+              <p style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)', lineHeight: 1.7, marginBottom: '1.5rem' }}>
                 نمتلك أنظمة متكاملة ومراقبين لضمان بيئة تداول موثوقة وآمنة لجميع أعضاء مجتمع صفقة.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-5 h-5 text-[var(--primary)] shrink-0" />
-                  <span className="text-xs sm:text-sm font-bold text-[var(--foreground)]">مستخدمون موثقون بحسابات حقيقية</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-5 h-5 text-[var(--primary)] shrink-0" />
-                  <span className="text-xs sm:text-sm font-bold text-[var(--foreground)]">محادثات فورية وآمنة داخل المنصة</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-5 h-5 text-[var(--primary)] shrink-0" />
-                  <span className="text-xs sm:text-sm font-bold text-[var(--foreground)]">نظام بلاغات فوري للتعامل مع المخالفات</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-5 h-5 text-[var(--primary)] shrink-0" />
-                  <span className="text-xs sm:text-sm font-bold text-[var(--foreground)]">مراقبة دورية وحماية البيانات على مدار 24/7</span>
-                </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
+                {[
+                  'مستخدمون موثقون بحسابات حقيقية',
+                  'محادثات فورية وآمنة داخل المنصة',
+                  'نظام بلاغات فوري لمعالجة المخالفات',
+                  'مراقبة دورية وحماية البيانات 24/7',
+                ].map((item) => (
+                  <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                    <CheckCircle2 size={16} color="var(--primary)" style={{ marginTop: '2px', flexShrink: 0 }} />
+                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--foreground)' }}>{item}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── SECTION 6: FINAL CTA BANNER ─────────────────────────────────── */}
-      <section className="py-16 bg-[var(--background)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-gradient-to-r from-[var(--primary)] via-teal-800 to-emerald-900 text-white p-8 sm:p-14 text-center sm:text-right flex flex-col sm:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden">
-            <div className="max-w-xl relative z-10">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold leading-snug mb-3">
+      {/* ══════════════════════════════════
+          FINAL CTA BANNER
+      ══════════════════════════════════ */}
+      <section style={{ padding: '4rem 0', backgroundColor: 'var(--background)' }}>
+        <div style={{ ...s.maxW }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '2rem', borderRadius: '24px', background: 'linear-gradient(135deg, var(--primary), #065f46)', padding: '3rem 2.5rem', boxShadow: 'var(--shadow-lg)', overflow: 'hidden', position: 'relative' }}>
+            <div style={{ position: 'absolute', right: '-40px', bottom: '-40px', fontSize: '120px', fontWeight: 900, color: 'rgba(255,255,255,0.07)', pointerEvents: 'none', userSelect: 'none', lineHeight: 1 }}>
+              Safqa
+            </div>
+
+            <div style={{ maxWidth: '520px', position: 'relative', zIndex: 1 }}>
+              <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#fff', marginBottom: '0.6rem', lineHeight: 1.3 }}>
                 هل أنت جاهز لبدء رحلتك مع صفقة؟
               </h2>
-              <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
+              <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
                 انضم إلى مجتمع صفقة اليوم واكتشف طريقة أسهل وأسرع لبيع وشراء كل ما تحتاجه.
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 shrink-0 relative z-10 w-full sm:w-auto">
-              <Link href="/register" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto bg-white text-[var(--primary)] hover:bg-slate-100 font-extrabold text-sm px-6">
-                  إنشاء حساب جديد
-                </Button>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem', position: 'relative', zIndex: 1 }}>
+              <Link href="/register" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 1.75rem', borderRadius: '12px', backgroundColor: '#fff', color: 'var(--primary)', fontWeight: 800, fontSize: '0.9rem', textDecoration: 'none', boxShadow: 'var(--shadow-md)' }}>
+                إنشاء حساب جديد
               </Link>
 
-              <Link href="/login" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto border-white text-white hover:bg-white/10 font-bold text-sm px-6 gap-1.5">
-                  تسجيل الدخول
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
+              <Link href="/login" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 1.75rem', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.6)', color: '#fff', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>
+                تسجيل الدخول
+                <ArrowLeft size={15} />
               </Link>
-            </div>
-
-            {/* Background Accent watermark */}
-            <div className="absolute -right-10 -bottom-10 opacity-10 text-white font-black text-9xl pointer-events-none select-none">
-              Safqa
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── PUBLIC MARKETING FOOTER ────────────────────────────────────── */}
-      <footer id="about" className="w-full border-t border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
-            {/* Brand Narrative */}
-            <div className="md:col-span-2 flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-bold text-xl">
-                  ص
-                </div>
-                <span className="font-extrabold text-2xl tracking-tight">صفقة.</span>
+      {/* ══════════════════════════════════
+          FOOTER
+      ══════════════════════════════════ */}
+      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--card)', padding: '4rem 0 2rem' }}>
+        <div style={{ ...s.maxW }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '2.5rem', marginBottom: '3rem' }}>
+            {/* Brand */}
+            <div style={{ gridColumn: 'span 2' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem' }}>ص</div>
+                <span style={{ fontWeight: 800, fontSize: '1.3rem' }}>صفقة.</span>
               </div>
-              <p className="text-xs text-[var(--muted-foreground)] leading-relaxed max-w-sm">
-                صفقة هي مجتمع إلكتروني مفتوح يربط بين المشترين والبائعين بسهولة وأمان. هدفنا إتاحة أفضل العروض بدون عمولات وبأسرع طريقة ممكنة.
+              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', lineHeight: 1.7, maxWidth: '260px' }}>
+                صفقة هي مجتمع إلكتروني مفتوح يربط بين المشترين والبائعين بسهولة وأمان بدون عمولات.
               </p>
             </div>
 
-            {/* Links Column 1: Company */}
+            {/* Links: Company */}
             <div>
-              <h4 className="font-bold text-sm mb-4 text-[var(--foreground)]">الشركة</h4>
-              <ul className="space-y-2.5 text-xs text-[var(--muted-foreground)] font-medium">
-                <li><a href="#about" className="hover:text-[var(--primary)] transition-colors">عن المنصة</a></li>
-                <li><a href="#how-it-works" className="hover:text-[var(--primary)] transition-colors">كيف يعمل صفقة</a></li>
-                <li><a href="#features" className="hover:text-[var(--primary)] transition-colors">المميزات</a></li>
-                <li><Link href="/products" className="hover:text-[var(--primary)] transition-colors">تصفح المتجر</Link></li>
+              <h4 style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--foreground)', marginBottom: '1rem' }}>الشركة</h4>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                {[{ href: '#', label: 'عن المنصة' }, { href: '#how-it-works', label: 'كيف يعمل صفقة' }, { href: '#features', label: 'المميزات' }, { href: '/products', label: 'تصفح المتجر' }].map(l => (
+                  <li key={l.label}><a href={l.href} style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', textDecoration: 'none', fontWeight: 500 }}>{l.label}</a></li>
+                ))}
               </ul>
             </div>
 
-            {/* Links Column 2: Support */}
+            {/* Links: Support */}
             <div>
-              <h4 className="font-bold text-sm mb-4 text-[var(--foreground)]">الدعم والأمان</h4>
-              <ul className="space-y-2.5 text-xs text-[var(--muted-foreground)] font-medium">
-                <li><a href="#safety" className="hover:text-[var(--primary)] transition-colors">نصائح الأمان</a></li>
-                <li><Link href="/reports/new" className="hover:text-[var(--primary)] transition-colors">تقديم بلاغ</Link></li>
-                <li><span className="opacity-70">شروط الاستخدام</span></li>
-                <li><span className="opacity-70">سياسة الخصوصية</span></li>
+              <h4 style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--foreground)', marginBottom: '1rem' }}>الدعم</h4>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                {[{ href: '#safety', label: 'نصائح الأمان' }, { href: '/reports/new', label: 'تقديم بلاغ' }, { href: '#', label: 'شروط الاستخدام' }, { href: '#', label: 'سياسة الخصوصية' }].map(l => (
+                  <li key={l.label}><a href={l.href} style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', textDecoration: 'none', fontWeight: 500 }}>{l.label}</a></li>
+                ))}
               </ul>
             </div>
 
-            {/* Links Column 3: Follow Us */}
+            {/* Social Links */}
             <div>
-              <h4 className="font-bold text-sm mb-4 text-[var(--foreground)]">تابعنا</h4>
-              <div className="flex items-center gap-3 text-[var(--muted-foreground)] mb-4">
-                <span className="w-8 h-8 rounded-lg bg-[var(--surface)] flex items-center justify-center hover:text-[var(--primary)] hover:bg-[var(--card)] transition-all border border-[var(--border)] cursor-pointer">
-                  <Globe className="w-4 h-4" />
-                </span>
-                <span className="w-8 h-8 rounded-lg bg-[var(--surface)] flex items-center justify-center hover:text-[var(--primary)] hover:bg-[var(--card)] transition-all border border-[var(--border)] cursor-pointer">
-                  <Share2 className="w-4 h-4" />
-                </span>
-                <span className="w-8 h-8 rounded-lg bg-[var(--surface)] flex items-center justify-center hover:text-[var(--primary)] hover:bg-[var(--card)] transition-all border border-[var(--border)] cursor-pointer">
-                  <Send className="w-4 h-4" />
-                </span>
+              <h4 style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--foreground)', marginBottom: '1rem' }}>تابعنا</h4>
+              <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1rem' }}>
+                {[<Globe size={16} key="g" />, <Share2 size={16} key="s" />, <Send size={16} key="send" />].map((icon, i) => (
+                  <span key={i} style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--muted-foreground)' }}>
+                    {icon}
+                  </span>
+                ))}
               </div>
-              <p className="text-[11px] text-[var(--muted-foreground)]">اللغة: العربية (مصر)</p>
+              <p style={{ fontSize: '0.72rem', color: 'var(--muted-foreground)' }}>اللغة: العربية (مصر)</p>
             </div>
           </div>
 
-          <div className="border-t border-[var(--border)] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--muted-foreground)] text-center sm:text-right">
-            <p>جميع الحقوق محفوظة © {new Date().getFullYear()} منصة صفقة Safqa.</p>
-            <p className="text-[11px]">صُنعت بالحُب لتوفير تجربة بيع وشراء استثنائية.</p>
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>جميع الحقوق محفوظة © {new Date().getFullYear()} منصة صفقة Safqa.</p>
+            <p style={{ fontSize: '0.7rem', color: 'var(--muted-foreground)' }}>صُنعت بالحُب لتوفير تجربة بيع وشراء استثنائية.</p>
           </div>
         </div>
       </footer>
