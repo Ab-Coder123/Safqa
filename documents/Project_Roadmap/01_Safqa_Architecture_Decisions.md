@@ -1820,6 +1820,20 @@ Documentation should always remain synchronized with the implementation.
 
 ---
 
+## Performance Engineering Decision
+
+Performance Engineering is a first-class architectural requirement across the Safqa codebase:
+
+1. **Measured Optimization:** Use `useMemo`, `useCallback`, and `React.memo` only when profiling or technical logic justifies them (e.g. high-frequency lists, expensive computations). Avoid premature, blanket memoization.
+2. **Code Splitting & Dynamic Imports:** Admin dashboards, heavy charts, and specialized modals must be dynamically imported to maintain small initial bundle sizes for standard users.
+3. **Client/Server Boundaries:** Minimize `"use client"` scopes and colocate interactive logic in leaf components.
+4. **Event Efficiency:** High-frequency input (search, filters, scroll) must be debounced or throttled.
+5. **Domain Isolation:** Authentication pages must remain ultra-lightweight and isolated from heavy marketplace and administrative dependencies.
+
+Every task must comply with `documents/WorkFlows/System/Performance_Engineering_Workflow.md`.
+
+---
+
 ## AI Rule
 
 The AI must never start coding immediately.
@@ -1829,7 +1843,7 @@ It must:
 1. Read documentation.
 2. Audit the project.
 3. Understand the architecture.
-4. Select the correct workflow.
+4. Select the correct workflow (including Performance Engineering).
 5. Implement.
 6. Test.
 7. Verify.

@@ -44,3 +44,37 @@ export function isValidEmail(email: string): boolean {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email.trim());
 }
+
+// ==========================================
+// Performance & Event Helpers
+// ==========================================
+
+export function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  waitMs: number
+): (...args: Parameters<T>) => void {
+  let timer: any = null;
+  return function (...args: Parameters<T>) {
+    if (timer) globalThis.clearTimeout(timer);
+    timer = globalThis.setTimeout(() => {
+      func(...args);
+    }, waitMs);
+  };
+}
+
+export function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  limitMs: number
+): (...args: Parameters<T>) => void {
+  let inThrottle = false;
+  return function (...args: Parameters<T>) {
+    if (!inThrottle) {
+      func(...args);
+      inThrottle = true;
+      globalThis.setTimeout(() => {
+        inThrottle = false;
+      }, limitMs);
+    }
+  };
+}
+
