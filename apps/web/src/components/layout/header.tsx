@@ -48,9 +48,9 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-bold text-xl shadow-md group-hover:scale-105 transition-transform">
-              ص
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
+              <img src="/images/safqa-logo-3d.png" alt="Safqa" className="w-full h-full object-contain" />
             </div>
             <span className="font-extrabold text-2xl tracking-tight text-[var(--foreground)]">
               صفقة<span className="text-[var(--primary)]">.</span>

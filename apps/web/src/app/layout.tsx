@@ -14,6 +14,11 @@ const cairo = Cairo({
 export const metadata = {
   title: 'صفقة | Safqa Marketplace',
   description: 'منصة صفقة - أسهل سوق للبيع والشراء في مصر والوطن العربي',
+  icons: {
+    icon: '/images/safqa-logo-3d.png',
+    shortcut: '/images/safqa-logo-3d.png',
+    apple: '/images/safqa-logo-3d.png',
+  },
 };
 
 export default function RootLayout({

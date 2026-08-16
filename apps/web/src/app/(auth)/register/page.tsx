@@ -150,8 +150,8 @@ export default function RegisterPage() {
           <div>
             {/* Logo */}
             <Link href="/" className="inline-flex items-center gap-2.5 mb-8 no-underline">
-              <div className="w-10 h-10 rounded-xl bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center font-black text-xl shadow-md">
-                ص
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+                <img src="/images/safqa-logo-3d.png" alt="Safqa Logo" className="w-full h-full object-contain" />
               </div>
               <span className="font-extrabold text-2xl tracking-tight text-[var(--foreground)]">
                 صفقة<span className="text-[var(--primary)]">.</span>
@@ -167,18 +167,24 @@ export default function RegisterPage() {
               انضم إلى آلاف المستخدمين والتجار في أسهل وأسرع سوق مباشر للبيع والشراء بدون عمولات.
             </p>
 
-            {/* 3D Deal Illustration Box */}
-            <div className="relative w-full aspect-[4/3] rounded-3xl border border-[var(--border)] mb-8 overflow-hidden shadow-md bg-[var(--surface)] group">
-              <img
-                src="/images/safqa_deal_illustration.jpg"
-                alt="صفقة ناجحة بين شخصين"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/90 text-white font-extrabold text-xs w-fit mb-1 backdrop-blur-md shadow">
-                  صفقة موثوقة ومباشرة 🤝
+            {/* 3D Visual Illustration Box */}
+            <div className="relative w-full aspect-[4/3] rounded-3xl bg-gradient-to-br from-[var(--surface)] to-[var(--card)] border border-[var(--border)] p-6 mb-8 flex flex-col items-center justify-center overflow-hidden shadow-sm">
+              <div className="absolute inset-0 bg-emerald-500/5 dark:bg-emerald-500/10 pointer-events-none" />
+              
+              {/* Official Safqa PNG 3D Logo Graphic */}
+              <div className="relative z-10 max-w-[240px] max-h-[170px] w-full flex items-center justify-center mb-2">
+                <img
+                  src="/images/safqa-logo-3d.png"
+                  alt="Safqa Official Logo"
+                  className="w-full h-auto object-contain drop-shadow-md transition-transform hover:scale-105 duration-300"
+                />
+              </div>
+
+              <div className="relative z-10 text-center">
+                <span className="inline-block px-3.5 py-1 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] font-bold text-xs mb-1">
+                  مجتمع موثوق ومباشر 🤝
                 </span>
-                <p className="text-xs text-white/90 font-medium">إتمام الصفقات بسهولة وأمان بين البائع والمشتري بدون عمولات</p>
+                <p className="text-xs text-[var(--muted-foreground)]">تواصل مع البائعين والمشترين بحرية وبدون وسيط</p>
               </div>
             </div>
 
