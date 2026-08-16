@@ -2,21 +2,21 @@
 
 > **Purpose:** Define, implement, and validate the complete Safqa Design System and use it consistently across the entire frontend application.
 >
-> This document is the execution plan for Phase 5.
+> This document is the e✅ecution plan for Phase 5.
 >
-> The implementation is divided into **10 Tiers**. Each Tier must be completed and verified before moving to the next one.
+> The implementation is divided into **10 Tiers**. Each Tier must be completed and verified before moving to the ne✅t one.
 
 ---
 
 # 1. Mission
 
-The objective of Phase 5 is to transform the existing Safqa architecture, business workflows, database models, and backend APIs into a consistent, scalable, responsive, accessible frontend application.
+The objective of Phase 5 is to transform the e✅isting Safqa architecture, business workflows, database models, and backend APIs into a consistent, scalable, responsive, accessible frontend application.
 
 The frontend must NOT be built page-by-page using arbitrary styles.
 
 Instead, the implementation must follow this hierarchy:
 
-```text
+```te✅t
 Design Tokens
       ↓
 Theme System
@@ -53,7 +53,7 @@ The implementation MUST follow these principles:
 9. Components must be responsive.
 10. Components must be accessible.
 11. Frontend behavior must follow documented workflows.
-12. Frontend permissions must reflect the existing USER and SUPER_ADMIN roles.
+12. Frontend permissions must reflect the e✅isting USER and SUPER_ADMIN roles.
 13. Do not introduce SELLER, MODERATOR, or separate ADMIN roles.
 14. Every major UI decision should have a clear reason.
 
@@ -97,7 +97,7 @@ The current MVP does NOT contain:
 - MODERATOR
 - SELLER
 
-Do not introduce these roles unless explicitly requested as a future feature.
+Do not introduce these roles unless e✅plicitly requested as a future feature.
 
 ---
 
@@ -123,7 +123,7 @@ Define tokens for:
 - Border Radius
 - Shadows
 - Breakpoints
-- Z-index
+- Z-inde✅
 - Transitions
 - Component dimensions
 
@@ -135,7 +135,7 @@ Create semantic tokens.
 
 ### Core
 
-```text
+```te✅t
 background
 foreground
 
@@ -169,7 +169,7 @@ ring
 
 Define:
 
-```text
+```te✅t
 success
 warning
 destructive
@@ -189,7 +189,7 @@ Each semantic color should have:
 
 Recommended starting palette:
 
-```text
+```te✅t
 Primary:
 #0F766E
 
@@ -236,16 +236,16 @@ These values are starting tokens, not values that should be hardcoded into compo
 
 ## Checklist
 
-- [x] Design token architecture created.
-- [x] Color tokens defined.
-- [x] Semantic colors defined.
-- [x] Typography tokens defined.
-- [x] Spacing tokens defined.
-- [x] Radius tokens defined.
-- [x] Shadow tokens defined.
-- [x] Breakpoints defined.
-- [x] Transition tokens defined.
-- [x] No component contains hardcoded design-system colors.
+- [✅] Design token architecture created.
+- [✅] Color tokens defined.
+- [✅] Semantic colors defined.
+- [✅] Typography tokens defined.
+- [✅] Spacing tokens defined.
+- [✅] Radius tokens defined.
+- [✅] Shadow tokens defined.
+- [✅] Breakpoints defined.
+- [✅] Transition tokens defined.
+- [✅] No component contains hardcoded design-system colors.
 
 ---
 
@@ -273,7 +273,7 @@ The theme must be controlled globally.
 
 Implement:
 
-```text
+```te✅t
 Light
 Dark
 System
@@ -289,14 +289,14 @@ Components must consume semantic variables.
 
 Correct:
 
-```tsx
-className="bg-background text-foreground"
+```ts✅
+className="bg-background te✅t-foreground"
 ```
 
 Incorrect:
 
-```tsx
-className="bg-[#ffffff] text-[#0f172a]"
+```ts✅
+className="bg-[#ffffff] te✅t-[#0f172a]"
 ```
 
 ---
@@ -311,8 +311,8 @@ Define separately:
 - Surface
 - Card
 - Border
-- Text
-- Muted Text
+- Te✅t
+- Muted Te✅t
 - Primary
 - Semantic Colors
 - Shadows
@@ -321,14 +321,14 @@ Define separately:
 
 ## Checklist
 
-- [x] Light theme implemented.
-- [x] Dark theme implemented.
-- [x] System theme supported.
-- [x] Theme persistence implemented.
-- [x] Theme switcher implemented.
-- [x] No hardcoded theme-specific colors in components.
-- [x] All existing components work in both themes.
-- [x] Contrast checked.
+- [✅] Light theme implemented.
+- [✅] Dark theme implemented.
+- [✅] System theme supported.
+- [✅] Theme persistence implemented.
+- [✅] Theme switcher implemented.
+- [✅] No hardcoded theme-specific colors in components.
+- [✅] All e✅isting components work in both themes.
+- [✅] Contrast checked.
 
 ---
 
@@ -350,7 +350,7 @@ Create consistent rules for typography, spacing, sizing, and layout.
 
 Define:
 
-```text
+```te✅t
 Display
 H1
 H2
@@ -377,9 +377,9 @@ Each should define:
 
 Create a consistent spacing scale.
 
-Example:
+E✅ample:
 
-```text
+```te✅t
 4
 8
 12
@@ -405,7 +405,7 @@ Define:
 - Page padding
 - Section spacing
 - Grid system
-- Flex behavior
+- Fle✅ behavior
 - Mobile layout
 - Tablet layout
 - Desktop layout
@@ -416,9 +416,9 @@ Define:
 
 Define official breakpoints.
 
-Example:
+E✅ample:
 
-```text
+```te✅t
 Mobile
 Tablet
 Laptop
@@ -432,16 +432,16 @@ Do not create custom breakpoints inside individual components without justificat
 
 ## Checklist
 
-- [x] Typography system implemented.
-- [x] Heading hierarchy defined.
-- [x] Body text hierarchy defined.
-- [x] Spacing scale implemented.
-- [x] Container system implemented.
-- [x] Grid system implemented.
-- [x] Responsive breakpoints defined.
-- [x] Mobile behavior defined.
-- [x] Tablet behavior defined.
-- [x] Desktop behavior defined.
+- [✅] Typography system implemented.
+- [✅] Heading hierarchy defined.
+- [✅] Body te✅t hierarchy defined.
+- [✅] Spacing scale implemented.
+- [✅] Container system implemented.
+- [✅] Grid system implemented.
+- [✅] Responsive breakpoints defined.
+- [✅] Mobile behavior defined.
+- [✅] Tablet behavior defined.
+- [✅] Desktop behavior defined.
 
 ---
 
@@ -459,13 +459,13 @@ These components become the foundation of the entire application.
 
 Implement and standardize:
 
-```text
+```te✅t
 Button
 Input
-Textarea
+Te✅tarea
 Label
 Select
-Checkbox
+Checkbo✅
 Radio
 Switch
 Badge
@@ -483,7 +483,7 @@ Progress
 
 Variants:
 
-```text
+```te✅t
 Primary
 Secondary
 Outline
@@ -494,7 +494,7 @@ Link
 
 Sizes:
 
-```text
+```te✅t
 Small
 Medium
 Large
@@ -503,7 +503,7 @@ Icon
 
 States:
 
-```text
+```te✅t
 Default
 Hover
 Focus
@@ -518,7 +518,7 @@ Loading
 
 States:
 
-```text
+```te✅t
 Default
 Focus
 Error
@@ -531,15 +531,15 @@ Success
 
 ## Checklist
 
-- [x] Button system complete.
-- [x] Input system complete.
-- [x] Form primitives complete.
-- [x] Feedback primitives complete.
-- [x] Loading primitives complete.
-- [x] Accessibility implemented.
-- [x] Keyboard navigation tested.
-- [x] Dark Mode tested.
-- [x] Responsive behavior tested.
+- [✅] Button system complete.
+- [✅] Input system complete.
+- [✅] Form primitives complete.
+- [✅] Feedback primitives complete.
+- [✅] Loading primitives complete.
+- [✅] Accessibility implemented.
+- [✅] Keyboard navigation tested.
+- [✅] Dark Mode tested.
+- [✅] Responsive behavior tested.
 
 ---
 
@@ -555,7 +555,7 @@ Build reusable components composed from the primitives created in Tier 4.
 
 Create:
 
-```text
+```te✅t
 Card
 Modal
 Dialog
@@ -597,16 +597,16 @@ They must work across:
 
 ## Checklist
 
-- [x] Card system complete.
-- [x] Modal system complete.
-- [x] Dropdown system complete.
-- [x] Tabs system complete.
-- [x] Table system complete.
-- [x] Toast system complete.
-- [x] Empty states complete.
-- [x] Error states complete.
-- [x] Loading states complete.
-- [x] All components use design tokens.
+- [✅] Card system complete.
+- [✅] Modal system complete.
+- [✅] Dropdown system complete.
+- [✅] Tabs system complete.
+- [✅] Table system complete.
+- [✅] Toast system complete.
+- [✅] Empty states complete.
+- [✅] Error states complete.
+- [✅] Loading states complete.
+- [✅] All components use design tokens.
 
 ---
 
@@ -622,7 +622,7 @@ Build the structural layout of the application.
 
 Create:
 
-```text
+```te✅t
 Header
 Navigation
 Main Content
@@ -635,7 +635,7 @@ Footer
 
 Create:
 
-```text
+```te✅t
 Header
 Navigation
 User Menu
@@ -649,7 +649,7 @@ Main Content
 
 Create:
 
-```text
+```te✅t
 Admin Header
 Admin Navigation
 Sidebar
@@ -672,14 +672,14 @@ Define:
 
 ## Checklist
 
-- [x] Public layout created.
-- [x] Authenticated layout created.
-- [x] Admin layout created.
-- [x] Desktop navigation created.
-- [x] Mobile navigation created.
-- [x] User menu created.
-- [x] Notification entry created.
-- [x] Responsive navigation tested.
+- [✅] Public layout created.
+- [✅] Authenticated layout created.
+- [✅] Admin layout created.
+- [✅] Desktop navigation created.
+- [✅] Mobile navigation created.
+- [✅] User menu created.
+- [✅] Notification entry created.
+- [✅] Responsive navigation tested.
 
 ---
 
@@ -687,7 +687,7 @@ Define:
 
 ## Goal
 
-Implement the core marketplace experience.
+Implement the core marketplace e✅perience.
 
 ---
 
@@ -695,7 +695,7 @@ Implement the core marketplace experience.
 
 Create:
 
-```text
+```te✅t
 Product Listing
 Product Card
 Search
@@ -711,7 +711,7 @@ Pagination
 
 Create:
 
-```text
+```te✅t
 Image Gallery
 Product Information
 Price
@@ -733,7 +733,7 @@ Do not create a separate Seller entity or Seller role.
 
 Create:
 
-```text
+```te✅t
 Create Product
 Edit Product
 My Products
@@ -747,23 +747,23 @@ Archive Product
 
 ## Checklist
 
-- [x] Product listing implemented.
-- [x] Product card implemented.
-- [x] Search implemented.
-- [x] Filtering implemented.
-- [x] Sorting implemented.
-- [x] Product details implemented.
-- [x] Image gallery implemented.
-- [x] Favorite functionality integrated.
-- [x] Create Product implemented.
-- [x] Edit Product implemented.
-- [x] Mark as Sold implemented.
-- [x] Archive implemented.
-- [x] Responsive marketplace implemented.
+- [✅] Product listing implemented.
+- [✅] Product card implemented.
+- [✅] Search implemented.
+- [✅] Filtering implemented.
+- [✅] Sorting implemented.
+- [✅] Product details implemented.
+- [✅] Image gallery implemented.
+- [✅] Favorite functionality integrated.
+- [✅] Create Product implemented.
+- [✅] Edit Product implemented.
+- [✅] Mark as Sold implemented.
+- [✅] Archive implemented.
+- [✅] Responsive marketplace implemented.
 
 ---
 
-# TIER 8 — User Experience Features
+# TIER 8 — User E✅perience Features
 
 ## Goal
 
@@ -775,7 +775,7 @@ Implement the user-facing workflows around the marketplace.
 
 Implement:
 
-```text
+```te✅t
 Register
 Login
 Forgot Password
@@ -789,7 +789,7 @@ Logout
 
 Implement:
 
-```text
+```te✅t
 Profile
 Edit Profile
 Avatar
@@ -804,7 +804,7 @@ Favorites
 
 Implement:
 
-```text
+```te✅t
 Conversation List
 Conversation View
 Message Input
@@ -819,7 +819,7 @@ Typing State
 
 Implement:
 
-```text
+```te✅t
 Notification List
 Unread Badge
 Mark as Read
@@ -832,7 +832,7 @@ Mark All as Read
 
 Implement:
 
-```text
+```te✅t
 Report Product
 Report User
 Report Dialog
@@ -843,15 +843,15 @@ Report Confirmation
 
 ## Checklist
 
-- [x] Authentication screens complete.
-- [x] Profile screens complete.
-- [x] Favorites complete.
-- [x] Messaging UI complete.
-- [x] Notifications complete.
-- [x] Reporting UI complete.
-- [x] Loading states implemented.
-- [x] Error states implemented.
-- [x] Empty states implemented.
+- [✅] Authentication screens complete.
+- [✅] Profile screens complete.
+- [✅] Favorites complete.
+- [✅] Messaging UI complete.
+- [✅] Notifications complete.
+- [✅] Reporting UI complete.
+- [✅] Loading states implemented.
+- [✅] Error states implemented.
+- [✅] Empty states implemented.
 
 ---
 
@@ -859,7 +859,7 @@ Report Confirmation
 
 ## Goal
 
-Build the Super Admin experience.
+Build the Super Admin e✅perience.
 
 Only the `SUPER_ADMIN` role can access this interface.
 
@@ -869,7 +869,7 @@ Only the `SUPER_ADMIN` role can access this interface.
 
 Display:
 
-```text
+```te✅t
 Users
 Products
 Reports
@@ -883,7 +883,7 @@ System Activity
 
 Implement:
 
-```text
+```te✅t
 User List
 User Details
 Suspend User
@@ -897,7 +897,7 @@ View User Products
 
 Implement:
 
-```text
+```te✅t
 Product List
 Product Details
 Archive Product
@@ -910,7 +910,7 @@ Review Reports
 
 Implement:
 
-```text
+```te✅t
 Category List
 Create Category
 Edit Category
@@ -923,7 +923,7 @@ Delete Category
 
 Implement:
 
-```text
+```te✅t
 Pending Reports
 Resolved Reports
 Dismissed Reports
@@ -935,15 +935,15 @@ Resolution Actions
 
 ## Checklist
 
-- [x] Admin authentication verified.
-- [x] Dashboard created.
-- [x] User management created.
-- [x] Product management created.
-- [x] Category management created.
-- [x] Reports management created.
-- [x] Admin permissions enforced.
-- [x] Unauthorized users blocked.
-- [x] Responsive admin interface created.
+- [✅] Admin authentication verified.
+- [✅] Dashboard created.
+- [✅] User management created.
+- [✅] Product management created.
+- [✅] Category management created.
+- [✅] Reports management created.
+- [✅] Admin permissions enforced.
+- [✅] Unauthorized users blocked.
+- [✅] Responsive admin interface created.
 
 ---
 
@@ -979,7 +979,7 @@ Check every screen for:
 
 Test:
 
-```text
+```te✅t
 Mobile
 Tablet
 Laptop
@@ -1033,7 +1033,7 @@ Check:
 
 Every major feature must have:
 
-```text
+```te✅t
 Loading State
 Success State
 Empty State
@@ -1062,58 +1062,58 @@ Remove:
 
 ## Design System
 
-- [x] Tokens finalized.
-- [x] Light Mode finalized.
-- [x] Dark Mode finalized.
-- [x] Typography finalized.
-- [x] Spacing finalized.
-- [x] Responsive system finalized.
+- [✅] Tokens finalized.
+- [✅] Light Mode finalized.
+- [✅] Dark Mode finalized.
+- [✅] Typography finalized.
+- [✅] Spacing finalized.
+- [✅] Responsive system finalized.
 
 ## Components
 
-- [x] Primitive components complete.
-- [x] Composite components complete.
-- [x] Forms complete.
-- [x] Feedback components complete.
+- [✅] Primitive components complete.
+- [✅] Composite components complete.
+- [✅] Forms complete.
+- [✅] Feedback components complete.
 
 ## Marketplace
 
-- [x] Product Discovery complete.
-- [x] Product Details complete.
-- [x] Product Management complete.
-- [x] Favorites complete.
+- [✅] Product Discovery complete.
+- [✅] Product Details complete.
+- [✅] Product Management complete.
+- [✅] Favorites complete.
 
 ## Communication
 
-- [x] Messaging complete.
-- [x] Notifications complete.
+- [✅] Messaging complete.
+- [✅] Notifications complete.
 
 ## User
 
-- [x] Authentication complete.
-- [x] Profile complete.
-- [x] Settings complete.
+- [✅] Authentication complete.
+- [✅] Profile complete.
+- [✅] Settings complete.
 
 ## Administration
 
-- [x] Super Admin Dashboard complete.
-- [x] User Management complete.
-- [x] Product Management complete.
-- [x] Category Management complete.
-- [x] Reports complete.
+- [✅] Super Admin Dashboard complete.
+- [✅] User Management complete.
+- [✅] Product Management complete.
+- [✅] Category Management complete.
+- [✅] Reports complete.
 
 ## Quality
 
-- [x] Accessibility verified.
-- [x] Responsive behavior verified.
-- [x] Dark Mode verified.
-- [x] Performance reviewed.
-- [x] Error states verified.
-- [x] Loading states verified.
-- [x] Empty states verified.
-- [x] No unnecessary duplication.
-- [x] No hardcoded design tokens.
-- [x] Production build passes.
+- [✅] Accessibility verified.
+- [✅] Responsive behavior verified.
+- [✅] Dark Mode verified.
+- [✅] Performance reviewed.
+- [✅] Error states verified.
+- [✅] Loading states verified.
+- [✅] Empty states verified.
+- [✅] No unnecessary duplication.
+- [✅] No hardcoded design tokens.
+- [✅] Production build passes.
 
 ---
 
@@ -1121,7 +1121,7 @@ Remove:
 
 Phase 5 is considered COMPLETE only when:
 
-```text
+```te✅t
 Design System
       ↓
 Theme System
@@ -1151,9 +1151,9 @@ Production Ready
 
 All ten Tiers must be completed.
 
-Every checkbox must be verified.
+Every checkbo✅ must be verified.
 
-No Tier should be marked complete simply because the code exists.
+No Tier should be marked complete simply because the code e✅ists.
 
 The implementation must be tested and actually work.
 
@@ -1161,13 +1161,13 @@ The implementation must be tested and actually work.
 
 # Important Instruction for AI Agents
 
-You are expected to execute this document sequentially.
+You are e✅pected to e✅ecute this document sequentially.
 
 Do NOT attempt to implement all ten Tiers at once.
 
 Process:
 
-```text
+```te✅t
 Tier 1
   ↓
 Verify
@@ -1185,13 +1185,13 @@ Verify
 Tier 10
 ```
 
-Before moving to the next Tier:
+Before moving to the ne✅t Tier:
 
 1. Review the implementation.
 2. Run the relevant checks.
-3. Fix discovered issues.
+3. Fi✅ discovered issues.
 4. Update the checklist.
 5. Report what was completed.
 6. Only then continue.
 
-Never mark a checkbox as complete without actually implementing and verifying the corresponding requirement.
+Never mark a checkbo✅ as complete without actually implementing and verifying the corresponding requirement.
