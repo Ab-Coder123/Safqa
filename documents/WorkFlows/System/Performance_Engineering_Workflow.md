@@ -92,7 +92,63 @@ const HeavyAnalyticsChart = dynamic(
 
 ---
 
-## 6. Authentication & Admin Domain Isolation
+## 6. Rendering Audit
+
+Before completing any Tier or feature implementation, a **mandatory rendering audit** must be performed:
+
+### Rendering Audit Checklist (run before closing any Tier):
+- [ ] Open React DevTools Profiler or add `console.count('ComponentName render')` temporarily.
+- [ ] Verify no component re-renders unnecessarily when unrelated state updates occur.
+- [ ] Confirm list-item components (e.g., `ProductCard`, `NotificationItem`) do NOT re-render when sibling items change.
+- [ ] Confirm parent page state updates (e.g., loading toggle, search query) do NOT cascade into memoized children.
+- [ ] Remove all debug render-count logs before committing.
+
+### Common Render Cascade Patterns to Detect:
+- Inline object/array props on memoized children: `<Child options={[...]} />` — creates new reference every render.
+- Unstable callback props: `<Child onAction={() => doX()} />` passed to `React.memo` child without `useCallback`.
+- Context consumers re-rendering on every context value update even when their slice didn't change.
+
+---
+
+## 7. Authentication Bundle Isolation Rules
+
+### Strict Rules for Auth Pages (`/login`, `/register`, `/forgot-password`):
+- **No heavy imports:** Auth pages must NEVER import marketplace components, admin utilities, notification centers, or messaging listeners.
+- **Minimal `useState`:** Only form field values, validation errors, loading state, and server error messages are allowed as state in auth pages.
+- **No `useEffect` for data fetching:** Auth pages must not fetch marketplace data, user feeds, or any non-auth API on mount.
+- **No shared layout with marketplace:** Auth pages use their own isolated `(auth)` route group layout, NOT the main app layout.
+- **Bundle size target:** Auth route First Load JS must stay under **120 kB**.
+
+---
+
+## 8. Admin Bundle Isolation & Dynamic Import Enforcement
+
+### Rules:
+- **Mandatory `dynamic()` for Admin:** All heavy admin components (data tables, moderation panels, bulk action forms, analytics charts) MUST be imported using Next.js `dynamic()` to prevent standard user sessions from downloading admin code.
+- **Admin routes only:** Any component that imports admin-specific utilities must be restricted to files inside `/app/admin/` directory.
+- **No admin imports in shared components:** Shared layout components (`Header`, `Footer`, `MobileNav`) must NEVER import or reference admin-only modules.
+
+```tsx
+// Enforcement Example — inside /app/admin/page.tsx
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui';
+
+// Heavy moderation table — loaded only when admin visits the page
+const ModerationTable = dynamic(
+  () => import('@/components/admin/moderation-table'),
+  { loading: () => <Skeleton className="h-48 w-full" /> }
+);
+
+// Bulk action form — loaded only when admin triggers it
+const BulkActionForm = dynamic(
+  () => import('@/components/admin/bulk-action-form'),
+  { loading: () => <Skeleton className="h-24 w-full" /> }
+);
+```
+
+---
+
+## 9. Authentication & Admin Domain Isolation (General)
 
 ### Rules:
 - **Authentication Pages (`/login`, `/register`):** Must remain strictly lightweight. Never bundle marketplace feeds, administrative tools, messaging listeners, or large third-party modules into auth routes.
@@ -113,12 +169,22 @@ Before writing code for any feature, page, component, or hook, the engineer/agen
 
 ---
 
-## Mandatory Post-Implementation Verification
+## Mandatory Post-Implementation Verification (Per Tier)
 
-After implementation, verify:
+After completing ANY Tier, the following must ALL pass before the Tier is marked `[x]` in the roadmap:
 
+### 🔍 Performance Gate
+* [ ] **Rendering Audit Complete:** No unnecessary re-renders detected (see Section 6).
 * [ ] **No Over-Optimization:** No unjustified `useMemo`/`useCallback` on trivial operations.
-* [ ] **No Render Cascades:** Parent updates do not trigger unnecessary child re-renders.
+* [ ] **No Render Cascades:** Parent state updates do not cascade into memoized children.
+* [ ] **Auth Bundle Isolation:** Auth routes comply with Section 7 rules (< 120 kB First Load JS).
+* [ ] **Admin Dynamic Imports:** Any new admin component is imported via `dynamic()` per Section 8.
+
+### 🧪 Build & Test Gate
 * [ ] **TypeScript Check:** `pnpm --filter @safqa/web build` or `tsc --noEmit` passes without type errors.
-* [ ] **Production Build:** Next.js build succeeds with optimal chunk sizes and zero warnings.
-* [ ] **Existing Tests:** Backend and frontend test suites pass with 100% success.
+* [ ] **Production Build:** Next.js build succeeds — all static pages generated with zero warnings.
+* [ ] **Backend Tests:** `pnpm --filter @safqa/backend test` — all test suites pass.
+
+### 📋 Documentation Gate
+* [ ] **Roadmap Updated:** The Tier checkbox is marked `[x]` in `documents/Project_Roadmap/Phase XX.md`.
+* [ ] **Workflow Compliance:** The implemented code was cross-checked against its domain workflow file(s) before writing.

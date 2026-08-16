@@ -7,6 +7,7 @@ import { MobileNav } from '../../components/layout/mobile-nav';
 import { ProductCard } from '../../components/marketplace/product-card';
 import { Button, EmptyState, Skeleton } from '../../components/ui';
 import { Search, Filter, Sparkles } from 'lucide-react';
+import { useDebounce } from '../../hooks/use-debounce';
 
 interface Product {
   id: string;
@@ -40,10 +41,13 @@ export default function MarketplacePage() {
   const [condition, setCondition] = useState('ALL');
   const [page, setPage] = useState(1);
 
+  // ✅ Performance: Debounce search query 400ms to avoid API call on every keystroke
+  const debouncedQ = useDebounce(q, 400);
+
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
-    if (q) params.set('q', q);
+    if (debouncedQ) params.set('q', debouncedQ);
     if (condition !== 'ALL') params.set('condition', condition);
     params.set('page', String(page));
     params.set('limit', '12');
@@ -57,17 +61,22 @@ export default function MarketplacePage() {
     } finally {
       setLoading(false);
     }
-  }, [q, condition, page]);
+  }, [debouncedQ, condition, page]);
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
+  // Reset page to 1 whenever search or condition changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedQ, condition]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setPage(1);
-    fetchProducts();
+    // No manual trigger needed — useDebounce handles this automatically
   };
+
 
   const maxW: React.CSSProperties = {
     maxWidth: '1200px',
