@@ -167,20 +167,18 @@ export default function RegisterPage() {
               انضم إلى آلاف المستخدمين والتجار في أسهل وأسرع سوق مباشر للبيع والشراء بدون عمولات.
             </p>
 
-            {/* 3D Visual Illustration Box */}
-            <div className="relative w-full aspect-[4/3] rounded-3xl bg-gradient-to-br from-[var(--surface)] to-[var(--card)] border border-[var(--border)] p-6 mb-8 flex flex-col items-center justify-center overflow-hidden shadow-sm">
-              <div className="absolute inset-0 bg-emerald-500/5 dark:bg-emerald-500/10 pointer-events-none" />
-              
-              {/* Decorative Avatar / Illustration Graphic */}
-              <div className="relative z-10 w-24 h-24 rounded-full bg-[var(--accent)] border-4 border-[var(--primary)] flex items-center justify-center shadow-lg mb-4">
-                <Users size={48} className="text-[var(--primary)]" />
-              </div>
-
-              <div className="relative z-10 text-center">
-                <span className="inline-block px-3 py-1 rounded-full bg-[var(--primary)]/10 text-[var(--primary)] font-bold text-xs mb-1">
-                  مجتمع موثوق ومباشر 🤝
+            {/* 3D Deal Illustration Box */}
+            <div className="relative w-full aspect-[4/3] rounded-3xl border border-[var(--border)] mb-8 overflow-hidden shadow-md bg-[var(--surface)] group">
+              <img
+                src="/images/safqa_deal_illustration.jpg"
+                alt="صفقة ناجحة بين شخصين"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/90 text-white font-extrabold text-xs w-fit mb-1 backdrop-blur-md shadow">
+                  صفقة موثوقة ومباشرة 🤝
                 </span>
-                <p className="text-xs text-[var(--muted-foreground)]">تواصل مع البائعين والمشترين بحرية وبدون وسيط</p>
+                <p className="text-xs text-white/90 font-medium">إتمام الصفقات بسهولة وأمان بين البائع والمشتري بدون عمولات</p>
               </div>
             </div>
 
