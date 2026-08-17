@@ -20,7 +20,7 @@ Before writing any code, map the user's request to one of the Safqa domains:
 | **Marketplace** | `Marketplace/Product_Management_Workflow.md`, `Marketplace/Product_Discovery_Workflow.md`, `Marketplace/Favorites_Workflow.md`, `Marketplace/Product_Lifecycle_Workflow.md` |
 | **Communication** | `Communication/Messaging_Workflow.md`, `Communication/Notification_Workflow.md` |
 | **Administration** | `Administration/Admin_Workflow.md`, `Administration/Category_Management_Workflow.md`, `Administration/Report_Workflow.md` |
-| **System** | `System/Media_Workflow.md`, `System/File_Upload_Workflow.md`, `System/Error_Handling_Workflow.md`, `System/Permission_Workflow.md`, `System/Logging_Workflow.md`, `System/Performance_Engineering_Workflow.md` |
+| **System** | `System/Frontend_Architecture_Workflow.md`, `System/Backend_Architecture_Workflow.md`, `System/Media_Workflow.md`, `System/File_Upload_Workflow.md`, `System/Error_Handling_Workflow.md`, `System/Permission_Workflow.md`, `System/Logging_Workflow.md`, `System/Performance_Engineering_Workflow.md` |
 
 If the task spans more than one domain (e.g. "add a report button on a product page" touches both Marketplace and Administration/Report), identify ALL relevant workflow files — not just the most obvious one.
 
@@ -46,6 +46,26 @@ Before writing or modifying any frontend component, page, hook, or event handler
 - **Memoization:** Is there an expensive calculation or high-frequency list rendering justifying `useMemo` or `React.memo` without over-optimizing?
 - **Events:** Do text inputs, search, scroll, or resize events require debouncing/throttling?
 - **State Scope:** Is state localized to prevent global re-render cascades?
+
+### 4A. Mandatory Frontend Architecture Pre-Review
+Before writing or modifying any frontend route, component, hook, API call, form, or client-side data flow, you MUST read `System/Frontend_Architecture_Workflow.md` and answer:
+- Which feature owns this code?
+- Is the data Server State or Client/UI State?
+- Which feature API service owns the endpoint?
+- Which query or mutation owns the request?
+- Which component owns the UI?
+- What should remain shared or reusable?
+- Does this require a new dependency?
+- Does this affect rendering performance or auth/admin bundle isolation?
+
+### 4B. Mandatory Backend Architecture Pre-Review
+Before writing or modifying any backend controller, DTO, service, guard, Prisma query, or module, you MUST read `System/Backend_Architecture_Workflow.md` and answer:
+- Which backend module owns the domain behavior?
+- Does the controller remain thin?
+- Which DTO validates the request?
+- Where does the business rule live?
+- Is Prisma access isolated from the controller?
+- Which authentication, permission, error, and test rules apply?
 
 ### 5. Implement strictly according to the workflow
 - Follow the exact data flow described (Frontend → Backend → Database, or whichever direction the workflow defines)

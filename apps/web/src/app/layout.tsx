@@ -2,6 +2,7 @@ import React from 'react';
 import { Cairo } from 'next/font/google';
 import { ThemeProvider } from '../components/theme-provider';
 import { ToastProvider } from '../components/ui/toast';
+import { QueryProvider } from '../lib/query';
 import './globals.css';
 
 const cairo = Cairo({
@@ -30,9 +31,11 @@ export default function RootLayout({
     <html lang="ar" dir="rtl" className={cairo.variable}>
       <body className={cairo.className}>
         <ThemeProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
+          <QueryProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>
