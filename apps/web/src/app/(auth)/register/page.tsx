@@ -170,7 +170,7 @@ export default function RegisterPage() {
             {/* 3D Visual Illustration Box */}
             <div className="relative w-full aspect-[4/3] rounded-3xl bg-gradient-to-br from-[var(--surface)] to-[var(--card)] border border-[var(--border)] p-6 mb-8 flex flex-col items-center justify-center overflow-hidden shadow-sm">
               <div className="absolute inset-0 bg-emerald-500/5 dark:bg-emerald-500/10 pointer-events-none" />
-              
+
               {/* Official Safqa PNG 3D Logo Graphic */}
               <div className="relative z-10 max-w-[240px] max-h-[170px] w-full flex items-center justify-center mb-2">
                 <img
@@ -313,7 +313,7 @@ export default function RegisterPage() {
                 </Label>
                 <div className="relative flex items-center">
                   <Phone size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] pointer-events-none" />
-                  
+
                   {/* Flag & Prefix */}
                   <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-xs font-bold text-[var(--muted-foreground)] border-r border-[var(--border)] pr-2.5 pointer-events-none">
                     <span>🇪🇬</span>
