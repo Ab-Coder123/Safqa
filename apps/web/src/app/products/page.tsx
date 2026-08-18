@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Header } from '../../components/layout/header';
 import { Footer } from '../../components/layout/footer';
 import { MobileNav } from '../../components/layout/mobile-nav';
@@ -8,24 +8,7 @@ import { ProductCard } from '../../components/marketplace/product-card';
 import { Button, EmptyState, Skeleton } from '../../components/ui';
 import { Search, Filter, Sparkles } from 'lucide-react';
 import { useDebounce } from '../../hooks/use-debounce';
-
-interface Product {
-  id: string;
-  title: string;
-  price: number;
-  condition: string;
-  status: string;
-  created_at: string;
-  category?: { name: string; slug?: string };
-  media?: { url: string }[];
-}
-
-interface PaginatedResult {
-  data: Product[];
-  total: number;
-  page: number;
-  totalPages: number;
-}
+import { useProducts } from '@/features/products/hooks/use-products';
 
 const conditions = [
   { key: 'ALL', label: 'الكل' },
@@ -35,8 +18,6 @@ const conditions = [
 ];
 
 export default function MarketplacePage() {
-  const [result, setResult] = useState<PaginatedResult | null>(null);
-  const [loading, setLoading] = useState(true);
   const [q, setQ] = useState('');
   const [condition, setCondition] = useState('ALL');
   const [page, setPage] = useState(1);
@@ -44,39 +25,17 @@ export default function MarketplacePage() {
   // ✅ Performance: Debounce search query 400ms to avoid API call on every keystroke
   const debouncedQ = useDebounce(q, 400);
 
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
-    const params = new URLSearchParams();
-    if (debouncedQ) params.set('q', debouncedQ);
-    if (condition !== 'ALL') params.set('condition', condition);
-    params.set('page', String(page));
-    params.set('limit', '12');
-
-    try {
-      const res = await fetch(`http://localhost:3001/products?${params.toString()}`);
-      const data: PaginatedResult = await res.json();
-      setResult(data);
-    } catch {
-      setResult(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [debouncedQ, condition, page]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-
-  // Reset page to 1 whenever search or condition changes
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQ, condition]);
+  // ✅ Server State: TanStack Query hook
+  const { data: result, isLoading: loading } = useProducts({
+    q: debouncedQ,
+    condition: condition !== 'ALL' ? condition : undefined,
+    page,
+    limit: 12,
+  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // No manual trigger needed — useDebounce handles this automatically
   };
-
 
   const maxW: React.CSSProperties = {
     maxWidth: '1200px',
@@ -117,7 +76,10 @@ export default function MarketplacePage() {
                 <input
                   type="text"
                   value={q}
-                  onChange={(e) => setQ(e.target.value)}
+                  onChange={(e) => {
+                    setQ(e.target.value);
+                    setPage(1);
+                  }}
                   placeholder="ما الذي تبحث عنه اليوم؟"
                   style={{ flex: 1, padding: '0.5rem 0.75rem', fontSize: '0.875rem', color: 'var(--foreground)', backgroundColor: 'transparent', border: 'none', outline: 'none', direction: 'rtl' }}
                 />

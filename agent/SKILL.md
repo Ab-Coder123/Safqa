@@ -82,7 +82,13 @@ After implementation, verify:
 ## Rules
 
 - Never start writing code in the Safqa project before identifying and reading the matching workflow file(s).
+- Always enforce `System/Frontend_Architecture_Workflow.md` and `System/Backend_Architecture_Workflow.md` on all feature work.
 - Always enforce `System/Performance_Engineering_Workflow.md` on all UI, state, event, and data operations.
+- DO NOT implement API calls directly inside pages or components (`fetch()` is only permitted inside `lib/api/api-client.ts`).
+- DO NOT duplicate server state into client state managers (Redux, Zustand, local state). Use TanStack Query hooks.
+- DO NOT create feature code outside its owning feature directory (`features/<feature>/`).
+- DO NOT add a new dependency without architectural justification.
+- DO NOT start a Tier feature before Architecture Foundation requirements are satisfied.
 - Never rely on general best practices alone when a workflow file exists for that domain — the workflow file is the source of truth for THIS project.
 - If a workflow file doesn't exist for what's being asked (a genuinely new capability), say so explicitly and propose that a new workflow doc be written first, rather than silently improvising.
 - Always mention, briefly, which workflow file(s) were used before showing the implementation — so the user can verify the right one was applied.

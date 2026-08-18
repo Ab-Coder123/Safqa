@@ -1,124 +1,134 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-
-interface Product {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  condition: string;
-  whatsapp_number: string;
-  status: string;
-  created_at: string;
-  category: { id: string; name: string; slug: string };
-  user: { id: string; full_name: string; avatar_url?: string; created_at: string };
-}
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { MobileNav } from '@/components/layout/mobile-nav';
+import { useProduct } from '@/features/products/hooks/use-product';
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { data: product, isLoading: loading, isError, error } = useProduct(params.id);
 
-  useEffect(() => {
-    fetch(`http://localhost:3001/products/${params.id}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.statusCode) setError(data.message || 'الإعلان غير موجود');
-        else setProduct(data);
-        setLoading(false);
-      })
-      .catch(() => { setError('فشل تحميل الإعلان'); setLoading(false); });
-  }, [params.id]);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[var(--background)]">
+        <Header />
+        <div className="flex-1 flex items-center justify-center text-[var(--muted-foreground)]">جاري التحميل...</div>
+        <Footer />
+      </div>
+    );
+  }
 
-  if (loading) return <div style={{ padding: '4rem', textAlign: 'center' }}>جاري التحميل...</div>;
-  if (error || !product) return <div style={{ padding: '4rem', textAlign: 'center', color: '#ef4444' }}>{error || 'لم يتم العثور على الإعلان'}</div>;
+  if (isError || !product) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[var(--background)]">
+        <Header />
+        <div className="flex-1 flex items-center justify-center text-[var(--destructive)]">
+          {(error as any)?.message || 'لم يتم العثور على الإعلان'}
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
-  const conditionLabel: Record<string, string> = { NEW: 'جديد', USED: 'مستعمل', REFURBISHED: 'مجدد' };
+  const conditionLabel: Record<string, string> = {
+    NEW: 'جديد',
+    LIKE_NEW: 'شبه جديد',
+    USED_GOOD: 'مستعمل بحالة جيدة',
+    USED_FAIR: 'مستعمل بحالة مقبولة',
+  };
   const isSold = product.status === 'SOLD';
   const isArchived = product.status === 'ARCHIVED';
 
   return (
-    <main style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
-      {/* Breadcrumb */}
-      <nav style={{ marginBottom: '1.5rem', color: '#6b7280', fontSize: '0.9rem' }}>
-        <Link href="/" style={{ color: '#2563eb', textDecoration: 'none' }}>الرئيسية</Link>
-        {' > '}
-        <Link href={`/categories`} style={{ color: '#2563eb', textDecoration: 'none' }}>{product.category?.name}</Link>
-        {' > '}
-        <span>{product.title}</span>
-      </nav>
+    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+      <Header />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
-        {/* LEFT — Image & Title */}
-        <div>
-          <div style={{ borderRadius: '12px', background: 'linear-gradient(135deg,#e0e7ff,#f0f9ff)', height: '320px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5rem', marginBottom: '1.5rem', position: 'relative' }}>
-            📦
-            {(isSold || isArchived) && (
-              <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: isSold ? '#f59e0b' : '#ef4444', color: '#fff', padding: '0.35rem 0.85rem', borderRadius: '20px', fontSize: '0.85rem', fontWeight: '600' }}>
-                {isSold ? 'تم البيع' : 'محذوف'}
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Breadcrumb */}
+        <nav className="mb-6 text-sm text-[var(--muted-foreground)] flex items-center gap-2">
+          <Link href="/" className="text-[var(--primary)] hover:underline">الرئيسية</Link>
+          <span>&gt;</span>
+          <Link href="/products" className="text-[var(--primary)] hover:underline">الإعلانات</Link>
+          {product.category && (
+            <>
+              <span>&gt;</span>
+              <span className="text-[var(--foreground)] font-medium">{product.category.name}</span>
+            </>
+          )}
+        </nav>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* LEFT — Image & Description */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="relative aspect-[16/10] w-full rounded-2xl bg-[var(--muted)] overflow-hidden flex items-center justify-center border border-[var(--border)]">
+              {product.media && product.media.length > 0 ? (
+                <img src={product.media[0].url} alt={product.title} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-6xl">📦</span>
+              )}
+              {(isSold || isArchived) && (
+                <div className={`absolute top-4 right-4 text-white text-xs font-bold px-3 py-1.5 rounded-full ${isSold ? 'bg-amber-500' : 'bg-red-500'}`}>
+                  {isSold ? 'تم البيع' : 'محذوف'}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <h1 className="text-2xl font-extrabold text-[var(--foreground)] mb-3">{product.title}</h1>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="bg-[var(--accent)] text-[var(--primary)] px-3 py-1 rounded-full text-xs font-bold">
+                  {conditionLabel[product.condition] || product.condition}
+                </span>
+                {product.category && (
+                  <span className="bg-[var(--muted)] text-[var(--muted-foreground)] px-3 py-1 rounded-full text-xs font-medium">
+                    {product.category.name}
+                  </span>
+                )}
               </div>
-            )}
+
+              <h2 className="text-base font-bold text-[var(--foreground)] mb-2">تفاصيل الإعلان</h2>
+              <p className="text-sm text-[var(--muted-foreground)] leading-relaxed whitespace-pre-wrap">{product.description}</p>
+            </div>
           </div>
 
-          <h1 style={{ fontSize: '1.6rem', fontWeight: '700', color: '#111827', marginBottom: '0.75rem' }}>{product.title}</h1>
-          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem' }}>
-            <span style={{ background: '#f0f9ff', color: '#0369a1', padding: '4px 12px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: '500' }}>
-              {conditionLabel[product.condition] || product.condition}
-            </span>
-            <span style={{ background: '#f3f4f6', color: '#374151', padding: '4px 12px', borderRadius: '20px', fontSize: '0.85rem' }}>
-              {product.category?.name}
-            </span>
-          </div>
+          {/* RIGHT — Price & Seller Card */}
+          <div className="space-y-6">
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm sticky top-20">
+              <p className="text-3xl font-extrabold text-[var(--primary)] mb-1">
+                {product.price.toLocaleString('ar-EG')} <span className="text-sm font-normal">جنيه</span>
+              </p>
+              <p className="text-xs text-[var(--muted-foreground)] mb-6">
+                نُشر في {new Date(product.created_at).toLocaleDateString('ar-EG')}
+              </p>
 
-          <h2 style={{ fontSize: '1rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>وصف الإعلان</h2>
-          <p style={{ color: '#4b5563', lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>{product.description}</p>
+              <div className="border-t border-[var(--border)] pt-4 mt-4">
+                <p className="text-xs font-bold text-[var(--muted-foreground)] mb-3">معلومات البائع</p>
+                {product.user && (
+                  <Link href={`/users/${product.user.id}`} className="flex items-center gap-3 group">
+                    <div className="w-10 h-10 rounded-full bg-[var(--muted)] flex items-center justify-center overflow-hidden">
+                      {product.user.avatar_url ? (
+                        <img src={product.user.avatar_url} alt={product.user.full_name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span>👤</span>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">
+                        {product.user.full_name}
+                      </p>
+                    </div>
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
+      </main>
 
-        {/* RIGHT — Price Card */}
-        <div>
-          <div style={{ background: '#fff', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 8px rgba(0,0,0,0.1)', position: 'sticky', top: '1rem' }}>
-            <p style={{ fontSize: '2rem', fontWeight: '800', color: '#16a34a', marginBottom: '0.25rem' }}>
-              {product.price.toLocaleString('ar-EG')} جنيه
-            </p>
-            <p style={{ color: '#6b7280', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
-              نُشر في {new Date(product.created_at).toLocaleDateString('ar-EG')}
-            </p>
-
-            {!isSold && !isArchived ? (
-              <a
-                href={`https://wa.me/2${product.whatsapp_number}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ display: 'block', background: '#16a34a', color: '#fff', textAlign: 'center', padding: '0.9rem', borderRadius: '8px', textDecoration: 'none', fontWeight: '700', fontSize: '1rem', marginBottom: '0.75rem' }}
-              >
-                📱 تواصل عبر واتساب
-              </a>
-            ) : (
-              <div style={{ background: '#f3f4f6', color: '#9ca3af', textAlign: 'center', padding: '0.9rem', borderRadius: '8px', fontWeight: '600' }}>
-                {isSold ? 'تم بيع هذا المنتج' : 'الإعلان غير متاح'}
-              </div>
-            )}
-
-            <hr style={{ border: 'none', borderTop: '1px solid #f3f4f6', margin: '1.25rem 0' }} />
-
-            {/* Seller card */}
-            <p style={{ fontWeight: '600', color: '#374151', marginBottom: '0.75rem' }}>البائع</p>
-            <Link href={`/users/${product.user?.id}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-              <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#e0e7ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}>
-                {product.user?.avatar_url ? <img src={product.user.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} /> : '👤'}
-              </div>
-              <div>
-                <p style={{ fontWeight: '600', color: '#111827', margin: 0 }}>{product.user?.full_name}</p>
-                <p style={{ color: '#9ca3af', fontSize: '0.8rem', margin: 0 }}>
-                  عضو منذ {new Date(product.user?.created_at).toLocaleDateString('ar-EG')}
-                </p>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </main>
+      <Footer />
+      <MobileNav />
+    </div>
   );
 }

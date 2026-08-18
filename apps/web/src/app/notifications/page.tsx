@@ -1,90 +1,29 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Header } from '../../components/layout/header';
 import { Footer } from '../../components/layout/footer';
 import { MobileNav } from '../../components/layout/mobile-nav';
 import { Card, CardContent, Button, Badge, EmptyState, Alert } from '../../components/ui';
 import { Bell, CheckCheck, MessageSquare, AlertTriangle, Heart } from 'lucide-react';
-
-interface NotificationItem {
-  id: string;
-  title: string;
-  body: string;
-  type: string;
-  is_read: boolean;
-  created_at: string;
-}
+import { useNotifications } from '@/features/notifications/hooks/use-notifications';
+import { useMarkNotificationRead } from '@/features/notifications/hooks/use-mark-notification-read';
+import { useMarkAllNotificationsRead } from '@/features/notifications/hooks/use-mark-all-notifications-read';
+import { tokenStorage } from '@/lib/api';
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { data: notifications = [], isLoading: loading, isError } = useNotifications();
+  const markReadMutation = useMarkNotificationRead();
+  const markAllReadMutation = useMarkAllNotificationsRead();
 
-  const fetchNotifications = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      setError('يجب تسجيل الدخول لعرض الإشعارات');
-      setLoading(false);
-      return;
-    }
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
-    try {
-      const res = await fetch('http://localhost:3001/notifications', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error('فشل جلب الإشعارات');
-      const data = await res.json();
-      setNotifications(data.notifications || []);
-      setUnreadCount(data.unread_count || 0);
-    } catch {
-      setError('حدث خطأ أثناء تحميل الإشعارات');
-    } finally {
-      setLoading(false);
-    }
+  const handleMarkAsRead = (id: string) => {
+    markReadMutation.mutate(id);
   };
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  const handleMarkAsRead = async (id: string) => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return;
-
-    try {
-      const res = await fetch(`http://localhost:3001/notifications/${id}/read`, {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        setNotifications((prev) =>
-          prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
-        );
-        setUnreadCount((c) => Math.max(0, c - 1));
-      }
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const handleMarkAllAsRead = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return;
-
-    try {
-      const res = await fetch('http://localhost:3001/notifications/read-all', {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-        setUnreadCount(0);
-      }
-    } catch {
-      /* ignore */
-    }
+  const handleMarkAllAsRead = () => {
+    markAllReadMutation.mutate();
   };
 
   return (
@@ -109,16 +48,26 @@ export default function NotificationsPage() {
           </div>
 
           {unreadCount > 0 && (
-            <Button variant="outline" size="sm" onClick={handleMarkAllAsRead} className="gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleMarkAllAsRead}
+              disabled={markAllReadMutation.isPending}
+              className="gap-1.5"
+            >
               <CheckCheck className="w-4 h-4 text-[var(--primary)]" />
               تحديد الكل كمقروء
             </Button>
           )}
         </div>
 
-        {error ? (
+        {!tokenStorage.hasToken() ? (
           <Alert variant="destructive" title="خطأ في الوصول">
-            {error}
+            يجب تسجيل الدخول لعرض الإشعارات
+          </Alert>
+        ) : isError ? (
+          <Alert variant="destructive" title="خطأ في الوصول">
+            حدث خطأ أثناء تحميل الإشعارات
           </Alert>
         ) : loading ? (
           <div className="text-center py-12 text-[var(--muted-foreground)]">جاري تحميل الإشعارات...</div>
@@ -148,7 +97,7 @@ export default function NotificationsPage() {
                         {new Date(item.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">{item.body}</p>
+                    <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">{item.content}</p>
                   </div>
                 </CardContent>
               </Card>

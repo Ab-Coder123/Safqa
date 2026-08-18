@@ -1,115 +1,90 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-
-interface ConversationItem {
-  id: string;
-  product_id: string;
-  other_user: {
-    id: string;
-    full_name: string;
-    avatar_url?: string;
-  };
-  last_message?: {
-    content: string;
-    created_at: string;
-    is_read: boolean;
-  };
-  updated_at: string;
-}
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { MobileNav } from '@/components/layout/mobile-nav';
+import { Button } from '@/components/ui/button';
+import { useConversations } from '@/features/conversations/hooks/use-conversations';
+import { tokenStorage } from '@/lib/api';
 
 export default function ConversationsPage() {
-  const [conversations, setConversations] = useState<ConversationItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { data: conversations = [], isLoading: loading, isError } = useConversations();
 
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      setError('يجب تسجيل الدخول لمشاهدة المحادثات');
-      setLoading(false);
-      return;
-    }
-
-    fetch('http://localhost:3001/conversations', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        setConversations(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('حدث خطأ أثناء تحميل المحادثات');
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <div style={{ padding: '4rem', textAlign: 'center' }}>جاري التحميل...</div>;
+  if (!tokenStorage.hasToken()) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+        <Header />
+        <div className="flex-1 flex items-center justify-center p-8 text-[var(--muted-foreground)]">
+          يجب تسجيل الدخول لمشاهدة المحادثات
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <main style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#111827', marginBottom: '0.5rem' }}>
-        💬 المحادثات
-      </h1>
-      <p style={{ color: '#6b7280', marginBottom: '2rem' }}>صندوق الرسائل والمفاوضات المباشرة</p>
+    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+      <Header />
 
-      {error ? (
-        <div style={{ color: '#ef4444', textAlign: 'center', padding: '2rem' }}>{error}</div>
-      ) : conversations.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem', background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <p style={{ fontSize: '3rem', margin: '0 0 1rem' }}>💬</p>
-          <p style={{ color: '#6b7280', fontSize: '1.1rem', marginBottom: '1.5rem' }}>لا توجد محادثات جارية</p>
-          <Link href="/" style={{ color: '#2563eb', fontWeight: '600' }}>تصفح الإعلانات وتواصل مع البائعين ←</Link>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {conversations.map((conv) => (
-            <Link
-              key={conv.id}
-              href={`/conversations/${conv.id}`}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              <div
-                style={{
-                  background: '#fff',
-                  borderRadius: '12px',
-                  padding: '1.25rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                  transition: 'box-shadow 0.2s',
-                  cursor: 'pointer',
-                }}
-              >
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e0e7ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', flexShrink: 0 }}>
-                  {conv.other_user?.avatar_url ? (
-                    <img src={conv.other_user.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                  ) : (
-                    '👤'
-                  )}
-                </div>
+      <main className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-8">
+        <h1 className="text-2xl font-extrabold text-[var(--foreground)] mb-1">
+          💬 المحادثات
+        </h1>
+        <p className="text-sm text-[var(--muted-foreground)] mb-6">صندوق الرسائل والمفاوضات المباشرة</p>
 
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#111827', margin: 0 }}>
-                      {conv.other_user?.full_name}
-                    </h3>
-                    <span style={{ fontSize: '0.78rem', color: '#9ca3af' }}>
-                      {new Date(conv.updated_at).toLocaleDateString('ar-EG')}
-                    </span>
-                  </div>
-                  <p style={{ color: '#6b7280', fontSize: '0.9rem', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {conv.last_message ? conv.last_message.content : 'بدأت المحادثة'}
-                  </p>
-                </div>
-              </div>
+        {loading ? (
+          <div className="text-center py-12 text-[var(--muted-foreground)]">جاري التحميل...</div>
+        ) : isError ? (
+          <div className="text-center py-12 text-[var(--destructive)]">حدث خطأ أثناء تحميل المحادثات</div>
+        ) : conversations.length === 0 ? (
+          <div className="text-center py-16 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-8">
+            <p className="text-4xl mb-4">💬</p>
+            <p className="text-base text-[var(--muted-foreground)] mb-4">لا توجد محادثات جارية</p>
+            <Link href="/products">
+              <Button variant="outline" size="sm">تصفح الإعلانات وتواصل مع البائعين ←</Button>
             </Link>
-          ))}
-        </div>
-      )}
-    </main>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {conversations.map((conv) => (
+              <Link
+                key={conv.id}
+                href={`/conversations/${conv.id}`}
+                className="block bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 shadow-sm hover:border-[var(--primary)]/50 transition-all"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[var(--muted)] flex items-center justify-center overflow-hidden shrink-0">
+                    {conv.buyer?.avatar_url || conv.seller?.avatar_url ? (
+                      <img src={conv.buyer?.avatar_url || conv.seller?.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-lg">👤</span>
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-center mb-1">
+                      <h3 className="text-sm font-bold text-[var(--foreground)] truncate">
+                        {conv.buyer?.full_name || conv.seller?.full_name || 'مستخدم صفقة'}
+                      </h3>
+                      <span className="text-xs text-[var(--muted-foreground)]">
+                        {new Date(conv.updated_at).toLocaleDateString('ar-EG')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-[var(--muted-foreground)] truncate">
+                      {conv.product ? `بخصوص: ${conv.product.title}` : 'بدأت المحادثة'}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </main>
+
+      <Footer />
+      <MobileNav />
+    </div>
   );
 }

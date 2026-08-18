@@ -1,40 +1,15 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent, Button, Badge, EmptyState, useToast } from '../../components/ui';
 import { Users, Package, Flag, FolderTree, UserX, UserCheck, CheckCircle2, AlertOctagon } from 'lucide-react';
-
-// ────────────────────────────────────────────
-// Types
-// ────────────────────────────────────────────
-
-interface SystemStats {
-  total_users: number;
-  total_products: number;
-  pending_reports: number;
-  total_categories: number;
-}
-
-export interface ReportItem {
-  id: string;
-  target_type: string;
-  target_id: string;
-  reason: string;
-  status: string;
-  created_at: string;
-  reporter: { full_name: string; email: string };
-}
-
-export interface UserItem {
-  id: string;
-  full_name: string;
-  email: string;
-  phone_number: string;
-  role: string;
-  status: 'ACTIVE' | 'SUSPENDED' | 'DELETED';
-  created_at: string;
-  _count: { products: number };
-}
+import {
+  useResolveReport,
+  useDismissReport,
+  useSuspendUser,
+  useActivateUser,
+} from '@/features/admin/hooks/use-admin';
+import type { SystemStats, AdminReportItem, AdminUserItem } from '@/features/admin/api/admin.api';
 
 // ────────────────────────────────────────────
 // Stats Tab
@@ -91,39 +66,34 @@ export function AdminStatsTab({ stats }: { stats: SystemStats }) {
 // ────────────────────────────────────────────
 
 interface ReportsTabProps {
-  reports: ReportItem[];
-  onRefresh: () => void;
+  reports: AdminReportItem[];
 }
 
-export function AdminReportsTab({ reports, onRefresh }: ReportsTabProps) {
+export function AdminReportsTab({ reports }: ReportsTabProps) {
   const { toast } = useToast();
+  const resolveMutation = useResolveReport();
+  const dismissMutation = useDismissReport();
 
-  const handleResolveReport = useCallback(async (id: string) => {
+  const handleResolveReport = (id: string) => {
     const reason = prompt('سبب قبول البلاغ وأرشفة الهدف:');
     if (!reason) return;
-    const token = localStorage.getItem('accessToken');
-    const res = await fetch(`http://localhost:3001/reports/${id}/resolve`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ reason }),
-    });
-    if (res.ok) {
-      toast({ title: 'تم قبول البلاغ وأرشفة الإعلان المخالف', type: 'success' });
-      onRefresh();
-    }
-  }, [toast, onRefresh]);
+    resolveMutation.mutate(
+      { id, reason },
+      {
+        onSuccess: () => {
+          toast({ title: 'تم قبول البلاغ وأرشفة الإعلان المخالف', type: 'success' });
+        },
+      }
+    );
+  };
 
-  const handleDismissReport = useCallback(async (id: string) => {
-    const token = localStorage.getItem('accessToken');
-    const res = await fetch(`http://localhost:3001/reports/${id}/dismiss`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` },
+  const handleDismissReport = (id: string) => {
+    dismissMutation.mutate(id, {
+      onSuccess: () => {
+        toast({ title: 'تم رفض البلاغ', type: 'info' });
+      },
     });
-    if (res.ok) {
-      toast({ title: 'تم رفض البلاغ', type: 'info' });
-      onRefresh();
-    }
-  }, [toast, onRefresh]);
+  };
 
   if (reports.length === 0) {
     return <EmptyState icon="🚩" title="لا توجد بلاغات حالية" description="جميع البلاغات المقدمة تم التعامل معها ومراجعتها." />;
@@ -149,11 +119,21 @@ export function AdminReportsTab({ reports, onRefresh }: ReportsTabProps) {
 
             {item.status === 'PENDING' && (
               <div className="flex items-center gap-2">
-                <Button variant="destructive" size="sm" onClick={() => handleResolveReport(item.id)}>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleResolveReport(item.id)}
+                  disabled={resolveMutation.isPending}
+                >
                   <CheckCircle2 className="w-3.5 h-3.5 ml-1" />
                   قبول وأرشفة
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => handleDismissReport(item.id)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDismissReport(item.id)}
+                  disabled={dismissMutation.isPending}
+                >
                   <AlertOctagon className="w-3.5 h-3.5 ml-1" />
                   رفض البلاغ
                 </Button>
@@ -171,39 +151,34 @@ export function AdminReportsTab({ reports, onRefresh }: ReportsTabProps) {
 // ────────────────────────────────────────────
 
 interface UsersTabProps {
-  users: UserItem[];
-  onRefresh: () => void;
+  users: AdminUserItem[];
 }
 
-export function AdminUsersTab({ users, onRefresh }: UsersTabProps) {
+export function AdminUsersTab({ users }: UsersTabProps) {
   const { toast } = useToast();
+  const suspendMutation = useSuspendUser();
+  const activateMutation = useActivateUser();
 
-  const handleSuspendUser = useCallback(async (id: string) => {
+  const handleSuspendUser = (id: string) => {
     const reason = prompt('سبب تعليق حساب المستخدم:');
     if (!reason) return;
-    const token = localStorage.getItem('accessToken');
-    const res = await fetch(`http://localhost:3001/admin/users/${id}/suspend`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ reason }),
-    });
-    if (res.ok) {
-      toast({ title: 'تم تعليق الحساب وأرشفة إعلاناته تلقائياً', type: 'success' });
-      onRefresh();
-    }
-  }, [toast, onRefresh]);
+    suspendMutation.mutate(
+      { id, reason },
+      {
+        onSuccess: () => {
+          toast({ title: 'تم تعليق الحساب وأرشفة إعلاناته تلقائياً', type: 'success' });
+        },
+      }
+    );
+  };
 
-  const handleActivateUser = useCallback(async (id: string) => {
-    const token = localStorage.getItem('accessToken');
-    const res = await fetch(`http://localhost:3001/admin/users/${id}/activate`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` },
+  const handleActivateUser = (id: string) => {
+    activateMutation.mutate(id, {
+      onSuccess: () => {
+        toast({ title: 'تم إعادة تنشيط الحساب بنجاح', type: 'success' });
+      },
     });
-    if (res.ok) {
-      toast({ title: 'تم إعادة تنشيط الحساب بنجاح', type: 'success' });
-      onRefresh();
-    }
-  }, [toast, onRefresh]);
+  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -228,12 +203,24 @@ export function AdminUsersTab({ users, onRefresh }: UsersTabProps) {
 
               {u.role !== 'SUPER_ADMIN' && (
                 u.status === 'ACTIVE' ? (
-                  <Button variant="destructive" size="sm" onClick={() => handleSuspendUser(u.id)} className="gap-1">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleSuspendUser(u.id)}
+                    disabled={suspendMutation.isPending}
+                    className="gap-1"
+                  >
                     <UserX className="w-3.5 h-3.5" />
                     تعليق الحساب
                   </Button>
                 ) : (
-                  <Button variant="outline" size="sm" onClick={() => handleActivateUser(u.id)} className="gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleActivateUser(u.id)}
+                    disabled={activateMutation.isPending}
+                    className="gap-1"
+                  >
                     <UserCheck className="w-3.5 h-3.5" />
                     إعادة تنشيط
                   </Button>

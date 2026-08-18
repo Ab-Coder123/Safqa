@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownMenuItem, Avatar, Separator } from '../ui';
 import { User, Package, Heart, Settings, ShieldAlert, LogOut } from 'lucide-react';
 
 interface UserMenuProps {
-  user: { id: string; full_name: string; role: string; avatar_url?: string };
+  user: { id: string; full_name: string; role: string; avatar_url?: string | null };
   onLogout: () => void;
 }
 

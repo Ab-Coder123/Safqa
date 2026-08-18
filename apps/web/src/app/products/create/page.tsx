@@ -1,33 +1,29 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-interface Category {
-  id: string;
-  name: string;
-}
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { MobileNav } from '@/components/layout/mobile-nav';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useCategories } from '@/features/categories/hooks/use-categories';
+import { useCreateProduct } from '@/features/products/hooks/use-create-product';
+import { tokenStorage } from '@/lib/api';
 
 export default function CreateProductPage() {
   const router = useRouter();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { data: categories = [] } = useCategories();
+  const createProductMutation = useCreateProduct();
   const [error, setError] = useState('');
   const [form, setForm] = useState({
     title: '',
     description: '',
     price: '',
-    condition: 'NEW',
+    condition: 'NEW' as 'NEW' | 'LIKE_NEW' | 'USED_GOOD' | 'USED_FAIR',
     category_id: '',
-    whatsapp_number: '',
   });
-
-  useEffect(() => {
-    fetch('http://localhost:3001/categories')
-      .then(r => r.json())
-      .then(data => setCategories(data))
-      .catch(() => {});
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -36,162 +32,137 @@ export default function CreateProductPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
+    if (!tokenStorage.hasToken()) {
       setError('يجب تسجيل الدخول أولاً');
-      setLoading(false);
       return;
     }
 
-    try {
-      const res = await fetch('http://localhost:3001/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ ...form, price: Number(form.price) }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        const msg = Array.isArray(data.message) ? data.message.join('. ') : data.message;
-        setError(msg || 'فشل نشر الإعلان');
-      } else {
-        router.push(`/products/${data.product.id}`);
+    createProductMutation.mutate(
+      {
+        title: form.title,
+        description: form.description,
+        price: Number(form.price),
+        condition: form.condition,
+        category_id: form.category_id,
+      },
+      {
+        onSuccess: (product) => {
+          router.push(`/products/${product.id}`);
+        },
+        onError: (err: any) => {
+          setError(err.message || 'فشل نشر الإعلان');
+        },
       }
-    } catch {
-      setError('خطأ في الاتصال. حاول مرة أخرى.');
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   return (
-    <main style={{ maxWidth: '620px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#111827', marginBottom: '0.5rem' }}>
-        📋 نشر إعلان جديد
-      </h1>
-      <p style={{ color: '#6b7280', marginBottom: '2rem' }}>يمكنك نشر حتى 3 إعلانات يومياً</p>
+    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+      <Header />
 
-      {error && (
-        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '0.85rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
-          {error}
-        </div>
-      )}
+      <main className="flex-1 max-w-xl w-full mx-auto px-4 sm:px-6 py-8">
+        <h1 className="text-2xl font-extrabold text-[var(--foreground)] mb-1">
+          📋 نشر إعلان جديد
+        </h1>
+        <p className="text-sm text-[var(--muted-foreground)] mb-6">يمكنك نشر حتى 3 إعلانات يومياً</p>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        {/* Title */}
-        <div>
-          <label style={{ display: 'block', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
-            عنوان الإعلان *
-          </label>
-          <input
-            name="title"
-            required
-            minLength={5}
-            maxLength={150}
-            value={form.title}
-            onChange={handleChange}
-            placeholder="مثال: لابتوب Dell Core i7 للبيع"
-            style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db', boxSizing: 'border-box', fontSize: '1rem' }}
-          />
-        </div>
+        {error && (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm mb-6">
+            {error}
+          </div>
+        )}
 
-        {/* Description */}
-        <div>
-          <label style={{ display: 'block', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
-            الوصف *
-          </label>
-          <textarea
-            name="description"
-            required
-            minLength={20}
-            value={form.description}
-            onChange={handleChange}
-            placeholder="اكتب تفاصيل كافية عن المنتج..."
-            rows={5}
-            style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db', boxSizing: 'border-box', fontSize: '1rem', resize: 'vertical' }}
-          />
-        </div>
-
-        {/* Price & Condition side by side */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label style={{ display: 'block', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
-              السعر (جنيه) *
-            </label>
-            <input
-              name="price"
-              type="number"
+            <Label htmlFor="title">عنوان الإعلان *</Label>
+            <Input
+              id="title"
+              name="title"
               required
-              min={1}
-              value={form.price}
+              minLength={3}
+              maxLength={150}
+              value={form.title}
               onChange={handleChange}
-              placeholder="0"
-              style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db', boxSizing: 'border-box', fontSize: '1rem' }}
+              placeholder="مثال: لابتوب Dell Core i7 للبيع"
             />
           </div>
+
           <div>
-            <label style={{ display: 'block', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
-              الحالة *
-            </label>
-            <select
-              name="condition"
-              value={form.condition}
+            <Label htmlFor="description">الوصف *</Label>
+            <textarea
+              id="description"
+              name="description"
+              required
+              minLength={10}
+              value={form.description}
               onChange={handleChange}
-              style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db', boxSizing: 'border-box', fontSize: '1rem', background: '#fff' }}
+              placeholder="اكتب تفاصيل كافية عن المنتج..."
+              rows={4}
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 text-sm focus:outline-none focus:border-[var(--primary)]"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="price">السعر (جنيه) *</Label>
+              <Input
+                id="price"
+                name="price"
+                type="number"
+                required
+                min={1}
+                value={form.price}
+                onChange={handleChange}
+                placeholder="0"
+              />
+            </div>
+            <div>
+              <Label htmlFor="condition">الحالة *</Label>
+              <select
+                id="condition"
+                name="condition"
+                value={form.condition}
+                onChange={handleChange}
+                className="w-full h-10 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 text-sm focus:outline-none focus:border-[var(--primary)]"
+              >
+                <option value="NEW">جديد</option>
+                <option value="LIKE_NEW">شبه جديد</option>
+                <option value="USED_GOOD">مستعمل - بحالة جيدة</option>
+                <option value="USED_FAIR">مستعمل - بحالة مقبولة</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="category_id">القسم *</Label>
+            <select
+              id="category_id"
+              name="category_id"
+              required
+              value={form.category_id}
+              onChange={handleChange}
+              className="w-full h-10 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 text-sm focus:outline-none focus:border-[var(--primary)]"
             >
-              <option value="NEW">جديد</option>
-              <option value="USED">مستعمل</option>
-              <option value="REFURBISHED">مجدد</option>
+              <option value="">اختر القسم</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
             </select>
           </div>
-        </div>
 
-        {/* Category */}
-        <div>
-          <label style={{ display: 'block', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
-            القسم *
-          </label>
-          <select
-            name="category_id"
-            required
-            value={form.category_id}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db', boxSizing: 'border-box', fontSize: '1rem', background: '#fff' }}
+          <Button
+            type="submit"
+            disabled={createProductMutation.isPending}
+            className="w-full"
           >
-            <option value="">اختر القسم</option>
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
-            ))}
-          </select>
-        </div>
+            {createProductMutation.isPending ? 'جاري النشر...' : '🚀 نشر الإعلان'}
+          </Button>
+        </form>
+      </main>
 
-        {/* WhatsApp */}
-        <div>
-          <label style={{ display: 'block', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
-            رقم واتساب *
-          </label>
-          <input
-            name="whatsapp_number"
-            required
-            value={form.whatsapp_number}
-            onChange={handleChange}
-            placeholder="01XXXXXXXXX"
-            style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db', boxSizing: 'border-box', fontSize: '1rem' }}
-          />
-          <p style={{ color: '#6b7280', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-            رقم مصري يبدأ بـ 010 / 011 / 012 / 015
-          </p>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ background: loading ? '#93c5fd' : '#2563eb', color: '#fff', padding: '0.9rem', borderRadius: '8px', border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '700', fontSize: '1.05rem' }}
-        >
-          {loading ? 'جاري النشر...' : '🚀 نشر الإعلان'}
-        </button>
-      </form>
-    </main>
+      <Footer />
+      <MobileNav />
+    </div>
   );
 }

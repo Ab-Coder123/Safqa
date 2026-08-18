@@ -10,7 +10,7 @@ Every workflow defines how a business capability executes end-to-end between Fro
 - **Marketplace Domain**: `Product Management`, `Product Discovery`, `Favorites`, `Product Lifecycle`
 - **Communication Domain**: `Messaging`, `Notifications`
 - **Administration Domain**: `Admin Overview`, `Content Moderation / Reports`, `Category Management`
-- **System Layer**: `Media Assets`, `File Uploads`, `Error Handling`, `Permissions / Authorization`, `Logging & Audit`, `Performance Engineering`
+- **System Layer**: `Frontend Architecture`, `Backend Architecture`, `Media Assets`, `File Uploads`, `Error Handling`, `Permissions / Authorization`, `Logging & Audit`, `Performance Engineering`
 
 ## Mandatory Architecture Workflows
 

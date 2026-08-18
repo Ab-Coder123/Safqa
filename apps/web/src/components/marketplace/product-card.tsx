@@ -4,6 +4,8 @@ import React, { useState, memo } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, Badge, useToast } from '../ui';
 import { Heart, MapPin, Tag } from 'lucide-react';
+import { useToggleFavorite } from '@/features/favorites/hooks/use-toggle-favorite';
+import { tokenStorage } from '@/lib/api';
 
 export interface ProductCardProps {
   product: {
@@ -32,36 +34,26 @@ const DEFAULT_IMAGE = 'https://placehold.co/600x400/0f766e/ffffff?text=صفقة'
 function ProductCardComponent({ product, initialFavorited = false }: ProductCardProps) {
   const { toast } = useToast();
   const [isFavorited, setIsFavorited] = useState(initialFavorited);
-  const [loading, setLoading] = useState(false);
+  const toggleFavoriteMutation = useToggleFavorite();
 
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
+    if (!tokenStorage.hasToken()) {
       toast({ title: 'يرجى تسجيل الدخول لحفظ الإعلان في المفضلة', type: 'warning' });
       return;
     }
 
-    setLoading(true);
-    try {
-      const res = await fetch(`http://localhost:3001/favorites/${product.id}/toggle`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
+    toggleFavoriteMutation.mutate(product.id, {
+      onSuccess: (data) => {
         setIsFavorited(data.is_favorited);
         toast({ title: data.message, type: 'success' });
-      } else {
-        toast({ title: data.message || 'فشل تعديل المفضلة', type: 'error' });
-      }
-    } catch {
-      toast({ title: 'حدث خطأ في الاتصال بالخادم', type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+      },
+      onError: (err: any) => {
+        toast({ title: err.message || 'فشل تعديل المفضلة', type: 'error' });
+      },
+    });
   };
 
   const mainImage = product.media && product.media.length > 0 ? product.media[0].url : DEFAULT_IMAGE;
@@ -90,7 +82,7 @@ function ProductCardComponent({ product, initialFavorited = false }: ProductCard
           <button
             type="button"
             onClick={toggleFavorite}
-            disabled={loading}
+            disabled={toggleFavoriteMutation.isPending}
             className="absolute top-3 left-3 w-8 h-8 rounded-full bg-[var(--card)]/80 backdrop-blur-md flex items-center justify-center text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-[var(--card)] transition-all shadow-sm cursor-pointer disabled:opacity-50"
             title={isFavorited ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}
           >

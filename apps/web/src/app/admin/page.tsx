@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic';
 import { Header } from '../../components/layout/header';
 import { Footer } from '../../components/layout/footer';
 import { MobileNav } from '../../components/layout/mobile-nav';
 import { Tabs, TabsList, TabsTrigger, TabsContent, Alert, Skeleton } from '../../components/ui';
 import { ShieldAlert } from 'lucide-react';
-import type { ReportItem, UserItem } from '../../components/admin/admin-tabs';
+import { useAdminStats, useAdminReports, useAdminUsers } from '@/features/admin/hooks/use-admin';
+import { tokenStorage } from '@/lib/api';
 
 // ────────────────────────────────────────────
 // ✅ Performance: dynamic() — Admin tabs loaded only when admin visits
@@ -28,53 +29,27 @@ const AdminUsersTab = dynamic(
   { loading: () => <Skeleton className="h-64 w-full rounded-xl" /> }
 );
 
-interface SystemStats {
-  total_users: number;
-  total_products: number;
-  pending_reports: number;
-  total_categories: number;
-}
-
 export default function AdminDashboardPage() {
-  const [stats, setStats] = useState<SystemStats | null>(null);
-  const [reports, setReports] = useState<ReportItem[]>([]);
-  const [users, setUsers] = useState<UserItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { data: stats, isLoading: statsLoading, isError: statsError } = useAdminStats();
+  const { data: reports = [], isLoading: reportsLoading } = useAdminReports();
+  const { data: users = [], isLoading: usersLoading } = useAdminUsers();
 
-  // ✅ useCallback — stable reference, safe to use as useEffect dependency
-  const fetchAdminData = useCallback(async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      setError('يجب تسجيل الدخول بحساب مشرف (SUPER_ADMIN)');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const [statsRes, reportsRes, usersRes] = await Promise.all([
-        fetch('http://localhost:3001/admin/stats', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('http://localhost:3001/reports', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('http://localhost:3001/admin/users', { headers: { Authorization: `Bearer ${token}` } }),
-      ]);
-
-      if (!statsRes.ok) throw new Error('صلاحية الوصول غير متاحة (تتطلب حساب SUPER_ADMIN)');
-
-      setStats(await statsRes.json());
-      setReports(await reportsRes.json());
-      setUsers(await usersRes.json());
-    } catch (err: any) {
-      setError(err.message || 'فشل تحميل بيانات لوحة التحكم');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchAdminData();
-  }, [fetchAdminData]);
-
+  const loading = statsLoading || reportsLoading || usersLoading;
   const pendingReportsCount = reports.filter((r) => r.status === 'PENDING').length;
+
+  if (!tokenStorage.hasToken()) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+        <Header />
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
+          <Alert variant="destructive" title="خطأ في الصلاحيات">
+            يجب تسجيل الدخول بحساب مشرف (SUPER_ADMIN)
+          </Alert>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] transition-colors">
@@ -91,9 +66,9 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {error ? (
+        {statsError ? (
           <Alert variant="destructive" title="خطأ في الصلاحيات">
-            {error}
+            صلاحية الوصول غير متاحة (تتطلب حساب SUPER_ADMIN)
           </Alert>
         ) : loading ? (
           <div className="flex flex-col gap-4">
@@ -120,11 +95,11 @@ export default function AdminDashboardPage() {
             </TabsContent>
 
             <TabsContent value="reports">
-              <AdminReportsTab reports={reports} onRefresh={fetchAdminData} />
+              <AdminReportsTab reports={reports} />
             </TabsContent>
 
             <TabsContent value="users">
-              <AdminUsersTab users={users} onRefresh={fetchAdminData} />
+              <AdminUsersTab users={users} />
             </TabsContent>
           </Tabs>
         )}

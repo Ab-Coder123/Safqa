@@ -1,59 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { Popover, Button, Badge } from '../ui';
+import { Popover, Button } from '../ui';
 import { Bell, CheckCheck, MessageSquare, AlertTriangle, Heart } from 'lucide-react';
-
-interface NotificationItem {
-  id: string;
-  title: string;
-  body: string;
-  type: string;
-  is_read: boolean;
-  created_at: string;
-}
+import { useNotifications } from '@/features/notifications/hooks/use-notifications';
+import { useMarkAllNotificationsRead } from '@/features/notifications/hooks/use-mark-all-notifications-read';
 
 export function NotificationCenter() {
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { data: notifications = [] } = useNotifications();
+  const markAllReadMutation = useMarkAllNotificationsRead();
 
-  const fetchNotifications = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return;
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
-    try {
-      const res = await fetch('http://localhost:3001/notifications', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setNotifications(data.notifications || []);
-        setUnreadCount(data.unread_count || 0);
-      }
-    } catch (e) {
-      // Fallback silent failure
-    }
-  };
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  const markAllRead = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return;
-
-    try {
-      await fetch('http://localhost:3001/notifications/read-all', {
-        method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-      setUnreadCount(0);
-    } catch (e) {
-      // Fail silently
-    }
+  const handleMarkAllRead = () => {
+    markAllReadMutation.mutate();
   };
 
   return (
@@ -76,11 +37,12 @@ export function NotificationCenter() {
         <h4 className="font-bold text-sm text-[var(--foreground)]">الإشعارات</h4>
         {unreadCount > 0 && (
           <button
-            onClick={markAllRead}
-            className="text-xs text-[var(--primary)] hover:underline flex items-center gap-1 cursor-pointer"
+            onClick={handleMarkAllRead}
+            disabled={markAllReadMutation.isPending}
+            className="text-xs text-[var(--primary)] hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
           >
             <CheckCheck className="w-3.5 h-3.5" />
-            تحديد الكل كقروء
+            تحديد الكل كمقروء
           </button>
         )}
       </div>
@@ -103,7 +65,7 @@ export function NotificationCenter() {
               </div>
               <div className="flex-1 text-right">
                 <p className="text-xs font-semibold text-[var(--foreground)]">{item.title}</p>
-                <p className="text-[11px] text-[var(--muted-foreground)] line-clamp-2 mt-0.5">{item.body}</p>
+                <p className="text-[11px] text-[var(--muted-foreground)] line-clamp-2 mt-0.5">{item.content}</p>
               </div>
             </div>
           ))

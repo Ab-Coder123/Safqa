@@ -1,73 +1,27 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
-
-interface Message {
-  id: string;
-  sender_id: string;
-  content: string;
-  created_at: string;
-  sender: {
-    id: string;
-    full_name: string;
-  };
-}
+import React, { useState, useRef, useEffect } from 'react';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useConversationMessages } from '@/features/conversations/hooks/use-conversation-messages';
+import { useSendMessage } from '@/features/conversations/hooks/use-send-message';
+import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
+import { tokenStorage } from '@/lib/api';
 
 export default function ChatRoomPage({ params }: { params: { id: string } }) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { data: messages = [], isLoading: loading, isError } = useConversationMessages(params.id);
+  const { data: userData } = useCurrentUser();
+  const sendMessageMutation = useSendMessage(params.id);
   const [inputText, setInputText] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState('');
-  const [currentUserId, setCurrentUserId] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const currentUserId = userData?.user?.id || '';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  const fetchMessages = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      setError('يجب تسجيل الدخول لمشاهدة الرسائل');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const res = await fetch(`http://localhost:3001/conversations/${params.id}/messages`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'فشل تحميل الرسائل');
-      }
-      const data = await res.json();
-      setMessages(data);
-    } catch (err: any) {
-      setError(err.message || 'حدث خطأ');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    // Get current user id from own profile endpoint
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      fetch('http://localhost:3001/users/me/profile', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((r) => r.json())
-        .then((user) => setCurrentUserId(user.id))
-        .catch(() => {});
-    }
-
-    fetchMessages();
-    // Auto-poll messages every 3 seconds
-    const interval = setInterval(fetchMessages, 3000);
-    return () => clearInterval(interval);
-  }, [params.id]);
 
   useEffect(() => {
     scrollToBottom();
@@ -75,111 +29,99 @@ export default function ChatRoomPage({ params }: { params: { id: string } }) {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputText.trim() || sending) return;
+    if (!inputText.trim() || sendMessageMutation.isPending) return;
 
-    setSending(true);
-    const token = localStorage.getItem('accessToken');
+    const textToSend = inputText.trim();
+    setInputText('');
 
-    try {
-      const res = await fetch(`http://localhost:3001/conversations/${params.id}/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ content: inputText.trim() }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        alert(data.message || 'فشل إرسال الرسالة');
-      } else {
-        setInputText('');
-        fetchMessages();
-      }
-    } catch {
-      alert('خطأ في الاتصال');
-    } finally {
-      setSending(false);
-    }
+    sendMessageMutation.mutate(textToSend);
   };
 
-  if (loading) return <div style={{ padding: '4rem', textAlign: 'center' }}>جاري التحميل...</div>;
+  if (!tokenStorage.hasToken()) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+        <Header />
+        <div className="flex-1 flex items-center justify-center p-8 text-[var(--muted-foreground)]">
+          يجب تسجيل الدخول لمشاهدة الرسائل
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <main style={{ maxWidth: '800px', margin: '0 auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 4rem)' }}>
-      <h1 style={{ fontSize: '1.4rem', fontWeight: '700', color: '#111827', marginBottom: '1rem' }}>
-        💬 غرفة المحادثة
-      </h1>
+    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+      <Header />
 
-      {error ? (
-        <div style={{ color: '#ef4444', textAlign: 'center', padding: '2rem' }}>{error}</div>
-      ) : (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#fff', borderRadius: '12px', boxShadow: '0 1px 4px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-          {/* Message History Area */}
-          <div style={{ flex: 1, padding: '1.25rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: '#f9fafb' }}>
-            {messages.length === 0 ? (
-              <p style={{ textAlign: 'center', color: '#9ca3af', margin: 'auto' }}>لا توجد رسائل سابقة. ابدأ المحادثة الآن!</p>
-            ) : (
-              messages.map((msg) => {
-                const isMe = msg.sender_id === currentUserId;
-                return (
-                  <div
-                    key={msg.id}
-                    style={{
-                      alignSelf: isMe ? 'flex-end' : 'flex-start',
-                      maxWidth: '70%',
-                      background: isMe ? '#2563eb' : '#fff',
-                      color: isMe ? '#fff' : '#111827',
-                      padding: '0.75rem 1rem',
-                      borderRadius: isMe ? '16px 16px 2px 16px' : '16px 16px 16px 2px',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
-                    }}
-                  >
-                    {!isMe && (
-                      <span style={{ fontSize: '0.75rem', color: '#6b7280', display: 'block', marginBottom: '0.2rem', fontWeight: '600' }}>
-                        {msg.sender?.full_name}
+      <main className="flex-1 max-w-3xl w-full mx-auto p-4 flex flex-col h-[calc(100vh-8rem)]">
+        <h1 className="text-xl font-extrabold text-[var(--foreground)] mb-3">
+          💬 غرفة المحادثة
+        </h1>
+
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center text-[var(--muted-foreground)]">جاري التحميل...</div>
+        ) : isError ? (
+          <div className="flex-1 flex items-center justify-center text-[var(--destructive)]">حدث خطأ أثناء تحميل الرسائل</div>
+        ) : (
+          <div className="flex-1 flex flex-col bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+            {/* Message History */}
+            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[var(--muted)]/20">
+              {messages.length === 0 ? (
+                <p className="text-center text-sm text-[var(--muted-foreground)] my-auto">لا توجد رسائل سابقة. ابدأ المحادثة الآن!</p>
+              ) : (
+                messages.map((msg) => {
+                  const isMe = msg.sender_id === currentUserId;
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`max-w-[75%] p-3 rounded-2xl shadow-sm ${
+                        isMe
+                          ? 'mr-auto bg-[var(--primary)] text-white rounded-bl-sm'
+                          : 'ml-auto bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-br-sm'
+                      }`}
+                    >
+                      {!isMe && (
+                        <span className="text-xs text-[var(--muted-foreground)] block mb-1 font-bold">
+                          {msg.sender?.full_name}
+                        </span>
+                      )}
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                      <span
+                        className={`text-[10px] block text-left mt-1 ${
+                          isMe ? 'text-white/80' : 'text-[var(--muted-foreground)]'
+                        }`}
+                      >
+                        {new Date(msg.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
                       </span>
-                    )}
-                    <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.4', whiteSpace: 'pre-wrap' }}>{msg.content}</p>
-                    <span style={{ fontSize: '0.7rem', color: isMe ? 'rgba(255,255,255,0.7)' : '#9ca3af', display: 'block', textAlign: 'left', marginTop: '0.25rem' }}>
-                      {new Date(msg.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                );
-              })
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+                    </div>
+                  );
+                })
+              )}
+              <div ref={messagesEndRef} />
+            </div>
 
-          {/* Send Input Bar */}
-          <form onSubmit={handleSendMessage} style={{ padding: '0.85rem', background: '#fff', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '0.5rem' }}>
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="اكتب رسالتك هنا..."
-              maxLength={2000}
-              style={{ flex: 1, padding: '0.75rem 1rem', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '0.95rem' }}
-            />
-            <button
-              type="submit"
-              disabled={sending || !inputText.trim()}
-              style={{
-                padding: '0.75rem 1.5rem',
-                borderRadius: '8px',
-                background: sending || !inputText.trim() ? '#93c5fd' : '#2563eb',
-                color: '#fff',
-                border: 'none',
-                cursor: sending || !inputText.trim() ? 'not-allowed' : 'pointer',
-                fontWeight: '600',
-              }}
-            >
-              {sending ? 'إرسال...' : 'إرسال 🚀'}
-            </button>
-          </form>
-        </div>
-      )}
-    </main>
+            {/* Input form */}
+            <form onSubmit={handleSendMessage} className="p-3 bg-[var(--card)] border-t border-[var(--border)] flex gap-2">
+              <Input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="اكتب رسالتك هنا..."
+                maxLength={2000}
+                className="flex-1"
+              />
+              <Button
+                type="submit"
+                disabled={sendMessageMutation.isPending || !inputText.trim()}
+              >
+                {sendMessageMutation.isPending ? 'إرسال...' : 'إرسال 🚀'}
+              </Button>
+            </form>
+          </div>
+        )}
+      </main>
+
+      <Footer />
+    </div>
   );
 }

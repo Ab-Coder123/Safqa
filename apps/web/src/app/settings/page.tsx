@@ -1,119 +1,142 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-
-interface Profile {
-  id: string;
-  full_name: string;
-  email: string;
-  phone_number: string;
-  gender: string;
-  birth_date: string;
-  avatar_url?: string;
-  role: string;
-  status: string;
-}
+import React, { useState } from 'react';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { MobileNav } from '@/components/layout/mobile-nav';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useMyProfile } from '@/features/users/hooks/use-my-profile';
+import { useChangePassword } from '@/features/users/hooks/use-change-password';
+import { useDeleteAccount } from '@/features/users/hooks/use-delete-account';
+import { tokenStorage } from '@/lib/api';
 
 export default function SettingsPage() {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: profileData, isLoading: loading } = useMyProfile();
+  const changePasswordMutation = useChangePassword();
+  const deleteAccountMutation = useDeleteAccount();
+
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-
-  // Change password state
   const [pwForm, setPwForm] = useState({ current_password: '', new_password: '', confirm_new_password: '' });
 
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) { setError('يجب تسجيل الدخول أولاً'); setLoading(false); return; }
-
-    fetch('http://localhost:3001/users/me/profile', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((data) => { setProfile(data); setLoading(false); })
-      .catch(() => { setError('فشل تحميل الإعدادات'); setLoading(false); });
-  }, []);
+  const profile = profileData?.user;
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage(''); setError('');
-    const token = localStorage.getItem('accessToken');
-    const res = await fetch('http://localhost:3001/users/me/change-password', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify(pwForm),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.message || 'فشل تغيير كلمة المرور'); }
-    else { setMessage(data.message); setPwForm({ current_password: '', new_password: '', confirm_new_password: '' }); }
-  };
+    setMessage('');
+    setError('');
 
-  const handleDeleteAccount = async () => {
-    if (!confirm('هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.')) return;
-    const token = localStorage.getItem('accessToken');
-    const res = await fetch('http://localhost:3001/users/me', {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    if (res.ok) {
-      localStorage.clear();
-      alert(data.message);
-      window.location.href = '/';
-    } else {
-      setError(data.message || 'فشل حذف الحساب');
+    if (pwForm.new_password !== pwForm.confirm_new_password) {
+      setError('كلمة المرور الجديدة غير متطابقة مع التأكيد');
+      return;
     }
+
+    changePasswordMutation.mutate(
+      {
+        current_password: pwForm.current_password,
+        new_password: pwForm.new_password,
+      },
+      {
+        onSuccess: (data) => {
+          setMessage(data.message || 'تم تغيير كلمة المرور بنجاح');
+          setPwForm({ current_password: '', new_password: '', confirm_new_password: '' });
+        },
+        onError: (err: any) => {
+          setError(err.message || 'فشل تغيير كلمة المرور');
+        },
+      }
+    );
   };
 
-  if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>جاري التحميل...</div>;
+  const handleDeleteAccount = () => {
+    if (!confirm('هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+    deleteAccountMutation.mutate();
+  };
+
+  if (!tokenStorage.hasToken()) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+        <Header />
+        <div className="flex-1 flex items-center justify-center p-8 text-[var(--muted-foreground)]">
+          يجب تسجيل الدخول أولاً
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <main style={{ maxWidth: '600px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ fontSize: '1.8rem', color: '#1e293b', marginBottom: '0.5rem' }}>إعدادات الحساب</h1>
+    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+      <Header />
 
-      {message && <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', padding: '0.75rem', borderRadius: '6px', marginBottom: '1rem' }}>{message}</div>}
-      {error && <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '0.75rem', borderRadius: '6px', marginBottom: '1rem' }}>{error}</div>}
+      <main className="flex-1 max-w-xl w-full mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <h1 className="text-2xl font-extrabold text-[var(--foreground)]">إعدادات الحساب</h1>
 
-      {/* Profile Summary */}
-      {profile && (
-        <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#334155', marginBottom: '1rem' }}>معلوماتي</h2>
-          <p style={{ margin: '0.4rem 0', color: '#475569' }}><strong>الاسم: </strong>{profile.full_name}</p>
-          <p style={{ margin: '0.4rem 0', color: '#475569' }}><strong>البريد: </strong>{profile.email}</p>
-          <p style={{ margin: '0.4rem 0', color: '#475569' }}><strong>الهاتف: </strong>{profile.phone_number}</p>
+        {message && (
+          <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 p-3 rounded-xl text-sm">
+            {message}
+          </div>
+        )}
+        {error && (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 p-3 rounded-xl text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Profile Summary */}
+        {loading ? (
+          <div className="text-center py-8 text-[var(--muted-foreground)]">جاري التحميل...</div>
+        ) : profile && (
+          <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm space-y-2">
+            <h2 className="text-base font-bold text-[var(--foreground)] mb-3">معلوماتي</h2>
+            <p className="text-sm text-[var(--muted-foreground)]"><strong className="text-[var(--foreground)]">الاسم: </strong>{profile.full_name}</p>
+            <p className="text-sm text-[var(--muted-foreground)]"><strong className="text-[var(--foreground)]">البريد: </strong>{profile.email}</p>
+            <p className="text-sm text-[var(--muted-foreground)]"><strong className="text-[var(--foreground)]">الهاتف: </strong>{profile.phone_number}</p>
+          </div>
+        )}
+
+        {/* Change Password */}
+        <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+          <h2 className="text-base font-bold text-[var(--foreground)] mb-4">تغيير كلمة المرور</h2>
+          <form onSubmit={handleChangePassword} className="space-y-3">
+            {(['current_password', 'new_password', 'confirm_new_password'] as const).map((field) => (
+              <Input
+                key={field}
+                type="password"
+                required
+                placeholder={field === 'current_password' ? 'كلمة المرور الحالية' : field === 'new_password' ? 'كلمة المرور الجديدة' : 'تأكيد كلمة المرور الجديدة'}
+                value={pwForm[field]}
+                onChange={(e) => setPwForm({ ...pwForm, [field]: e.target.value })}
+              />
+            ))}
+            <Button
+              type="submit"
+              disabled={changePasswordMutation.isPending}
+              className="w-full"
+            >
+              {changePasswordMutation.isPending ? 'جاري التحديث...' : 'تغيير كلمة المرور'}
+            </Button>
+          </form>
         </div>
-      )}
 
-      {/* Change Password */}
-      <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#334155', marginBottom: '1rem' }}>تغيير كلمة المرور</h2>
-        <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {(['current_password', 'new_password', 'confirm_new_password'] as const).map((field) => (
-            <input
-              key={field}
-              type="password"
-              required
-              placeholder={field === 'current_password' ? 'كلمة المرور الحالية' : field === 'new_password' ? 'كلمة المرور الجديدة' : 'تأكيد كلمة المرور الجديدة'}
-              value={pwForm[field]}
-              onChange={(e) => setPwForm({ ...pwForm, [field]: e.target.value })}
-              style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
-            />
-          ))}
-          <button type="submit" style={{ backgroundColor: '#2563eb', color: '#fff', padding: '0.75rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600' }}>
-            تغيير كلمة المرور
-          </button>
-        </form>
-      </div>
+        {/* Danger Zone */}
+        <div className="bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-6">
+          <h2 className="text-base font-bold text-red-600 dark:text-red-400 mb-1">منطقة الخطر</h2>
+          <p className="text-xs text-[var(--muted-foreground)] mb-4">سيتم أرشفة جميع إعلاناتك وحذف حسابك بشكل نهائي.</p>
+          <Button
+            variant="destructive"
+            onClick={handleDeleteAccount}
+            disabled={deleteAccountMutation.isPending}
+            size="sm"
+          >
+            {deleteAccountMutation.isPending ? 'جاري الحذف...' : 'حذف الحساب'}
+          </Button>
+        </div>
+      </main>
 
-      {/* Danger Zone */}
-      <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #fecaca' }}>
-        <h2 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#991b1b', marginBottom: '0.75rem' }}>منطقة الخطر</h2>
-        <p style={{ color: '#64748b', marginBottom: '1rem', fontSize: '0.9rem' }}>سيتم أرشفة جميع إعلاناتك وحذف حسابك بشكل نهائي.</p>
-        <button onClick={handleDeleteAccount} style={{ backgroundColor: '#ef4444', color: '#fff', padding: '0.75rem 1.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '600' }}>
-          حذف الحساب
-        </button>
-      </div>
-    </main>
+      <Footer />
+      <MobileNav />
+    </div>
   );
 }

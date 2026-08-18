@@ -1,55 +1,17 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Header } from '../../components/layout/header';
 import { Footer } from '../../components/layout/footer';
 import { MobileNav } from '../../components/layout/mobile-nav';
 import { ProductCard } from '../../components/marketplace/product-card';
 import { EmptyState, Skeleton, Alert } from '../../components/ui';
 import { Heart } from 'lucide-react';
-
-interface FavoritedProduct {
-  id: string;
-  title: string;
-  price: number;
-  condition: string;
-  status: string;
-  created_at: string;
-  favorited_at: string;
-  category?: { name: string; slug?: string };
-  media?: { url: string }[];
-}
+import { useFavorites } from '@/features/favorites/hooks/use-favorites';
+import { tokenStorage } from '@/lib/api';
 
 export default function FavoritesPage() {
-  const [favorites, setFavorites] = useState<FavoritedProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  const fetchFavorites = async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      setError('يجب تسجيل الدخول لعرض إعلاناتك المفضلة');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const res = await fetch('http://localhost:3001/favorites', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error('فشل جلب المفضلة');
-      const data = await res.json();
-      setFavorites(data);
-    } catch {
-      setError('حدث خطأ أثناء تحميل المفضلة');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFavorites();
-  }, []);
+  const { data: favorites = [], isLoading: loading, isError } = useFavorites();
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] transition-colors">
@@ -66,9 +28,13 @@ export default function FavoritesPage() {
           </div>
         </div>
 
-        {error ? (
+        {!tokenStorage.hasToken() ? (
           <Alert variant="destructive" title="خطأ في الوصول">
-            {error}
+            يجب تسجيل الدخول لعرض إعلاناتك المفضلة
+          </Alert>
+        ) : isError ? (
+          <Alert variant="destructive" title="خطأ في الوصول">
+            حدث خطأ أثناء تحميل المفضلة
           </Alert>
         ) : loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -88,8 +54,12 @@ export default function FavoritesPage() {
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {favorites.map((product) => (
-              <ProductCard key={product.id} product={product} initialFavorited={true} />
+            {favorites.map((item) => (
+              <ProductCard
+                key={item.id}
+                product={(item as any).product || item}
+                initialFavorited={true}
+              />
             ))}
           </div>
         )}

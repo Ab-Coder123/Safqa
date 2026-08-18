@@ -1,67 +1,52 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  icon_url?: string;
-  children?: Category[];
-}
+import React from 'react';
+import { useCategories } from '@/features/categories/hooks/use-categories';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { MobileNav } from '@/components/layout/mobile-nav';
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetch('http://localhost:3001/categories')
-      .then((r) => r.json())
-      .then((data) => {
-        setCategories(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('فشل تحميل الأقسام');
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>جاري التحميل...</div>;
-  if (error) return <div style={{ padding: '2rem', textAlign: 'center', color: '#ef4444' }}>{error}</div>;
+  const { data: categories = [], isLoading, isError } = useCategories();
 
   return (
-    <main style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ fontSize: '2rem', color: '#1e293b', marginBottom: '0.5rem' }}>تصفح الأقسام</h1>
-      <p style={{ color: '#64748b', marginBottom: '2rem' }}>اختر القسم الذي يناسبك للبحث داخله</p>
+    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+      <Header />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
-        {categories.map((cat) => (
-          <div
-            key={cat.id}
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: '12px',
-              padding: '1.5rem',
-              textAlign: 'center',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              cursor: 'pointer',
-              transition: 'box-shadow 0.2s',
-            }}
-          >
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>
-              {cat.icon_url || '📦'}
-            </div>
-            <h2 style={{ fontSize: '1rem', fontWeight: '600', color: '#334155' }}>{cat.name}</h2>
-            {cat.children && cat.children.length > 0 && (
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.25rem' }}>
-                {cat.children.length} قسم فرعي
-              </p>
-            )}
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-3xl font-extrabold text-[var(--foreground)] mb-2">تصفح الأقسام</h1>
+        <p className="text-sm text-[var(--muted-foreground)] mb-8">اختر القسم الذي يناسبك للبحث وتصفح الإعلانات داخله</p>
+
+        {isLoading ? (
+          <div className="text-center py-12 text-[var(--muted-foreground)]">جاري تحميل الأقسام...</div>
+        ) : isError ? (
+          <div className="text-center py-12 text-[var(--destructive)]">فشل تحميل الأقسام</div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {categories.map((cat) => (
+              <div
+                key={cat.id}
+                className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 text-center shadow-sm hover:border-[var(--primary)]/50 transition-all cursor-pointer group"
+              >
+                <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">
+                  {cat.icon_url || '📦'}
+                </div>
+                <h2 className="text-sm font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">
+                  {cat.name}
+                </h2>
+                {cat.children && cat.children.length > 0 && (
+                  <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                    {cat.children.length} قسم فرعي
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </main>
+        )}
+      </main>
+
+      <Footer />
+      <MobileNav />
+    </div>
   );
 }

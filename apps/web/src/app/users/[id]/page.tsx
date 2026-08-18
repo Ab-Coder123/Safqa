@@ -1,75 +1,66 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-
-interface UserProfile {
-  id: string;
-  full_name: string;
-  avatar_url?: string;
-  created_at: string;
-  products?: any[];
-}
+import React from 'react';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { MobileNav } from '@/components/layout/mobile-nav';
+import { ProductCard } from '@/components/marketplace/product-card';
+import { useUserProfile } from '@/features/users/hooks/use-user-profile';
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { data: profileData, isLoading: loading, isError } = useUserProfile(params.id);
 
-  useEffect(() => {
-    fetch(`http://localhost:3001/users/${params.id}/profile`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.statusCode) {
-          setError(data.message || 'المستخدم غير موجود');
-        } else {
-          setProfile(data);
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('فشل تحميل الملف الشخصي');
-        setLoading(false);
-      });
-  }, [params.id]);
-
-  if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>جاري التحميل...</div>;
-  if (error || !profile)
-    return <div style={{ padding: '2rem', textAlign: 'center', color: '#ef4444' }}>{error || 'لم يتم العثور على المستخدم'}</div>;
+  const profile = profileData?.user;
 
   return (
-    <main style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem' }}>
-      {/* Profile Header */}
-      <div style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '2rem', marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-        <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', flexShrink: 0 }}>
-          {profile.avatar_url ? (
-            <img src={profile.avatar_url} alt="avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-          ) : '👤'}
-        </div>
-        <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1e293b', margin: 0 }}>{profile.full_name}</h1>
-          <p style={{ color: '#94a3b8', margin: '0.25rem 0 0' }}>
-            عضو منذ {new Date(profile.created_at).toLocaleDateString('ar-EG')}
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+      <Header />
 
-      {/* Listings */}
-      <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#334155', marginBottom: '1rem' }}>
-        إعلانات المستخدم ({profile.products?.length || 0})
-      </h2>
-      {!profile.products?.length ? (
-        <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>لا توجد إعلانات منشورة حالياً</p>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
-          {profile.products.map((p: any) => (
-            <div key={p.id} style={{ backgroundColor: '#fff', borderRadius: '10px', padding: '1rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#1e293b', margin: '0 0 0.5rem' }}>{p.title}</h3>
-              <p style={{ color: '#16a34a', fontWeight: '700', margin: 0 }}>{p.price} {p.currency}</p>
-              <p style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '0.25rem' }}>{p.category?.name}</p>
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8">
+        {loading ? (
+          <div className="text-center py-16 text-[var(--muted-foreground)]">جاري التحميل...</div>
+        ) : isError || !profile ? (
+          <div className="text-center py-16 text-[var(--destructive)]">لم يتم العثور على المستخدم</div>
+        ) : (
+          <>
+            {/* Profile Header */}
+            <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 mb-8 flex items-center gap-5 shadow-sm">
+              <div className="w-20 h-20 rounded-full bg-[var(--muted)] flex items-center justify-center overflow-hidden shrink-0 text-3xl">
+                {profile.avatar_url ? (
+                  <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+                ) : (
+                  '👤'
+                )}
+              </div>
+              <div>
+                <h1 className="text-2xl font-extrabold text-[var(--foreground)]">{profile.full_name}</h1>
+                <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                  عضو منذ {new Date(profile.created_at).toLocaleDateString('ar-EG')}
+                </p>
+              </div>
             </div>
-          ))}
-        </div>
-      )}
-    </main>
+
+            {/* Listings */}
+            <h2 className="text-lg font-bold text-[var(--foreground)] mb-4">
+              إعلانات المستخدم ({profile.products?.length || 0})
+            </h2>
+            {!profile.products?.length ? (
+              <div className="text-center py-12 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 text-[var(--muted-foreground)] text-sm">
+                لا توجد إعلانات منشورة حالياً
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                {profile.products.map((p: any) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </main>
+
+      <Footer />
+      <MobileNav />
+    </div>
   );
 }

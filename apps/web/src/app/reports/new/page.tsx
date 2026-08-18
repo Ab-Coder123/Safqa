@@ -2,127 +2,126 @@
 
 import React, { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { useSubmitReport } from '@/features/reports/hooks/use-submit-report';
+import { tokenStorage } from '@/lib/api';
 
-// Inner component that uses useSearchParams — must be wrapped in Suspense
 function NewReportContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const targetType = searchParams.get('type') || 'PRODUCT';
+  const targetType = (searchParams.get('type') || 'PRODUCT') as 'PRODUCT' | 'USER' | 'MESSAGE';
   const targetId = searchParams.get('id') || '';
 
+  const submitReportMutation = useSubmitReport();
   const [reason, setReason] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(''); setSuccess(''); setLoading(true);
+    setError('');
+    setSuccess('');
 
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
+    if (!tokenStorage.hasToken()) {
       setError('يجب تسجيل الدخول لتقديم بلاغ');
-      setLoading(false);
       return;
     }
 
-    try {
-      const res = await fetch('http://localhost:3001/reports', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+    submitReportMutation.mutate(
+      {
+        target_type: targetType,
+        target_id: targetId,
+        reason,
+      },
+      {
+        onSuccess: () => {
+          setSuccess('تم إرسال البلاغ بنجاح. سيقوم فريق الإدارة بمراجعته.');
+          setTimeout(() => router.back(), 2000);
         },
-        body: JSON.stringify({
-          target_type: targetType,
-          target_id: targetId,
-          reason,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.message || 'فشل إرسال البلاغ');
-      } else {
-        setSuccess('تم إرسال البلاغ بنجاح. سيقوم فريق الإدارة بمراجعته.');
-        setTimeout(() => router.back(), 2000);
+        onError: (err: any) => {
+          setError(err.message || 'فشل إرسال البلاغ');
+        },
       }
-    } catch {
-      setError('حدث خطأ في الاتصال');
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   return (
-    <main style={{ maxWidth: '600px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#111827', marginBottom: '0.5rem' }}>
-        🚩 تقديم بلاغ مخالفة
-      </h1>
-      <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
-        ساعدنا في الحفاظ على أمان المنصة بالإبلاغ عن الإعلانات أو الحسابات المخالفة
-      </p>
+    <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
+      <Header />
 
-      {error && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '0.85rem', borderRadius: '8px', marginBottom: '1rem' }}>{error}</div>}
-      {success && <div style={{ background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', padding: '0.85rem', borderRadius: '8px', marginBottom: '1rem' }}>{success}</div>}
+      <main className="flex-1 max-w-xl w-full mx-auto px-4 sm:px-6 py-8">
+        <h1 className="text-2xl font-extrabold text-[var(--foreground)] mb-1">
+          🚩 تقديم بلاغ مخالفة
+        </h1>
+        <p className="text-sm text-[var(--muted-foreground)] mb-6">
+          ساعدنا في الحفاظ على أمان المنصة بالإبلاغ عن الإعلانات أو الحسابات المخالفة
+        </p>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        <div>
-          <label style={{ display: 'block', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
-            نوع البلاغ
-          </label>
-          <input
-            disabled
-            value={targetType === 'PRODUCT' ? 'إعلان مخالف' : 'حساب مستخدم مخالف'}
-            style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db', background: '#f9fafb', fontSize: '1rem' }}
-          />
-        </div>
+        {error && (
+          <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 p-3 rounded-xl text-sm mb-6">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 p-3 rounded-xl text-sm mb-6">
+            {success}
+          </div>
+        )}
 
-        <div>
-          <label style={{ display: 'block', fontWeight: '600', color: '#374151', marginBottom: '0.4rem' }}>
-            سبب البلاغ بالتفصيل *
-          </label>
-          <textarea
-            required
-            minLength={5}
-            maxLength={500}
-            rows={5}
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="اشرح سبب البلاغ (مثل: إعلان واحتيال، منتج ممنوع، معلومات غير صحيحة)..."
-            style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #d1d5db', fontSize: '1rem', resize: 'vertical' }}
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="target_type">نوع البلاغ</Label>
+            <input
+              id="target_type"
+              disabled
+              value={targetType === 'PRODUCT' ? 'إعلان مخالف' : targetType === 'USER' ? 'حساب مستخدم مخالف' : 'رسالة مخالفة'}
+              className="w-full h-10 rounded-xl border border-[var(--border)] bg-[var(--muted)]/50 px-3 text-sm"
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading || !targetId}
-          style={{
-            background: loading || !targetId ? '#fca5a5' : '#ef4444',
-            color: '#fff',
-            padding: '0.9rem',
-            borderRadius: '8px',
-            border: 'none',
-            cursor: loading || !targetId ? 'not-allowed' : 'pointer',
-            fontWeight: '700',
-            fontSize: '1rem',
-          }}
-        >
-          {loading ? 'جاري الإرسال...' : 'إرسال البلاغ'}
-        </button>
-      </form>
-    </main>
+          <div>
+            <Label htmlFor="reason">سبب البلاغ بالتفصيل *</Label>
+            <textarea
+              id="reason"
+              required
+              minLength={5}
+              maxLength={500}
+              rows={4}
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="اشرح سبب البلاغ (مثل: إعلان واحتيال، منتج ممنوع، معلومات غير صحيحة)..."
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 text-sm focus:outline-none focus:border-[var(--primary)]"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            variant="destructive"
+            disabled={submitReportMutation.isPending || !targetId}
+            className="w-full"
+          >
+            {submitReportMutation.isPending ? 'جاري الإرسال...' : 'إرسال البلاغ'}
+          </Button>
+        </form>
+      </main>
+
+      <Footer />
+    </div>
   );
 }
 
-// Outer page wraps content in Suspense (Next.js 14 requirement for useSearchParams)
 export default function NewReportPage() {
   return (
-    <Suspense fallback={
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem', color: '#6b7280' }}>
-        جاري التحميل...
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center text-[var(--muted-foreground)]">
+          جاري التحميل...
+        </div>
+      }
+    >
       <NewReportContent />
     </Suspense>
   );
