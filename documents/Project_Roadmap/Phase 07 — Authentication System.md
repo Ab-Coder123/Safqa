@@ -584,18 +584,18 @@ Implement complete login functionality.
 
 Verify:
 
-* [ ] Login page
-* [ ] Email field
-* [ ] Password field
-* [ ] Validation
-* [ ] Loading state
-* [ ] Invalid credentials state
-* [ ] Server error
-* [ ] Success state
-* [ ] Responsive layout
-* [ ] RTL
-* [ ] Dark mode
-* [ ] Accessibility
+* ✅ Login page
+* ✅ Email field
+* ✅ Password field
+* ✅ Validation
+* ✅ Loading state
+* ✅ Invalid credentials state
+* ✅ Server error
+* ✅ Success state
+* ✅ Responsive layout
+* ✅ RTL
+* ✅ Dark mode
+* ✅ Accessibility
 
 ---
 
@@ -603,12 +603,12 @@ Verify:
 
 Implement or verify:
 
-* [ ] Login endpoint
-* [ ] User lookup
-* [ ] Password verification
-* [ ] Account status verification
-* [ ] Authentication response
-* [ ] Error handling
+* ✅ Login endpoint
+* ✅ User lookup
+* ✅ Password verification
+* ✅ Account status verification
+* ✅ Authentication response
+* ✅ Error handling
 
 ---
 
@@ -634,24 +634,24 @@ Authenticated Application
 
 ## Login Testing
 
-* [ ] Valid credentials
-* [ ] Invalid email
-* [ ] Invalid password
-* [ ] Missing fields
-* [ ] Suspended account
-* [ ] Deleted account
-* [ ] Server error
-* [ ] Network failure
+* ✅ Valid credentials
+* ✅ Invalid email
+* ✅ Invalid password
+* ✅ Missing fields
+* ✅ Suspended account
+* ✅ Deleted account
+* ✅ Server error
+* ✅ Network failure
 
 ---
 
 ## Tier 05 Completion
 
-* [ ] Login UI complete
-* [ ] Login backend complete
-* [ ] Frontend/backend integrated
-* [ ] Error handling complete
-* [ ] Tests passed
+* ✅ Login UI complete
+* ✅ Login backend complete
+* ✅ Frontend/backend integrated
+* ✅ Error handling complete
+* ✅ Tests passed
 
 ---
 
@@ -667,11 +667,11 @@ Implement secure authentication persistence.
 
 Inspect the repository and determine whether Safqa uses:
 
-* [ ] Cookie-based sessions
-* [ ] JWT
-* [ ] Refresh tokens
-* [ ] Access tokens
-* [ ] Another documented mechanism
+* [x] Cookie-based sessions — ❌ Not used (documented as future hardening)
+* [x] JWT — ✅ Access Token (15m) + Refresh Token (7d) via @nestjs/jwt
+* [x] Refresh tokens — ✅ POST /auth/refresh endpoint exists and works
+* [x] Access tokens — ✅ Bearer token via Authorization header
+* [x] Another documented mechanism — tokenStorage (localStorage, documented as interim strategy)
 
 Do not introduce a different strategy without architectural justification.
 
@@ -679,14 +679,14 @@ Do not introduce a different strategy without architectural justification.
 
 ## Tasks
 
-* [ ] Token/session creation
-* [ ] Token/session validation
-* [ ] Expiration
-* [ ] Persistence
-* [ ] Refresh mechanism if required
-* [ ] Frontend authentication state
-* [ ] Backend authentication middleware
-* [ ] Logout cleanup
+* [x] Token/session creation — ✅ generateTokens() in AuthService
+* [x] Token/session validation — ✅ JwtAuthGuard verifies Bearer token on protected routes
+* [x] Expiration — ✅ accessToken: 15m, refreshToken: 7d (via env vars)
+* [x] Persistence — ✅ tokenStorage.setTokens() on login/register/refresh
+* [x] Refresh mechanism if required — ✅ POST /auth/refresh + 401 auto-refresh interceptor in api-client
+* [x] Frontend authentication state — ✅ useCurrentUser() with staleTime:14m, enabled:hasToken()
+* [x] Backend authentication middleware — ✅ JwtAuthGuard used on all protected endpoints
+* [x] Logout cleanup — ✅ useLogout() clears tokenStorage + queryClient.clear()
 
 ---
 
@@ -694,21 +694,21 @@ Do not introduce a different strategy without architectural justification.
 
 Verify:
 
-* [ ] Secure storage strategy
-* [ ] No unnecessary localStorage token exposure
-* [ ] Environment secrets protected
-* [ ] Expiration handled
-* [ ] Invalid sessions rejected
+* [x] Secure storage strategy — localStorage (documented as interim; HttpOnly cookie migration in Tier 09)
+* [x] No unnecessary localStorage token exposure — tokenStorage abstraction isolates all access
+* [x] Environment secrets protected — JWT secrets in .env (gitignored), .env.example committed
+* [x] Expiration handled — 401 interceptor in api-client detects expired tokens and auto-refreshes
+* [x] Invalid sessions rejected — JwtAuthGuard throws UnauthorizedException on invalid/expired tokens
 
 ---
 
 ## Tier 06 Completion
 
-* [ ] Authentication persistence works
-* [ ] Session/token validation works
-* [ ] Expiration works
-* [ ] Frontend recognizes authentication
-* [ ] Backend recognizes authentication
+* ✅ Authentication persistence works
+* ✅ Session/token validation works
+* ✅ Expiration works
+* ✅ Frontend recognizes authentication
+* ✅ Backend recognizes authentication
 
 ---
 
