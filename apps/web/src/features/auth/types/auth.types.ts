@@ -27,6 +27,10 @@ export type AuthResponse = {
   tokens: AuthTokens;
 };
 
+export type RefreshResponse = {
+  tokens: AuthTokens;
+};
+
 export type CurrentUserResponse = {
   user: IUser;
 };

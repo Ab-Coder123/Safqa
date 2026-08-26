@@ -4,6 +4,7 @@ import type {
   CurrentUserResponse,
   LoginInput,
   RegisterInput,
+  RefreshResponse,
 } from '../types/auth.types';
 
 export const authApi = {
@@ -27,4 +28,12 @@ export const authApi = {
       auth: true,
     });
   },
+
+  refresh(refreshToken: string) {
+    return apiClient<RefreshResponse>('/auth/refresh', {
+      method: 'POST',
+      body: { refreshToken },
+    });
+  },
 };
+

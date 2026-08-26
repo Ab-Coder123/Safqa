@@ -7,6 +7,11 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 type ApiClientOptions = Omit<RequestInit, 'body'> & {
   body?: unknown;
   auth?: boolean;
+  /**
+   * Internal flag — prevents infinite retry loop when the refresh call itself fails.
+   * Never set this from outside api-client.
+   */
+  _isRetry?: boolean;
 };
 
 async function parseJsonResponse<T>(response: Response): Promise<T> {
@@ -29,7 +34,7 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
 
 export async function apiClient<T>(
   path: string,
-  { body, headers, auth = false, ...options }: ApiClientOptions = {},
+  { body, headers, auth = false, _isRetry = false, ...options }: ApiClientOptions = {},
 ): Promise<T> {
   const requestHeaders = new Headers(headers);
 
@@ -39,7 +44,6 @@ export async function apiClient<T>(
 
   if (auth) {
     const token = tokenStorage.getAccessToken();
-
     if (token) {
       requestHeaders.set('Authorization', `Bearer ${token}`);
     }
@@ -50,6 +54,47 @@ export async function apiClient<T>(
     headers: requestHeaders,
     body: body === undefined ? undefined : JSON.stringify(body),
   });
+
+  // ── 401 Auto-Refresh Interceptor ──────────────────────────────────────────
+  // When a protected request returns 401 and we haven't already retried:
+  //  1. Try to get a new access token using the stored refresh token.
+  //  2. If successful, store the new tokens and replay the original request.
+  //  3. If the refresh itself fails, clear all tokens (forces re-login).
+  if (response.status === 401 && auth && !_isRetry) {
+    const refreshToken = tokenStorage.getRefreshToken();
+
+    if (refreshToken) {
+      try {
+        // Call /auth/refresh directly (no auth flag — uses body, not header)
+        const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+        });
+
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          // Store the fresh tokens
+          tokenStorage.setTokens(refreshData.tokens);
+
+          // Replay the original request with the new access token
+          return apiClient<T>(path, {
+            body,
+            headers,
+            auth,
+            _isRetry: true, // prevent further retry loops
+            ...options,
+          });
+        }
+      } catch {
+        // Refresh request itself failed (network error etc.) — fall through to clear
+      }
+
+      // Refresh token is invalid or expired — clear session
+      tokenStorage.clear();
+    }
+  }
+  // ── End Auto-Refresh Interceptor ──────────────────────────────────────────
 
   return parseJsonResponse<T>(response);
 }
