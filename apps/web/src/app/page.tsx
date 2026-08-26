@@ -2,6 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Header } from '../components/layout/header';
+import { Footer } from '../components/layout/footer';
+import { MobileNav } from '../components/layout/mobile-nav';
 import { useTheme } from '../components/theme-provider';
 import {
   ShieldCheck, Zap, Users, Tag, Headphones,
@@ -81,67 +84,9 @@ export default function LandingPage() {
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--background)', color: 'var(--foreground)', direction: 'rtl' }}>
 
       {/* ══════════════════════════════════
-          PUBLIC HEADER
+          DYNAMIC GLOBAL HEADER
       ══════════════════════════════════ */}
-      <header style={{ position: 'sticky', top: 0, zIndex: 50, borderBottom: '1px solid var(--border)', backgroundColor: 'var(--card)', backdropFilter: 'blur(12px)' }}>
-        <div style={{ ...s.maxW, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '64px' }}>
-          {/* Logo */}
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', boxShadow: 'var(--shadow-md)' }}>
-              ص
-            </div>
-            <span style={{ fontWeight: 800, fontSize: '1.4rem', color: 'var(--foreground)' }}>
-              صفقة<span style={{ color: 'var(--primary)' }}>.</span>
-            </span>
-          </Link>
-
-          {/* Nav Links - hidden on mobile */}
-          <nav style={{ display: 'flex', gap: '1.75rem', alignItems: 'center' }}>
-            {[
-              { href: '/', label: 'الرئيسية', active: true },
-              { href: '#how-it-works', label: 'كيف يعمل', active: false },
-              { href: '#features', label: 'المميزات', active: false },
-              { href: '/categories', label: 'التصنيفات', active: false },
-              { href: '#safety', label: 'الأمان', active: false },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                style={{
-                  fontSize: '0.875rem',
-                  fontWeight: item.active ? 700 : 500,
-                  color: item.active ? 'var(--primary)' : 'var(--muted-foreground)',
-                  textDecoration: item.active ? 'underline' : 'none',
-                  textUnderlineOffset: '4px',
-                  transition: 'color var(--transition-fast)',
-                }}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              title="تبديل المظهر"
-              style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '8px', padding: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted-foreground)', transition: 'all var(--transition-fast)' }}
-            >
-              {theme === 'dark' ? <Sun size={18} color="#fbbf24" /> : <Moon size={18} />}
-            </button>
-
-            <Link href="/login" style={{ padding: '0.45rem 1rem', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, color: 'var(--foreground)', textDecoration: 'none', border: '1px solid var(--border)', transition: 'background var(--transition-fast)' }}>
-              تسجيل الدخول
-            </Link>
-
-            <Link href="/register" style={{ padding: '0.5rem 1.25rem', borderRadius: '10px', fontSize: '0.875rem', fontWeight: 700, backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem', boxShadow: 'var(--shadow-md)', transition: 'background var(--transition-fast)' }}>
-              ابدأ الآن
-              <ArrowLeft size={16} />
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* ══════════════════════════════════
           HERO SECTION
@@ -430,62 +375,10 @@ export default function LandingPage() {
       </section>
 
       {/* ══════════════════════════════════
-          FOOTER
+          DYNAMIC FOOTER & MOBILE NAV
       ══════════════════════════════════ */}
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--card)', padding: '4rem 0 2rem' }}>
-        <div style={{ ...s.maxW }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '2.5rem', marginBottom: '3rem' }}>
-            {/* Brand */}
-            <div style={{ gridColumn: 'span 2' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem' }}>ص</div>
-                <span style={{ fontWeight: 800, fontSize: '1.3rem' }}>صفقة.</span>
-              </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', lineHeight: 1.7, maxWidth: '260px' }}>
-                صفقة هي مجتمع إلكتروني مفتوح يربط بين المشترين والبائعين بسهولة وأمان بدون عمولات.
-              </p>
-            </div>
-
-            {/* Links: Company */}
-            <div>
-              <h4 style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--foreground)', marginBottom: '1rem' }}>الشركة</h4>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                {[{ href: '#', label: 'عن المنصة' }, { href: '#how-it-works', label: 'كيف يعمل صفقة' }, { href: '#features', label: 'المميزات' }, { href: '/products', label: 'تصفح المتجر' }].map(l => (
-                  <li key={l.label}><a href={l.href} style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', textDecoration: 'none', fontWeight: 500 }}>{l.label}</a></li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Links: Support */}
-            <div>
-              <h4 style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--foreground)', marginBottom: '1rem' }}>الدعم</h4>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                {[{ href: '#safety', label: 'نصائح الأمان' }, { href: '/reports/new', label: 'تقديم بلاغ' }, { href: '#', label: 'شروط الاستخدام' }, { href: '#', label: 'سياسة الخصوصية' }].map(l => (
-                  <li key={l.label}><a href={l.href} style={{ fontSize: '0.8rem', color: 'var(--muted-foreground)', textDecoration: 'none', fontWeight: 500 }}>{l.label}</a></li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Social Links */}
-            <div>
-              <h4 style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--foreground)', marginBottom: '1rem' }}>تابعنا</h4>
-              <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1rem' }}>
-                {[<Globe size={16} key="g" />, <Share2 size={16} key="s" />, <Send size={16} key="send" />].map((icon, i) => (
-                  <span key={i} style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--muted-foreground)' }}>
-                    {icon}
-                  </span>
-                ))}
-              </div>
-              <p style={{ fontSize: '0.72rem', color: 'var(--muted-foreground)' }}>اللغة: العربية (مصر)</p>
-            </div>
-          </div>
-
-          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <p style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)' }}>جميع الحقوق محفوظة © {new Date().getFullYear()} منصة صفقة Safqa.</p>
-            <p style={{ fontSize: '0.7rem', color: 'var(--muted-foreground)' }}>صُنعت بالحُب لتوفير تجربة بيع وشراء استثنائية.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
+      <MobileNav />
     </div>
   );
 }

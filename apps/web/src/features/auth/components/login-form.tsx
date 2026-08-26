@@ -41,7 +41,7 @@ export function LoginForm() {
 
     try {
       await loginMutation.mutateAsync(formData);
-      router.replace('/');
+      window.location.href = '/';
     } catch (err: unknown) {
       setServerError(
         isApiError(err)
