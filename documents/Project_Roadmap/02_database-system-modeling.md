@@ -122,6 +122,7 @@ Every entity follows a consistent template: Description, Purpose, Responsibiliti
   - `currency`: String (Default: 'EGP')
   - `condition`: Enum (`NEW` | `USED` | `REFURBISHED`)
   - `whatsapp_number`: String
+  - `media_urls`: Array<String>
   - `status`: Enum (`DRAFT` | `PUBLISHED` | `SOLD` | `ARCHIVED`) - Default: `PUBLISHED`
   - `created_at`: Timestamp
   - `updated_at`: Timestamp

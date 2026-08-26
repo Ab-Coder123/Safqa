@@ -13,7 +13,7 @@ import { CONSTANTS } from '@safqa/utils';
 
 @Injectable()
 export class ProductsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // ─── CREATE: Enforce daily limit per Product_Management_Workflow.md ─────────
   async create(userId: string, dto: CreateProductDto) {

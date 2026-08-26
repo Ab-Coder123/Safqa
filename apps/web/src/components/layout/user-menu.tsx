@@ -18,7 +18,7 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
           <Avatar name={user.full_name} src={user.avatar_url} size="sm" statusDot="online" />
         </div>
       }
-      align="start"
+      align="end"
     >
       <div className="px-4 py-3 border-b border-[var(--border)]">
         <p className="text-sm font-bold text-[var(--foreground)] truncate">{user.full_name}</p>

@@ -12,7 +12,9 @@ import { useCategories } from '@/features/categories/hooks/use-categories';
 import { useCreateProduct } from '@/features/products/hooks/use-create-product';
 import { tokenStorage } from '@/lib/api';
 
-export default function CreateProductPage() {
+import { AuthGuard } from '@/features/auth/components/auth-guard';
+
+function CreateProductForm() {
   const router = useRouter();
   const { data: categories = [] } = useCategories();
   const createProductMutation = useCreateProduct();
@@ -32,11 +34,6 @@ export default function CreateProductPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (!tokenStorage.hasToken()) {
-      setError('يجب تسجيل الدخول أولاً');
-      return;
-    }
 
     createProductMutation.mutate(
       {
@@ -164,5 +161,13 @@ export default function CreateProductPage() {
       <Footer />
       <MobileNav />
     </div>
+  );
+}
+
+export default function CreateProductPage() {
+  return (
+    <AuthGuard>
+      <CreateProductForm />
+    </AuthGuard>
   );
 }

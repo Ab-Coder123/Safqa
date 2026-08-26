@@ -8,7 +8,8 @@ import { MobileNav } from '../../components/layout/mobile-nav';
 import { Tabs, TabsList, TabsTrigger, TabsContent, Alert, Skeleton } from '../../components/ui';
 import { ShieldAlert } from 'lucide-react';
 import { useAdminStats, useAdminReports, useAdminUsers } from '@/features/admin/hooks/use-admin';
-import { tokenStorage } from '@/lib/api';
+import { AuthGuard } from '@/features/auth/components/auth-guard';
+import { UserRole } from '@safqa/types';
 
 // ────────────────────────────────────────────
 // ✅ Performance: dynamic() — Admin tabs loaded only when admin visits
@@ -29,27 +30,13 @@ const AdminUsersTab = dynamic(
   { loading: () => <Skeleton className="h-64 w-full rounded-xl" /> }
 );
 
-export default function AdminDashboardPage() {
+function AdminDashboardContent() {
   const { data: stats, isLoading: statsLoading, isError: statsError } = useAdminStats();
   const { data: reports = [], isLoading: reportsLoading } = useAdminReports();
   const { data: users = [], isLoading: usersLoading } = useAdminUsers();
 
   const loading = statsLoading || reportsLoading || usersLoading;
   const pendingReportsCount = reports.filter((r) => r.status === 'PENDING').length;
-
-  if (!tokenStorage.hasToken()) {
-    return (
-      <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
-        <Header />
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
-          <Alert variant="destructive" title="خطأ في الصلاحيات">
-            يجب تسجيل الدخول بحساب مشرف (SUPER_ADMIN)
-          </Alert>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] transition-colors">
@@ -61,52 +48,55 @@ export default function AdminDashboardPage() {
             <ShieldAlert className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold text-[var(--foreground)]">لوحة الإدارة والإشراف (Super Admin)</h1>
-            <p className="text-xs text-[var(--muted-foreground)]">مراقبة إحصائيات المنصة، معالجة البلاغات المعلقة، وحظر الحسابات المخالفة</p>
+            <h1 className="text-2xl font-extrabold text-[var(--foreground)]">لوحة الإدارة والتحكم</h1>
+            <p className="text-xs text-[var(--muted-foreground)]">إدارة البلاغات، مراجعة الحسابات، ومراقبة إحصائيات النظام</p>
           </div>
         </div>
 
-        {statsError ? (
-          <Alert variant="destructive" title="خطأ في الصلاحيات">
-            صلاحية الوصول غير متاحة (تتطلب حساب SUPER_ADMIN)
+        {statsError && (
+          <Alert variant="destructive" title="خطأ" className="mb-6">
+            تعذر تحميل بيانات الإدارة. تأكد من امتلاكك صلاحيات المشرف.
           </Alert>
-        ) : loading ? (
-          <div className="flex flex-col gap-4">
-            <Skeleton className="h-10 w-64 rounded-xl" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-28 w-full rounded-xl" />
-              ))}
-            </div>
-          </div>
-        ) : (
-          <Tabs defaultValue="stats">
-            <TabsList className="mb-6">
-              <TabsTrigger value="stats">📊 الإحصائيات</TabsTrigger>
-              <TabsTrigger value="reports">
-                🚩 البلاغات المعلقة ({pendingReportsCount})
-              </TabsTrigger>
-              <TabsTrigger value="users">👥 المستخدمين ({users.length})</TabsTrigger>
-            </TabsList>
-
-            {/* ✅ dynamic() — each tab loads its JS only when rendered */}
-            <TabsContent value="stats">
-              {stats && <AdminStatsTab stats={stats} />}
-            </TabsContent>
-
-            <TabsContent value="reports">
-              <AdminReportsTab reports={reports} />
-            </TabsContent>
-
-            <TabsContent value="users">
-              <AdminUsersTab users={users} />
-            </TabsContent>
-          </Tabs>
         )}
+
+        <Tabs defaultValue="stats" className="space-y-6">
+          <TabsList className="grid grid-cols-3 max-w-md bg-[var(--card)] border border-[var(--border)]">
+            <TabsTrigger value="stats">الإحصائيات</TabsTrigger>
+            <TabsTrigger value="reports" className="relative">
+              البلاغات
+              {pendingReportsCount > 0 && (
+                <span className="mr-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white">
+                  {pendingReportsCount}
+                </span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="users">المستخدمين</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="stats">
+            <AdminStatsTab stats={stats} loading={loading} />
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <AdminReportsTab reports={reports} loading={loading} />
+          </TabsContent>
+
+          <TabsContent value="users">
+            <AdminUsersTab users={users} loading={loading} />
+          </TabsContent>
+        </Tabs>
       </main>
 
       <Footer />
       <MobileNav />
     </div>
+  );
+}
+
+export default function AdminDashboardPage() {
+  return (
+    <AuthGuard requiredRole={UserRole.SUPER_ADMIN}>
+      <AdminDashboardContent />
+    </AuthGuard>
   );
 }

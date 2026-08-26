@@ -5,15 +5,20 @@ export interface NotificationItem {
   user_id: string;
   type: string;
   title: string;
-  content: string;
+  body: string;
   is_read: boolean;
   action_url?: string;
   created_at: string;
 }
 
+export interface NotificationsResponse {
+  notifications: NotificationItem[];
+  unread_count: number;
+}
+
 export const notificationsApi = {
-  getNotifications(): Promise<NotificationItem[]> {
-    return apiClient<NotificationItem[]>('/notifications', {
+  getNotifications(): Promise<NotificationsResponse> {
+    return apiClient<NotificationsResponse>('/notifications', {
       method: 'GET',
       auth: true,
     });
@@ -26,8 +31,8 @@ export const notificationsApi = {
     });
   },
 
-  markAllAsRead(): Promise<{ success: boolean; count: number }> {
-    return apiClient<{ success: boolean; count: number }>('/notifications/read-all', {
+  markAllAsRead(): Promise<{ message: string }> {
+    return apiClient<{ message: string }>('/notifications/read-all', {
       method: 'PATCH',
       auth: true,
     });

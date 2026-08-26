@@ -9,14 +9,15 @@ import { Bell, CheckCheck, MessageSquare, AlertTriangle, Heart } from 'lucide-re
 import { useNotifications } from '@/features/notifications/hooks/use-notifications';
 import { useMarkNotificationRead } from '@/features/notifications/hooks/use-mark-notification-read';
 import { useMarkAllNotificationsRead } from '@/features/notifications/hooks/use-mark-all-notifications-read';
-import { tokenStorage } from '@/lib/api';
+import { AuthGuard } from '@/features/auth/components/auth-guard';
 
-export default function NotificationsPage() {
-  const { data: notifications = [], isLoading: loading, isError } = useNotifications();
+function NotificationsContent() {
+  const { data, isLoading: loading, isError } = useNotifications();
   const markReadMutation = useMarkNotificationRead();
   const markAllReadMutation = useMarkAllNotificationsRead();
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const notifications = data?.notifications ?? [];
+  const unreadCount = data?.unread_count ?? notifications.filter((n) => !n.is_read).length;
 
   const handleMarkAsRead = (id: string) => {
     markReadMutation.mutate(id);
@@ -61,11 +62,7 @@ export default function NotificationsPage() {
           )}
         </div>
 
-        {!tokenStorage.hasToken() ? (
-          <Alert variant="destructive" title="خطأ في الوصول">
-            يجب تسجيل الدخول لعرض الإشعارات
-          </Alert>
-        ) : isError ? (
+        {isError ? (
           <Alert variant="destructive" title="خطأ في الوصول">
             حدث خطأ أثناء تحميل الإشعارات
           </Alert>
@@ -97,7 +94,7 @@ export default function NotificationsPage() {
                         {new Date(item.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">{item.content}</p>
+                    <p className="text-xs text-[var(--muted-foreground)] leading-relaxed">{item.body}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -109,5 +106,13 @@ export default function NotificationsPage() {
       <Footer />
       <MobileNav />
     </div>
+  );
+}
+
+export default function NotificationsPage() {
+  return (
+    <AuthGuard>
+      <NotificationsContent />
+    </AuthGuard>
   );
 }

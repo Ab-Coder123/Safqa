@@ -7,22 +7,10 @@ import { Footer } from '@/components/layout/footer';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { Button } from '@/components/ui/button';
 import { useConversations } from '@/features/conversations/hooks/use-conversations';
-import { tokenStorage } from '@/lib/api';
+import { AuthGuard } from '@/features/auth/components/auth-guard';
 
-export default function ConversationsPage() {
+function ConversationsContent() {
   const { data: conversations = [], isLoading: loading, isError } = useConversations();
-
-  if (!tokenStorage.hasToken()) {
-    return (
-      <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
-        <Header />
-        <div className="flex-1 flex items-center justify-center p-8 text-[var(--muted-foreground)]">
-          يجب تسجيل الدخول لمشاهدة المحادثات
-        </div>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)]">
@@ -59,22 +47,23 @@ export default function ConversationsPage() {
                     {conv.buyer?.avatar_url || conv.seller?.avatar_url ? (
                       <img src={conv.buyer?.avatar_url || conv.seller?.avatar_url} alt="avatar" className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-lg">👤</span>
+                      <span className="text-lg font-bold text-[var(--muted-foreground)]">
+                        {(conv.buyer?.full_name || conv.seller?.full_name || 'U')[0]}
+                      </span>
                     )}
                   </div>
-
                   <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-center mb-1">
-                      <h3 className="text-sm font-bold text-[var(--foreground)] truncate">
-                        {conv.buyer?.full_name || conv.seller?.full_name || 'مستخدم صفقة'}
-                      </h3>
-                      <span className="text-xs text-[var(--muted-foreground)]">
-                        {new Date(conv.updated_at).toLocaleDateString('ar-EG')}
-                      </span>
-                    </div>
-                    <p className="text-xs text-[var(--muted-foreground)] truncate">
-                      {conv.product ? `بخصوص: ${conv.product.title}` : 'بدأت المحادثة'}
+                    <p className="text-sm font-bold text-[var(--foreground)] truncate">
+                      {conv.buyer?.full_name || conv.seller?.full_name || 'مستخدم'}
                     </p>
+                    <p className="text-xs text-[var(--muted-foreground)] truncate mt-0.5">
+                      {conv.product?.title || 'إعلان محذوف'}
+                    </p>
+                  </div>
+                  <div className="text-left shrink-0">
+                    <span className="text-[11px] text-[var(--muted-foreground)]">
+                      {new Date(conv.updated_at).toLocaleDateString('ar-EG')}
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -86,5 +75,13 @@ export default function ConversationsPage() {
       <Footer />
       <MobileNav />
     </div>
+  );
+}
+
+export default function ConversationsPage() {
+  return (
+    <AuthGuard>
+      <ConversationsContent />
+    </AuthGuard>
   );
 }

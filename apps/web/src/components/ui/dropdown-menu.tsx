@@ -6,13 +6,13 @@ import { cn } from '../../lib/cn';
 export interface DropdownMenuProps {
   trigger: React.ReactNode;
   children: React.ReactNode;
-  align?: 'start' | 'end';
+  align?: 'center' | "start" | "end";
 }
 
 export const DropdownMenu: React.FC<DropdownMenuProps> = ({
   trigger,
   children,
-  align = 'start',
+  align = 'center',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,8 +35,8 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-50 mt-2 w-56 rounded-xl border border-[var(--border)] bg-[var(--popover)] text-[var(--popover-foreground)] shadow-lg animate-fade-in py-1 overflow-hidden',
-            align === 'start' ? 'right-0' : 'left-0'
+            'absolute z-50 mt-6 w-56 rounded-xl border border-[var(--border)] bg-[var(--popover)] text-[var(--popover-foreground)] shadow-lg animate-fade-in py-1 overflow-hidden',
+            align === 'center' ? 'right-0' : 'left-0'
           )}
         >
           {children}

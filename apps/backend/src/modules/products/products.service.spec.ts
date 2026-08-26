@@ -41,6 +41,7 @@ describe('ProductsService', () => {
       condition: 'NEW' as any,
       category_id: 'cat-1',
       whatsapp_number: '01012345678',
+      media_urls: [],
     };
 
     await expect(service.create('user-1', dto)).rejects.toThrow(BadRequestException);

@@ -8,10 +8,11 @@ import { useNotifications } from '@/features/notifications/hooks/use-notificatio
 import { useMarkAllNotificationsRead } from '@/features/notifications/hooks/use-mark-all-notifications-read';
 
 export function NotificationCenter() {
-  const { data: notifications = [] } = useNotifications();
+  const { data } = useNotifications();
   const markAllReadMutation = useMarkAllNotificationsRead();
 
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const notifications = data?.notifications ?? [];
+  const unreadCount = data?.unread_count ?? notifications.filter((n) => !n.is_read).length;
 
   const handleMarkAllRead = () => {
     markAllReadMutation.mutate();
@@ -65,7 +66,7 @@ export function NotificationCenter() {
               </div>
               <div className="flex-1 text-right">
                 <p className="text-xs font-semibold text-[var(--foreground)]">{item.title}</p>
-                <p className="text-[11px] text-[var(--muted-foreground)] line-clamp-2 mt-0.5">{item.content}</p>
+                <p className="text-[11px] text-[var(--muted-foreground)] line-clamp-2 mt-0.5">{item.body}</p>
               </div>
             </div>
           ))

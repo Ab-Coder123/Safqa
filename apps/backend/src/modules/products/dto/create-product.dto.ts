@@ -7,6 +7,8 @@ import {
   MinLength,
   MaxLength,
   Matches,
+  IsArray,
+  IsUrl,
 } from 'class-validator';
 import { ProductCondition } from '@safqa/types';
 import { Type } from 'class-transformer';
@@ -38,4 +40,10 @@ export class CreateProductDto {
     message: 'WhatsApp number must be a valid Egyptian mobile number',
   })
   whatsapp_number!: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsUrl(undefined, { each: true, message: 'Each image must be a valid URL' })
+  media_urls!: string[];
+
 }

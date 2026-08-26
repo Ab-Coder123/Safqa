@@ -8,9 +8,9 @@ import { ProductCard } from '../../components/marketplace/product-card';
 import { EmptyState, Skeleton, Alert } from '../../components/ui';
 import { Heart } from 'lucide-react';
 import { useFavorites } from '@/features/favorites/hooks/use-favorites';
-import { tokenStorage } from '@/lib/api';
+import { AuthGuard } from '@/features/auth/components/auth-guard';
 
-export default function FavoritesPage() {
+function FavoritesContent() {
   const { data: favorites = [], isLoading: loading, isError } = useFavorites();
 
   return (
@@ -28,11 +28,7 @@ export default function FavoritesPage() {
           </div>
         </div>
 
-        {!tokenStorage.hasToken() ? (
-          <Alert variant="destructive" title="خطأ في الوصول">
-            يجب تسجيل الدخول لعرض إعلاناتك المفضلة
-          </Alert>
-        ) : isError ? (
+        {isError ? (
           <Alert variant="destructive" title="خطأ في الوصول">
             حدث خطأ أثناء تحميل المفضلة
           </Alert>
@@ -58,7 +54,6 @@ export default function FavoritesPage() {
               <ProductCard
                 key={item.id}
                 product={(item as any).product || item}
-                initialFavorited={true}
               />
             ))}
           </div>
@@ -68,5 +63,13 @@ export default function FavoritesPage() {
       <Footer />
       <MobileNav />
     </div>
+  );
+}
+
+export default function FavoritesPage() {
+  return (
+    <AuthGuard>
+      <FavoritesContent />
+    </AuthGuard>
   );
 }

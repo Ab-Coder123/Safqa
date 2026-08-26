@@ -15,7 +15,20 @@ import type { SystemStats, AdminReportItem, AdminUserItem } from '@/features/adm
 // Stats Tab
 // ────────────────────────────────────────────
 
-export function AdminStatsTab({ stats }: { stats: SystemStats }) {
+export function AdminStatsTab({ stats, loading }: { stats?: SystemStats; loading?: boolean }) {
+  if (loading || !stats) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-28 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 space-y-3 animate-pulse">
+            <div className="h-4 w-24 bg-[var(--muted)] rounded" />
+            <div className="h-8 w-16 bg-[var(--muted)] rounded" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <Card>
@@ -67,12 +80,23 @@ export function AdminStatsTab({ stats }: { stats: SystemStats }) {
 
 interface ReportsTabProps {
   reports: AdminReportItem[];
+  loading?: boolean;
 }
 
-export function AdminReportsTab({ reports }: ReportsTabProps) {
+export function AdminReportsTab({ reports, loading }: ReportsTabProps) {
   const { toast } = useToast();
   const resolveMutation = useResolveReport();
   const dismissMutation = useDismissReport();
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-24 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 animate-pulse" />
+        ))}
+      </div>
+    );
+  }
 
   const handleResolveReport = (id: string) => {
     const reason = prompt('سبب قبول البلاغ وأرشفة الهدف:');
@@ -152,12 +176,23 @@ export function AdminReportsTab({ reports }: ReportsTabProps) {
 
 interface UsersTabProps {
   users: AdminUserItem[];
+  loading?: boolean;
 }
 
-export function AdminUsersTab({ users }: UsersTabProps) {
+export function AdminUsersTab({ users, loading }: UsersTabProps) {
   const { toast } = useToast();
   const suspendMutation = useSuspendUser();
   const activateMutation = useActivateUser();
+
+  if (loading) {
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-20 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 animate-pulse" />
+        ))}
+      </div>
+    );
+  }
 
   const handleSuspendUser = (id: string) => {
     const reason = prompt('سبب تعليق حساب المستخدم:');

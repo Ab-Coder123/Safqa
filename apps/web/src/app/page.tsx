@@ -268,25 +268,186 @@ export default function LandingPage() {
             تصفح عينة من أحدث الإعلانات المعروضة على منصة صفقة
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem', textAlign: 'right' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))',
+              gap: '1.25rem',
+              marginBottom: '2.5rem',
+              direction: 'rtl',
+            }}
+          >
             {PREVIEW_PRODUCTS.map((p) => (
-              <div key={p.id} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '14px', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', transition: 'box-shadow var(--transition-fast)' }}>
+              <div
+                key={p.id}
+                className="group"
+                style={{
+                  position: 'relative',
+                  backgroundColor: 'var(--card)',
+                  border: '1px solid var(--border)',
+                  borderRadius: '18px',
+                  overflow: 'hidden',
+                  boxShadow: 'var(--shadow-sm)',
+                  transition:
+                    'transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-6px)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                  e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 30%, var(--border))';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                }}
+              >
                 {/* Image */}
-                <div style={{ position: 'relative', aspectRatio: '4/3', backgroundColor: 'var(--muted)' }}>
-                  <img src={p.img} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                  <span style={{ position: 'absolute', top: '8px', right: '8px', backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff', fontSize: '0.6rem', fontWeight: 700, padding: '2px 7px', borderRadius: '20px', backdropFilter: 'blur(4px)' }}>
+                <div
+                  style={{
+                    position: 'relative',
+                    aspectRatio: '4 / 3',
+                    overflow: 'hidden',
+                    backgroundColor: 'var(--muted)',
+                  }}
+                >
+                  <img
+                    src={p.img}
+                    alt={p.title}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
+                      transition: 'transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+                    }}
+                    className="group-hover:scale-105"
+                  />
+
+                  {/* Image Gradient */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background:
+                        'linear-gradient(to bottom, rgba(0,0,0,0.18), transparent 35%, rgba(0,0,0,0.12))',
+                      pointerEvents: 'none',
+                    }}
+                  />
+
+                  {/* Category */}
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '10px',
+                      backgroundColor: 'rgba(15, 23, 42, 0.72)',
+                      color: '#fff',
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      padding: '5px 9px',
+                      borderRadius: '999px',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                    }}
+                  >
                     {p.category}
                   </span>
-                  <button style={{ position: 'absolute', top: '8px', left: '8px', width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.85)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-                    <Heart size={13} color="#9ca3af" />
+
+                  {/* Favorite */}
+                  <button
+                    type="button"
+                    aria-label={`إضافة ${p.title} للمفضلة`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      left: '10px',
+                      width: '34px',
+                      height: '34px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(255,255,255,0.9)',
+                      border: '1px solid rgba(255,255,255,0.5)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)',
+                      transition:
+                        'transform 180ms ease, background-color 180ms ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      e.currentTarget.style.backgroundColor = '#fff';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.9)';
+                    }}
+                  >
+                    <Heart size={15} color="var(--primary)" strokeWidth={2.2} />
                   </button>
                 </div>
-                {/* Info */}
-                <div style={{ padding: '0.85rem' }}>
-                  <p style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.4rem', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{p.title}</p>
-                  <p style={{ fontSize: '0.95rem', fontWeight: 900, color: 'var(--primary)' }}>
-                    {p.price.toLocaleString('ar-EG')} <span style={{ fontSize: '0.7rem', fontWeight: 400 }}>ج.م</span>
+
+                {/* Content */}
+                <div
+                  style={{
+                    padding: '1rem',
+                  }}
+                >
+                  {/* Title */}
+                  <p
+                    style={{
+                      fontSize: '0.9rem',
+                      fontWeight: 750,
+                      color: 'var(--foreground)',
+                      margin: 0,
+                      marginBottom: '0.65rem',
+                      lineHeight: 1.55,
+                      minHeight: '2.8rem',
+                      overflow: 'hidden',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                    }}
+                  >
+                    {p.title}
                   </p>
+
+                  {/* Price */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      gap: '5px',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '1.08rem',
+                        fontWeight: 900,
+                        color: 'var(--primary)',
+                        letterSpacing: '-0.02em',
+                      }}
+                    >
+                      {p.price.toLocaleString('ar-EG')}
+                    </span>
+
+                    <span
+                      style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        color: 'var(--muted-foreground)',
+                      }}
+                    >
+                      ج.م
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
