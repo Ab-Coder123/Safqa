@@ -111,9 +111,9 @@ Implement unit tests for core frontend building blocks:
 * `features/auth/hooks/__tests__/use-login.test.tsx` (Test login mutation execution & token storage).
 
 ## Definition of Done (Tier 03)
-- [ ] `pnpm --filter @safqa/web test` command configured and runnable.
-- [ ] Unit tests for `AuthGuard` and `ProductCard` pass.
-- [ ] Testing pattern documented for subsequent Phase 08 Tiers.
+- [x] ✅ `pnpm --filter @safqa/web test` command configured and runnable.
+- [x] ✅ Unit tests for `AuthGuard`, `ProductCard`, and `useLogin` pass.
+- [x] ✅ Testing pattern documented for subsequent Phase 08 Tiers.
 
 ---
 
@@ -148,7 +148,7 @@ Verify that Scorecard metrics read:
   ```
 
 ## Definition of Done (Tier 04)
-- [ ] All tests pass in web and backend.
-- [ ] Next.js build succeeds without type errors or lint warnings.
-- [ ] Final audit report committed and pushed.
-- [ ] Repository status officially marked: **READY FOR PHASE 08**.
+- [x] ✅ All tests pass in web and backend.
+- [x] ✅ Next.js build succeeds without type errors or lint warnings.
+- [x] ✅ Final audit report committed and pushed.
+- [x] ✅ Repository status officially marked: **READY FOR PHASE 08**.
