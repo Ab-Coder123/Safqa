@@ -57,9 +57,9 @@ Ensure 100% adherence to `System/Frontend_Architecture_Workflow.md` by moving do
 * Verify TypeScript compilation (`tsc --noEmit`).
 
 ## Definition of Done (Tier 01)
-- [ ] No feature UI components exist in global `components/` directory.
-- [ ] All pages import feature components from `@/features/<feature>/components`.
-- [ ] Next.js build passes cleanly.
+- [x] ✅ No feature UI components exist in global `components/` directory.
+- [x] ✅ All pages import feature components from `@/features/<feature>/components`.
+- [x] ✅ Next.js build passes cleanly.
 
 ---
 
@@ -87,9 +87,9 @@ Create co-located query key factories in each feature:
 * Remove legacy global `lib/query/query-keys.ts`.
 
 ## Definition of Done (Tier 02)
-- [ ] Every feature owns its `query-keys.ts`.
-- [ ] No feature imports query keys from `lib/query/query-keys.ts`.
-- [ ] All cache invalidations (`queryClient.invalidateQueries`) reference local feature keys.
+- [x] ✅ Every feature owns its `query-keys.ts`.
+- [x] ✅ No feature imports query keys from `lib/query/query-keys.ts`.
+- [x] ✅ All cache invalidations (`queryClient.invalidateQueries`) reference local feature keys.
 
 ---
 
