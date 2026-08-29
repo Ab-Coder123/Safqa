@@ -4,7 +4,7 @@ import React from 'react';
 import { Header } from '../../components/layout/header';
 import { Footer } from '../../components/layout/footer';
 import { MobileNav } from '../../components/layout/mobile-nav';
-import { ProductCard } from '../../components/marketplace/product-card';
+import { ProductCard } from '@/features/products/components/product-card';
 import { EmptyState, Skeleton, Alert } from '../../components/ui';
 import { Heart } from 'lucide-react';
 import { useFavorites } from '@/features/favorites/hooks/use-favorites';

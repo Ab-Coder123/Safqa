@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query';
+import { userKeys } from '../query-keys';
 import { usersApi, type ChangePasswordInput } from '../api/users.api';
 
 export function useChangePassword() {
@@ -10,7 +10,7 @@ export function useChangePassword() {
   return useMutation({
     mutationFn: (input: ChangePasswordInput) => usersApi.changePassword(input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.me() });
+      queryClient.invalidateQueries({ queryKey: userKeys.me() });
     },
   });
 }

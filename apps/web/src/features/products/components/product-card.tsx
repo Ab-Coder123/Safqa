@@ -2,7 +2,7 @@
 
 import React, { useState, memo } from 'react';
 import Link from 'next/link';
-import { Card, CardContent, Badge, useToast } from '../ui';
+import { Card, CardContent, Badge, useToast } from '@/components/ui';
 import { Heart, MapPin, Tag } from 'lucide-react';
 import { useToggleFavorite } from '@/features/favorites/hooks/use-toggle-favorite';
 import { tokenStorage } from '@/lib/api';

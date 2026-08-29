@@ -16,17 +16,17 @@ import { UserRole } from '@safqa/types';
 // Standard user sessions NEVER download this code (Section 8 of Performance Engineering Workflow)
 // ────────────────────────────────────────────
 const AdminStatsTab = dynamic(
-  () => import('../../components/admin/admin-tabs').then((mod) => mod.AdminStatsTab),
+  () => import('@/features/admin/components/admin-tabs').then((mod) => mod.AdminStatsTab),
   { loading: () => <Skeleton className="h-40 w-full rounded-xl" /> }
 );
 
 const AdminReportsTab = dynamic(
-  () => import('../../components/admin/admin-tabs').then((mod) => mod.AdminReportsTab),
+  () => import('@/features/admin/components/admin-tabs').then((mod) => mod.AdminReportsTab),
   { loading: () => <Skeleton className="h-64 w-full rounded-xl" /> }
 );
 
 const AdminUsersTab = dynamic(
-  () => import('../../components/admin/admin-tabs').then((mod) => mod.AdminUsersTab),
+  () => import('@/features/admin/components/admin-tabs').then((mod) => mod.AdminUsersTab),
   { loading: () => <Skeleton className="h-64 w-full rounded-xl" /> }
 );
 

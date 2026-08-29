@@ -1,26 +1,26 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query';
+import { adminKeys } from '../query-keys';
 import { adminApi } from '../api/admin.api';
 
 export function useAdminStats() {
   return useQuery({
-    queryKey: queryKeys.admin.stats(),
+    queryKey: adminKeys.stats(),
     queryFn: () => adminApi.getStats(),
   });
 }
 
 export function useAdminReports() {
   return useQuery({
-    queryKey: queryKeys.admin.reports(),
+    queryKey: adminKeys.reports(),
     queryFn: () => adminApi.getReports(),
   });
 }
 
 export function useAdminUsers() {
   return useQuery({
-    queryKey: queryKeys.admin.users(),
+    queryKey: adminKeys.users(),
     queryFn: () => adminApi.getUsers(),
   });
 }
@@ -30,8 +30,8 @@ export function useResolveReport() {
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) => adminApi.resolveReport(id, reason),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.reports() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.stats() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.reports() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.stats() });
     },
   });
 }
@@ -41,8 +41,8 @@ export function useDismissReport() {
   return useMutation({
     mutationFn: (id: string) => adminApi.dismissReport(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.reports() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.stats() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.reports() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.stats() });
     },
   });
 }
@@ -52,8 +52,8 @@ export function useSuspendUser() {
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) => adminApi.suspendUser(id, reason),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.users() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.stats() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.users() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.stats() });
     },
   });
 }
@@ -63,8 +63,8 @@ export function useActivateUser() {
   return useMutation({
     mutationFn: (id: string) => adminApi.activateUser(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.users() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.stats() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.users() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.stats() });
     },
   });
 }

@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { tokenStorage } from '@/lib/api';
-import { queryKeys } from '@/lib/query';
+import { authKeys } from '../query-keys';
 import { authApi } from '../api/auth.api';
 
 // Access token lifetime is 15 minutes.
@@ -14,7 +14,7 @@ const STALE_TIME = ACCESS_TOKEN_LIFETIME_MS - STALE_BUFFER_MS; // 14 min
 
 export function useCurrentUser() {
   return useQuery({
-    queryKey: queryKeys.auth.me(),
+    queryKey: authKeys.me(),
     queryFn: authApi.me,
     enabled: !!tokenStorage.getAccessToken(),
     staleTime: STALE_TIME,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query';
+import { productKeys } from '../query-keys';
 import { productsApi } from '../api/products.api';
 
 export function useDeleteProduct() {
@@ -10,8 +10,8 @@ export function useDeleteProduct() {
   return useMutation({
     mutationFn: (id: string) => productsApi.deleteProduct(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.products.myListings() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.products.lists() });
+      queryClient.invalidateQueries({ queryKey: productKeys.myListings() });
+      queryClient.invalidateQueries({ queryKey: productKeys.lists() });
     },
   });
 }

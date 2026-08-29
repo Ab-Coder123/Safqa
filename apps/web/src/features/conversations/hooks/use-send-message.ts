@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query';
+import { conversationKeys } from '../query-keys';
 import { conversationsApi } from '../api/conversations.api';
 
 export function useSendMessage(conversationId: string) {
@@ -10,8 +10,8 @@ export function useSendMessage(conversationId: string) {
   return useMutation({
     mutationFn: (content: string) => conversationsApi.sendMessage(conversationId, content),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.messages(conversationId) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.conversations.list() });
+      queryClient.invalidateQueries({ queryKey: conversationKeys.messages(conversationId) });
+      queryClient.invalidateQueries({ queryKey: conversationKeys.list() });
     },
   });
 }

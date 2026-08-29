@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent, Button, Badge, EmptyState, useToast } from '../../components/ui';
+import { Card, CardHeader, CardTitle, CardContent, Button, Badge, EmptyState, useToast } from '@/components/ui';
 import { Users, Package, Flag, FolderTree, UserX, UserCheck, CheckCircle2, AlertOctagon } from 'lucide-react';
 import {
   useResolveReport,
@@ -243,9 +243,8 @@ export function AdminUsersTab({ users, loading }: UsersTabProps) {
                     size="sm"
                     onClick={() => handleSuspendUser(u.id)}
                     disabled={suspendMutation.isPending}
-                    className="gap-1"
                   >
-                    <UserX className="w-3.5 h-3.5" />
+                    <UserX className="w-3.5 h-3.5 ml-1" />
                     تعليق الحساب
                   </Button>
                 ) : (
@@ -254,10 +253,9 @@ export function AdminUsersTab({ users, loading }: UsersTabProps) {
                     size="sm"
                     onClick={() => handleActivateUser(u.id)}
                     disabled={activateMutation.isPending}
-                    className="gap-1"
                   >
-                    <UserCheck className="w-3.5 h-3.5" />
-                    إعادة تنشيط
+                    <UserCheck className="w-3.5 h-3.5 ml-1" />
+                    تنشيط الحساب
                   </Button>
                 )
               )}
