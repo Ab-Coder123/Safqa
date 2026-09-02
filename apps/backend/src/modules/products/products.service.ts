@@ -153,7 +153,19 @@ export class ProductsService {
       where: { id },
       include: {
         category: true,
-        user: { select: { id: true, full_name: true, avatar_url: true, created_at: true } },
+        user: {
+          select: {
+            id: true,
+            full_name: true,
+            avatar_url: true,
+            created_at: true,
+            _count: {
+              select: {
+                products: true,
+              },
+            },
+          },
+        },
       },
     });
 

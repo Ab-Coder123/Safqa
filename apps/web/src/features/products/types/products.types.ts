@@ -11,7 +11,7 @@ export interface Product {
   updated_at?: string;
   category?: { id?: string; name: string; slug?: string };
   media?: { id?: string; url: string; order?: number }[];
-  user?: { id: string; full_name: string; email?: string; phone_number?: string; avatar_url?: string };
+  user?: { id: string; full_name: string; email?: string; phone_number?: string; avatar_url?: string; created_at?: string; _count?: { products: number } };
   is_favorited?: boolean;
 }
 

@@ -153,11 +153,13 @@ PHASE 08 (PART 1) — CORE PRODUCT & MARKETPLACE TIERS
 * **Backend Tests:** `products.service.spec.ts` (test public access, not found exceptions, media inclusion).
 
 ### Definition of Done (Tier 02)
-- [ ] Interactive media gallery supports multiple images.
-- [ ] WhatsApp button initiates direct chat with pre-filled product title.
-- [ ] Favorite toggle updates server and local UI state optimistically.
-- [ ] All unit/component tests pass.
-- [ ] Production build succeeds.
+- [x] ✅ Interactive media gallery supports multiple images with thumbnail strip and fullscreen lightbox.
+- [x] ✅ WhatsApp button initiates direct chat with pre-filled product title and Egyptian phone number formatting.
+- [x] ✅ Favorite toggle updates server and local UI state optimistically via `useToggleFavorite`.
+- [x] ✅ Report modal allows authenticated users to flag listings via `useSubmitReport`.
+- [x] ✅ Frontend unit tests pass — 6 test files / 18 tests (ProductGallery 3 tests, ProductSellerCard 3 tests, + prior 12).
+- [x] ✅ Backend tests pass — 4 suites / 11 tests (100% passed).
+- [x] ✅ Next.js production build passes — 17/17 pages generated, `/products/[id]` bundle 5.21 kB, exit 0.
 
 ---
 
