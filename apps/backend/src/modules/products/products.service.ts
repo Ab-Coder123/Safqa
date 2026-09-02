@@ -115,8 +115,31 @@ export class ProductsService {
       }),
     ]);
 
+    // Attach media records for products
+    const productIds = products.map((p) => p.id);
+    const mediaList = productIds.length > 0
+      ? await this.prisma.media.findMany({
+          where: {
+            entity_type: 'PRODUCT',
+            entity_id: { in: productIds },
+          },
+          orderBy: { order: 'asc' },
+        })
+      : [];
+
+    const mediaMap: Record<string, { id: string; url: string; order: number }[]> = {};
+    for (const m of mediaList) {
+      if (!mediaMap[m.entity_id]) mediaMap[m.entity_id] = [];
+      mediaMap[m.entity_id].push({ id: m.id, url: m.url, order: m.order });
+    }
+
+    const productsWithMedia = products.map((p) => ({
+      ...p,
+      media: mediaMap[p.id] || [],
+    }));
+
     return {
-      data: products,
+      data: productsWithMedia,
       total,
       page,
       limit,
@@ -138,7 +161,16 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    return product;
+    const media = await this.prisma.media.findMany({
+      where: { entity_type: 'PRODUCT', entity_id: id },
+      orderBy: { order: 'asc' },
+      select: { id: true, url: true, order: true },
+    });
+
+    return {
+      ...product,
+      media,
+    };
   }
 
   // ─── GET MY LISTINGS: All statuses for owner ─────────────────────────────

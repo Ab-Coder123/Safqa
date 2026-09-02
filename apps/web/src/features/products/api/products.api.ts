@@ -7,6 +7,8 @@ export const productsApi = {
     if (filters.q) params.set('q', filters.q);
     if (filters.category_id) params.set('category_id', filters.category_id);
     if (filters.condition && filters.condition !== 'ALL') params.set('condition', filters.condition);
+    if (filters.min_price !== undefined) params.set('min_price', String(filters.min_price));
+    if (filters.max_price !== undefined) params.set('max_price', String(filters.max_price));
     if (filters.page) params.set('page', String(filters.page));
     if (filters.limit) params.set('limit', String(filters.limit));
 

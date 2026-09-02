@@ -105,12 +105,12 @@ PHASE 08 (PART 1) — CORE PRODUCT & MARKETPLACE TIERS
 * **Backend Unit Tests:** `products.service.spec.ts` (testing filtering, pagination, price range normalization).
 
 ### Definition of Done (Tier 01)
-- [ ] Product discovery filtering and search work end-to-end.
-- [ ] Debounced search prevents query flooding.
-- [ ] Loading skeletons and empty states rendered properly.
-- [ ] Frontend tests pass (`pnpm --filter @safqa/web test`).
-- [ ] Backend tests pass (`pnpm --filter @safqa/backend test`).
-- [ ] Next.js build passes with zero errors.
+- [x] ✅ Product discovery filtering and search work end-to-end.
+- [x] ✅ Debounced search prevents query flooding.
+- [x] ✅ Loading skeletons and empty states rendered properly.
+- [x] ✅ Frontend tests pass (`pnpm --filter @safqa/web test` — 4 files / 12 tests passed).
+- [x] ✅ Backend tests pass (`pnpm --filter @safqa/backend test` — 4 suites / 11 tests passed).
+- [x] ✅ Next.js build passes with zero errors (17/17 static pages).
 
 ---
 

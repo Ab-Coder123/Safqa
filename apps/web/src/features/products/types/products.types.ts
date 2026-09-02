@@ -27,6 +27,8 @@ export interface ProductFilters {
   q?: string;
   category_id?: string;
   condition?: string;
+  min_price?: number;
+  max_price?: number;
   page?: number;
   limit?: number;
 }
