@@ -38,6 +38,7 @@ export interface CreateProductInput {
   description: string;
   price: number;
   category_id: string;
-  condition: 'NEW' | 'LIKE_NEW' | 'USED_GOOD' | 'USED_FAIR';
+  condition: 'NEW' | 'USED' | 'REFURBISHED';
+  whatsapp_number: string;
   media_urls?: string[];
 }

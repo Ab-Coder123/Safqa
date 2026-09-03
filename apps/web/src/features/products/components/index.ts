@@ -4,3 +4,5 @@ export * from './product-grid-skeleton';
 export * from './product-gallery';
 export * from './product-seller-card';
 export * from './product-detail-skeleton';
+export * from './product-image-uploader';
+export * from './create-product-form';

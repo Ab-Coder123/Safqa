@@ -63,9 +63,30 @@ export class ProductsService {
       },
     });
 
+    let media: { id: string; url: string; order: number }[] = [];
+    if (dto.media_urls && dto.media_urls.length > 0) {
+      await this.prisma.media.createMany({
+        data: dto.media_urls.map((url, index) => ({
+          entity_type: 'PRODUCT',
+          entity_id: product.id,
+          url,
+          order: index,
+        })),
+      });
+
+      media = await this.prisma.media.findMany({
+        where: { entity_type: 'PRODUCT', entity_id: product.id },
+        orderBy: { order: 'asc' },
+        select: { id: true, url: true, order: true },
+      });
+    }
+
     return {
       message: 'Product published successfully',
-      product,
+      product: {
+        ...product,
+        media,
+      },
     };
   }
 

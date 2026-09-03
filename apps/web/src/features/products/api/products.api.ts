@@ -21,11 +21,19 @@ export const productsApi = {
   },
 
   createProduct(input: CreateProductInput): Promise<Product> {
-    return apiClient<Product>('/products', {
+    return apiClient<any>('/products', {
       method: 'POST',
       body: input,
       auth: true,
-    });
+    }).then((res) => (res?.product ? res.product : res));
+  },
+
+  updateProduct(id: string, input: Partial<CreateProductInput>): Promise<Product> {
+    return apiClient<any>(`/products/${id}`, {
+      method: 'PATCH',
+      body: input,
+      auth: true,
+    }).then((res) => (res?.product ? res.product : res));
   },
 
   getMyListings(): Promise<Product[]> {

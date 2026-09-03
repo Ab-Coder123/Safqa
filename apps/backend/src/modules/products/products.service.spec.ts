@@ -18,6 +18,10 @@ describe('ProductsService', () => {
         findUnique: jest.fn(),
         update: jest.fn(),
       },
+      media: {
+        createMany: jest.fn(),
+        findMany: jest.fn(),
+      },
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -45,6 +49,41 @@ describe('ProductsService', () => {
     };
 
     await expect(service.create('user-1', dto)).rejects.toThrow(BadRequestException);
+  });
+
+  it('should successfully create product and attach media when within daily limit', async () => {
+    prismaMock.category.findUnique.mockResolvedValue({ id: 'cat-1' });
+    prismaMock.product.count.mockResolvedValue(1); // 1 posted today, limit is 3
+    prismaMock.product.create.mockResolvedValue({
+      id: 'prod-new-1',
+      title: 'Valid Product Title',
+      description: 'Full description of product details here',
+      price: 1500,
+      condition: 'NEW',
+      whatsapp_number: '01012345678',
+      status: ProductStatus.PUBLISHED,
+    });
+    prismaMock.media.createMany.mockResolvedValue({ count: 2 });
+    prismaMock.media.findMany.mockResolvedValue([
+      { id: 'm-1', url: 'https://example.com/1.jpg', order: 0 },
+      { id: 'm-2', url: 'https://example.com/2.jpg', order: 1 },
+    ]);
+
+    const dto = {
+      title: 'Valid Product Title',
+      description: 'Full description of product details here',
+      price: 1500,
+      condition: 'NEW' as any,
+      category_id: 'cat-1',
+      whatsapp_number: '01012345678',
+      media_urls: ['https://example.com/1.jpg', 'https://example.com/2.jpg'],
+    };
+
+    const result = await service.create('user-1', dto);
+    expect(result.message).toBe('Product published successfully');
+    expect(result.product.id).toBe('prod-new-1');
+    expect(result.product.media).toHaveLength(2);
+    expect(prismaMock.media.createMany).toHaveBeenCalled();
   });
 
   it('should throw ForbiddenException if user edits product owned by someone else', async () => {

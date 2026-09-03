@@ -14,6 +14,7 @@ import {
 } from '@/features/products/components';
 import { ReportModal } from '@/features/reports/components/report-modal';
 import { Button, useToast } from '@/components/ui';
+import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
 import {
   Heart,
   Share2,
@@ -24,18 +25,23 @@ import {
   Tag,
   ArrowRight,
   ShieldCheck,
+  Edit3,
 } from 'lucide-react';
 import { tokenStorage } from '@/lib/api';
+import { UserRole } from '@safqa/types';
 
 const CONDITION_MAP: Record<string, { label: string; color: string }> = {
   NEW: { label: 'جديد بالكامل', color: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' },
+  REFURBISHED: { label: 'مجدد معتمد', color: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-400' },
   LIKE_NEW: { label: 'شبه جديد (كالجديد)', color: 'bg-teal-500/10 text-teal-700 dark:text-teal-400' },
+  USED: { label: 'مستعمل', color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400' },
   USED_GOOD: { label: 'مستعمل بحالة جيدة', color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400' },
   USED_FAIR: { label: 'مستعمل بحالة مقبولة', color: 'bg-amber-500/10 text-amber-700 dark:text-amber-400' },
 };
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const { toast } = useToast();
+  const { data: currentUser } = useCurrentUser();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const { data: product, isLoading: loading, isError, error, refetch } = useProduct(params.id);
@@ -301,6 +307,18 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   <span>إبلاغ</span>
                 </Button>
               </div>
+
+              {/* Owner / Admin Edit Action */}
+              {currentUser?.user && (currentUser.user.id === product.user_id || currentUser.user.id === product.user?.id || currentUser.user.role === UserRole.SUPER_ADMIN) && (
+                <div className="pt-2 border-t border-[var(--border)]/60">
+                  <Link href={`/products/${product.id}/edit`} className="block w-full">
+                    <Button variant="outline" size="sm" className="w-full gap-2 text-xs h-9 font-bold border-[var(--primary)]/30 text-[var(--primary)] hover:bg-[var(--primary)]/10">
+                      <Edit3 className="w-3.5 h-3.5" />
+                      تعديل بيانات الإعلان
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Seller Contact Card */}
