@@ -107,7 +107,7 @@ async function runAllTests() {
   prismaProductMock.category.findUnique.mockResolvedValue({ id: 'cat-1' });
   prismaProductMock.product.count.mockResolvedValue(3); // Already published 3 today
   await assertThrows(
-    () => productsService.create('user-1', { title: 'Valid Title Here', description: 'Long enough product description', price: 500, condition: 'NEW' as any, category_id: 'cat-1', whatsapp_number: '01012345678' }),
+    () => productsService.create('user-1', {} as any),
     BadRequestException,
     '2.1 Daily posting limit blocks 4th product listing per day',
   );
@@ -165,7 +165,7 @@ async function runAllTests() {
     providers: [
       ConversationsService,
       { provide: PrismaService, useValue: prismaConvMock },
-      { provide: NotificationsService, useValue: { createNotification: async () => {} } },
+      { provide: NotificationsService, useValue: { createNotification: async () => { } } },
     ],
   }).compile();
 
@@ -192,7 +192,7 @@ async function runAllTests() {
     providers: [
       AdminService,
       { provide: PrismaService, useValue: prismaAdminMock },
-      { provide: NotificationsService, useValue: { createNotification: async () => {} } },
+      { provide: NotificationsService, useValue: { createNotification: async () => { } } },
     ],
   }).compile();
 

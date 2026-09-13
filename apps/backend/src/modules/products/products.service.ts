@@ -208,13 +208,35 @@ export class ProductsService {
 
   // ─── GET MY LISTINGS: All statuses for owner ─────────────────────────────
   async findMyListings(userId: string) {
-    return this.prisma.product.findMany({
+    const products = await this.prisma.product.findMany({
       where: { user_id: userId },
       orderBy: { created_at: 'desc' },
       include: {
         category: { select: { id: true, name: true, slug: true } },
       },
     });
+
+    const productIds = products.map((p) => p.id);
+    const mediaList =
+      productIds.length > 0
+        ? await this.prisma.media.findMany({
+            where: { entity_type: 'PRODUCT', entity_id: { in: productIds } },
+            orderBy: { order: 'asc' },
+            select: { id: true, entity_id: true, url: true, order: true },
+          })
+        : [];
+
+    const mediaMap = new Map<string, Array<{ id: string; url: string; order: number }>>();
+    for (const m of mediaList) {
+      const list = mediaMap.get(m.entity_id) || [];
+      list.push({ id: m.id, url: m.url, order: m.order });
+      mediaMap.set(m.entity_id, list);
+    }
+
+    return products.map((product) => ({
+      ...product,
+      media: mediaMap.get(product.id) || [],
+    }));
   }
 
   // ─── UPDATE: Ownership check — Product_Management_Workflow.md ─────────────

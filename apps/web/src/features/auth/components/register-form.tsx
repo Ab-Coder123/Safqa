@@ -91,7 +91,7 @@ export function RegisterForm() {
       setServerError(
         isApiError(err)
           ? err.message
-          : 'Unable to connect to the server. Please try again later.',
+          : 'تعذر الاتصال بالخادم. يرجى المحاولة لاحقاً.',
       );
     }
   };

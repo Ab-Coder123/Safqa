@@ -6,3 +6,4 @@ export * from './product-seller-card';
 export * from './product-detail-skeleton';
 export * from './product-image-uploader';
 export * from './create-product-form';
+export * from './seller-workspace';

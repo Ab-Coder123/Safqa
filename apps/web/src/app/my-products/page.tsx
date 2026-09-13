@@ -7,7 +7,7 @@ import { MobileNav } from '@/components/layout/mobile-nav';
 import { AuthGuard } from '@/features/auth/components/auth-guard';
 import { SellerWorkspace } from '@/features/products/components';
 
-export default function MyListingsPage() {
+export default function MyProductsPage() {
   return (
     <AuthGuard>
       <div className="min-h-screen flex flex-col bg-[var(--background)] text-[var(--foreground)] dir-rtl">

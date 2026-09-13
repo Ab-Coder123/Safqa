@@ -1047,25 +1047,25 @@ Cards
 
 ## Tier 04 Completion Gate
 
-* [ ] `/my-products`
-* [ ] Current user's products
-* [ ] Correct authorization
-* [ ] Product status حسب الـ actual domain
-* [ ] View
-* [ ] Edit
-* [ ] Delete حسب الـ API
-* [ ] Delete confirmation
-* [ ] Loading
-* [ ] Empty
-* [ ] Error
-* [ ] Success
-* [ ] Query invalidation
-* [ ] Responsive
-* [ ] RTL
-* [ ] Light/Dark
-* [ ] Accessibility
-* [ ] Performance
-* [ ] Tests/build clean
+* [x] ✅ `/my-products`
+* [x] ✅ Current user's products
+* [x] ✅ Correct authorization
+* [x] ✅ Product status حسب الـ actual domain (PUBLISHED / SOLD / ARCHIVED)
+* [x] ✅ View
+* [x] ✅ Edit
+* [x] ✅ Delete حسب الـ API (soft-delete → ARCHIVED)
+* [x] ✅ Delete confirmation
+* [x] ✅ Loading (Skeleton)
+* [x] ✅ Empty
+* [x] ✅ Error
+* [x] ✅ Success
+* [x] ✅ Query invalidation
+* [x] ✅ Responsive
+* [x] ✅ RTL
+* [x] ✅ Light/Dark
+* [x] ✅ Accessibility
+* [x] ✅ Performance
+* [x] ✅ Tests/build clean
 
 ### Commit
 
@@ -1119,3 +1119,1015 @@ feat(phase-08): complete my products workspace
     ├── Edit
     └── Delete
 ```
+
+# 🟡 Tier 05 — Favorites & Saved Products
+
+### الهدف
+
+تحويل الـ Favorite من مجرد button في Product Details إلى **تجربة كاملة لإدارة المنتجات المحفوظة**.
+
+### Route
+
+```text
+/favorites
+```
+
+### Scope
+
+#### 05.1 Favorites Page
+
+```text
+Favorites
+│
+├── Header
+├── Results count
+└── Favorite Products Grid
+```
+
+#### 05.2 Favorite State
+
+التعامل مع:
+
+* Add favorite
+* Remove favorite
+* Already favorited
+* Authentication required
+* Mutation loading
+* Mutation error
+* Cache synchronization
+
+والـ favorite logic يفضل يظل داخل:
+
+```text
+features/favorites/
+```
+
+بدل ما يبقى duplicated داخل:
+
+```text
+ProductCard
+ProductDetails
+FavoritesPage
+```
+
+#### 05.3 Empty State
+
+```text
+You haven't saved any products yet.
+
+[ Browse Products ]
+```
+
+#### 05.4 Product Removal
+
+المستخدم يقدر يشيل المنتج من favorites بدون refresh كامل للصفحة.
+
+#### 05.5 States
+
+* Loading
+* Empty
+* Error
+* Success
+* Unauthorized
+* Responsive
+
+### Completion Gate
+
+* [ ] `/favorites`
+* [ ] Favorite products
+* [ ] Add/remove synchronization
+* [ ] Correct Query invalidation
+* [ ] Empty state
+* [ ] Error state
+* [ ] Auth handling
+* [ ] Responsive
+* [ ] RTL
+* [ ] Dark mode
+* [ ] Accessibility
+* [ ] Tests/build
+
+### Commit
+
+```text
+feat(phase-08): complete favorites experience
+```
+
+---
+
+# 🔴 Tier 06 — Messaging & Conversations
+
+### الهدف
+
+بناء الـ communication flow بين buyer وseller.
+
+وده Capability مستقلة، مش مجرد `/messages` page.
+
+### Routes
+
+```text
+/messages
+/messages/[id]
+```
+
+### Flow
+
+```text
+Product Details
+      │
+      │ Contact Seller
+      ▼
+Create/Open Conversation
+      │
+      ▼
+/messages/[id]
+      │
+      ▼
+Send Message
+```
+
+---
+
+## 06.1 Messages Inbox
+
+```text
+Messages
+│
+├── Conversation Search
+├── Conversation List
+│
+└── Selected Conversation
+```
+
+Desktop ممكن يبقى:
+
+```text
+┌──────────────┬─────────────────────────┐
+│ Conversations│ Conversation            │
+│              │                         │
+│ Ahmed        │ Ahmed                   │
+│ Mohamed      │                         │
+│ Ali          │ Message                 │
+│              │ Message                 │
+│              │                         │
+│              │ [ Type message... ]     │
+└──────────────┴─────────────────────────┘
+```
+
+Mobile:
+
+```text
+Conversations
+      ↓
+Conversation
+```
+
+---
+
+## 06.2 Conversation
+
+لازم يظهر:
+
+* participant
+* messages
+* timestamps
+* unread state
+* input
+* send button
+
+---
+
+## 06.3 Message States
+
+كل message محتاج state واضح:
+
+```text
+sending
+sent
+failed
+```
+
+لو الـ backend لا يدعم delivery/read status، لا نخترعها.
+
+---
+
+## 06.4 Sending
+
+عند إرسال message:
+
+```text
+Input
+ ↓
+Validate
+ ↓
+Mutation
+ ↓
+Update Conversation
+```
+
+مع منع duplicate submissions.
+
+---
+
+## 06.5 Empty State
+
+لو مفيش conversations:
+
+```text
+No conversations yet.
+
+Start by contacting a seller.
+```
+
+---
+
+## 06.6 Real-time
+
+هنا لازم نراجع الـ backend architecture.
+
+لو المشروع حاليًا **لا يحتوي WebSocket/SSE infrastructure**:
+
+لا نضيف WebSocket لمجرد إن messaging "المفروض real-time".
+
+ننفذ messaging بالـ current supported architecture ونوثق:
+
+```text
+Real-time messaging → future capability
+```
+
+إلا لو الـ backend workflow الحالي يطلبه.
+
+---
+
+## 06.7 Auth / Permissions
+
+المستخدم لا يقدر:
+
+* يدخل conversation لا تخصه
+* يرسل باسم مستخدم آخر
+* يقرأ conversation غير مصرح له بها
+
+الـ backend يظل authority.
+
+### Completion Gate
+
+* [ ] Messages inbox
+* [ ] Conversation route
+* [ ] Send message
+* [ ] Message states
+* [ ] Unread state حسب API
+* [ ] Empty
+* [ ] Loading
+* [ ] Error
+* [ ] Authorization
+* [ ] Responsive
+* [ ] RTL
+* [ ] Accessibility
+* [ ] Query/cache synchronization
+* [ ] Tests/build
+
+### Commit
+
+```text
+feat(phase-08): complete messaging experience
+```
+
+---
+
+# 🔵 Tier 07 — Notifications Center
+
+### الهدف
+
+تحويل notifications الموجودة إلى تجربة كاملة ومتسقة.
+
+### Route
+
+```text
+/notifications
+```
+
+---
+
+## 07.1 Notification List
+
+```text
+Notifications
+│
+├── All
+├── Unread
+└── Notification Items
+```
+
+كل item يعرض حسب الـ actual notification contract:
+
+```text
+Icon
+Title
+Message
+Time
+Read state
+```
+
+---
+
+## 07.2 Read / Unread
+
+دعم:
+
+```text
+Mark as read
+Mark all as read
+```
+
+والـ unread count يكون متزامن مع الـ notification query.
+
+خصوصًا إن الـ notifications API عندك يستخدم payload بالشكل:
+
+```ts
+{
+  notifications,
+  unread_count
+}
+```
+
+فـ component لازم يتعامل مع object، مش يعمل `.filter()` مباشرة على `data`.
+
+---
+
+## 07.3 Notification Navigation
+
+لو notification مرتبطة بـ:
+
+* product
+* conversation
+* report
+* account action
+
+فالضغط عليها يروح للـ relevant destination حسب الـ payload.
+
+---
+
+## 07.4 Header Integration
+
+لو الـ Header عنده notification indicator:
+
+```text
+🔔 3
+```
+
+لازم الرقم يتزامن مع:
+
+```text
+/notifications
+```
+
+بدون duplicate fetching غير ضروري.
+
+---
+
+## 07.5 States
+
+* Loading
+* Empty
+* Error
+* Unread
+* Read
+* Marking as read
+* Mark all
+* Navigation
+
+### Completion Gate
+
+* [ ] Notification center
+* [ ] Correct API payload handling
+* [ ] Unread count
+* [ ] Mark read
+* [ ] Mark all
+* [ ] Header synchronization
+* [ ] Related navigation
+* [ ] Empty/error/loading
+* [ ] Responsive
+* [ ] RTL
+* [ ] Dark mode
+* [ ] Accessibility
+* [ ] Tests/build
+
+### Commit
+
+```text
+feat(phase-08): complete notifications experience
+```
+
+---
+
+# 🟣 Tier 08 — Public Profile & Profile Management
+
+### الهدف
+
+بناء هوية المستخدم داخل الـ marketplace.
+
+### Routes
+
+```text
+/profile
+/profile/edit
+```
+
+ولو الـ domain يدعم public profiles لاحقًا:
+
+```text
+/users/[id]
+```
+
+لكن **ما نضيفش route مش موجود في الـ current product contract بدون سبب**.
+
+---
+
+## 08.1 Profile
+
+```text
+Profile
+│
+├── Avatar
+├── Name
+├── Basic Information
+├── Joined Date
+│
+├── My Products
+├── Favorites
+└── Account Actions
+```
+
+حسب البيانات الموجودة بالفعل.
+
+---
+
+## 08.2 Edit Profile
+
+```text
+Edit Profile
+│
+├── Avatar
+├── Name
+├── Email
+├── Phone
+└── Save
+```
+
+فقط fields التي الـ backend يسمح بتعديلها.
+
+---
+
+## 08.3 Update Flow
+
+```text
+Edit
+ ↓
+Validate
+ ↓
+Mutation
+ ↓
+Update current-user cache
+ ↓
+Success
+```
+
+مهم جدًا إن تعديل profile ينعكس في:
+
+* Header
+* Profile
+* other user UI
+
+بدون refresh إجباري.
+
+---
+
+## 08.4 States
+
+* Initial loading
+* Editing
+* Validation error
+* API error
+* Success
+* Unauthorized
+
+### Completion Gate
+
+* [ ] Profile
+* [ ] Edit Profile
+* [ ] Avatar handling
+* [ ] Update mutation
+* [ ] Current-user cache synchronization
+* [ ] Validation
+* [ ] Error/success
+* [ ] Responsive
+* [ ] RTL
+* [ ] Accessibility
+* [ ] Tests/build
+
+### Commit
+
+```text
+feat(phase-08): complete profile experience
+```
+
+---
+
+# 🟠 Tier 09 — Settings & Account Preferences
+
+### الهدف
+
+بناء account settings بشكل منفصل عن profile editing.
+
+### Route
+
+```text
+/settings
+```
+
+---
+
+## 09.1 Settings Structure
+
+```text
+Settings
+│
+├── Account
+├── Appearance
+├── Notifications
+├── Security
+└── Danger Zone
+```
+
+لكن sections تعتمد على capabilities الموجودة بالفعل.
+
+---
+
+## 09.2 Appearance
+
+Integration مع:
+
+```text
+next-themes
+```
+
+والـ existing:
+
+```text
+light
+dark
+system
+```
+
+مش نعمل theme state جديد.
+
+---
+
+## 09.3 Account
+
+Actions مثل:
+
+```text
+Edit Profile
+Change Password
+```
+
+فقط لو الـ backend يدعمها.
+
+---
+
+## 09.4 Security
+
+Authentication-related controls الموجودة فعليًا.
+
+ممنوع نحط UI لـ feature غير موجودة backend-side.
+
+---
+
+## 09.5 Danger Zone
+
+لو account deletion موجود:
+
+```text
+Delete Account
+```
+
+مع confirmation قوية.
+
+---
+
+### Completion Gate
+
+* [ ] Settings page
+* [ ] Existing preferences
+* [ ] Theme integration
+* [ ] Account actions
+* [ ] Security actions
+* [ ] Danger Zone حسب API
+* [ ] Loading/error/success
+* [ ] Responsive
+* [ ] RTL
+* [ ] Accessibility
+* [ ] Tests/build
+
+### Commit
+
+```text
+feat(phase-08): complete account settings
+```
+
+---
+
+# 🔴 Tier 10 — User Reports & Trust & Safety
+
+### الهدف
+
+إكمال user-facing moderation/reporting flow.
+
+### Route
+
+```text
+/reports
+```
+
+---
+
+## 10.1 My Reports
+
+المستخدم يشوف التقارير اللي عملها:
+
+```text
+My Reports
+│
+├── Report
+├── Target
+├── Reason
+├── Status
+└── Created At
+```
+
+---
+
+## 10.2 Report Details
+
+لو الـ current routing/API يدعم التفاصيل:
+
+```text
+/reports/[id]
+```
+
+نعرض:
+
+* reason
+* target
+* status
+* submitted date
+* moderation result حسب الـ actual API
+
+---
+
+## 10.3 Status
+
+مثلاً:
+
+```text
+Pending
+Reviewed
+Resolved
+Rejected
+```
+
+**فقط لو هذه statuses موجودة فعليًا في backend contract.**
+
+---
+
+## 10.4 Security
+
+المستخدم يشوف:
+
+> تقاريره هو فقط.
+
+مش كل reports الموجودة في النظام.
+
+---
+
+### Completion Gate
+
+* [ ] Reports page
+* [ ] User-owned reports
+* [ ] Status
+* [ ] Details حسب API
+* [ ] Loading
+* [ ] Empty
+* [ ] Error
+* [ ] Authorization
+* [ ] Responsive
+* [ ] RTL
+* [ ] Accessibility
+* [ ] Tests/build
+
+### Commit
+
+```text
+feat(phase-08): complete user reports experience
+```
+
+---
+
+# ⚫ Tier 11 — Super Admin Moderation Experience
+
+وده هنخليه Tier كبير لأنه مختلف عن الـ User Flow.
+
+الـ roadmap الحالي محدد 8 Admin capabilities: Dashboard، Users، User Details، Products، Product Review، Categories، Reports، Report Details.
+
+### Routes
+
+```text
+/admin
+/admin/users
+/admin/users/[id]
+/admin/products
+/admin/products/[id]
+/admin/categories
+/admin/reports
+/admin/reports/[id]
+```
+
+---
+
+## 11.1 Admin Dashboard
+
+KPIs حسب البيانات المتاحة:
+
+```text
+Users
+Products
+Reports
+Pending Moderation
+```
+
+لا نعمل fake statistics.
+
+---
+
+## 11.2 Users Management
+
+```text
+Search
+Filter
+Users Table
+Actions
+```
+
+مع pagination حسب API.
+
+---
+
+## 11.3 User Details
+
+عرض:
+
+* user information
+* account status
+* products
+* relevant moderation information
+
+---
+
+## 11.4 Products Management
+
+Admin product moderation:
+
+```text
+Search
+Filter
+Status
+Product list
+```
+
+---
+
+## 11.5 Product Review
+
+Admin يقدر يراجع المنتج ويأخذ actions المتاحة فعليًا.
+
+---
+
+## 11.6 Categories
+
+إدارة:
+
+```text
+Create
+Edit
+Delete
+```
+
+حسب API permissions.
+
+---
+
+## 11.7 Reports
+
+Admin report queue:
+
+```text
+Pending
+Reviewed
+Resolved
+```
+
+حسب actual domain.
+
+---
+
+## 11.8 Report Details
+
+Admin يشوف:
+
+```text
+Reporter
+Target
+Reason
+Evidence
+Status
+Actions
+```
+
+والـ authorization لازم تكون server-enforced.
+
+### Completion Gate
+
+* [ ] Admin dashboard
+* [ ] Users
+* [ ] User details
+* [ ] Products
+* [ ] Product review
+* [ ] Categories
+* [ ] Reports
+* [ ] Report details
+* [ ] SUPER_ADMIN protection
+* [ ] Loading/error/empty
+* [ ] Responsive
+* [ ] Accessibility
+* [ ] RTL
+* [ ] Tests/build
+
+### Commit
+
+```text
+feat(phase-08): complete super admin moderation experience
+```
+
+---
+
+# 🟤 Tier 12 — Marketplace UX Hardening
+
+ده **مش Page جديدة**.
+
+ده Tier أخير نرجع فيه على كل الـ capabilities اللي بنيناها.
+
+```text
+Tier 01 ─┐
+Tier 02 ─┤
+Tier 03 ─┤
+Tier 04 ─┤
+Tier 05 ─┤
+Tier 06 ─┤
+Tier 07 ─┤──► UX Hardening
+Tier 08 ─┤
+Tier 09 ─┤
+Tier 10 ─┤
+Tier 11 ─┘
+```
+
+## 12.1 UX Audit
+
+نراجع:
+
+* consistency
+* spacing
+* typography
+* buttons
+* dialogs
+* forms
+* cards
+* empty states
+* error messages
+
+---
+
+## 12.2 Responsive Audit
+
+نختبر:
+
+```text
+Mobile
+Tablet
+Desktop
+Large Desktop
+```
+
+---
+
+## 12.3 Accessibility Audit
+
+نراجع:
+
+* keyboard navigation
+* focus
+* labels
+* aria
+* contrast
+* semantic HTML
+* dialogs
+* forms
+
+---
+
+## 12.4 Performance Audit
+
+نراجع:
+
+* unnecessary client components
+* image optimization
+* query behavior
+* duplicate requests
+* bundle impact
+* loading UX
+
+---
+
+## 12.5 Architecture Audit
+
+نتأكد إننا ما رجعناش للمشاكل اللي Architecture Foundation عالجتها:
+
+```text
+Feature ownership
+Query key ownership
+Shared UI ownership
+API boundaries
+Server state
+UI state
+```
+
+---
+
+## 12.6 Final Regression
+
+```text
+Landing
+Auth
+Home
+Marketplace
+Product
+Create
+Edit
+My Products
+Favorites
+Messages
+Notifications
+Profile
+Settings
+Reports
+Admin
+```
+
+كلهم يتراجعوا بعد انتهاء Phase 08.
+
+### Completion Gate
+
+* [ ] UX audit
+* [ ] Responsive audit
+* [ ] Accessibility audit
+* [ ] Performance audit
+* [ ] Architecture audit
+* [ ] Regression
+* [ ] TypeScript
+* [ ] Tests
+* [ ] Production build
+
+### Commit
+
+```text
+chore(phase-08): harden marketplace experience
+```
+
+---
+
+# 🧭 Phase 08 كاملة بعد التقسيم
+
+| Tier   | Capability                     |
+| ------ | ------------------------------ |
+| **01** | Marketplace Discovery          |
+| **02** | Product Details                |
+| **03** | Listing Creation & Editing     |
+| **04** | My Products Workspace          |
+| **05** | Favorites & Saved Products     |
+| **06** | Messaging & Conversations      |
+| **07** | Notifications Center           |
+| **08** | Profile & Profile Management   |
+| **09** | Settings & Account Preferences |
+| **10** | User Reports & Trust & Safety  |
+| **11** | Super Admin Moderation         |
+| **12** | Marketplace UX Hardening       |
+

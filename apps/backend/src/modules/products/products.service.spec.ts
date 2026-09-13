@@ -111,4 +111,20 @@ describe('ProductsService', () => {
     const result = await service.archive('prod-1', 'admin-id', UserRole.SUPER_ADMIN);
     expect(result.message).toContain('archived');
   });
+
+  it('should find user listings with media attachments', async () => {
+    prismaMock.product.findMany.mockResolvedValue([
+      { id: 'prod-my-1', title: 'My Product 1', user_id: 'user-1' },
+      { id: 'prod-my-2', title: 'My Product 2', user_id: 'user-1' },
+    ]);
+    prismaMock.media.findMany.mockResolvedValue([
+      { id: 'm-1', entity_id: 'prod-my-1', url: 'https://example.com/p1.jpg', order: 0 },
+    ]);
+
+    const listings = await service.findMyListings('user-1');
+    expect(listings).toHaveLength(2);
+    expect(listings[0].media).toHaveLength(1);
+    expect(listings[0].media[0].url).toBe('https://example.com/p1.jpg');
+    expect(listings[1].media).toHaveLength(0);
+  });
 });
