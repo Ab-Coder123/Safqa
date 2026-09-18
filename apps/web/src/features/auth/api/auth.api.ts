@@ -27,6 +27,7 @@ export const authApi = {
       method: 'GET',
       auth: true,
     });
+
   },
 
   refresh(refreshToken: string) {

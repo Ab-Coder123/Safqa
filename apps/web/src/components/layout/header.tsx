@@ -27,8 +27,8 @@ export function Header() {
   const logout = useLogout();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const user = userData?.user ?? null;
-
+  const user = userData?.user;
+  console.log(user)
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {

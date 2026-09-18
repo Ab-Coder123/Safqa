@@ -11,40 +11,19 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user, onLogout }: UserMenuProps) {
-  const [imgError, setImgError] = useState(false);
-
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-  const resolveUrl = (url?: string | null) => {
-    if (!url) return null;
-    if (url.startsWith('http')) return url;
-    return `${apiBase}${url}`;
-  };
-
-  const avatarSrc = resolveUrl(user?.avatar_url);
-
-  const initials = user?.full_name
-    ? user.full_name
-        .split(' ')
-        .map((n: string) => n[0])
-        .join('')
-        .slice(0, 2)
-        .toUpperCase()
-    : '??';
-
   return (
     <DropdownMenu
       trigger={
         <div className="cursor-pointer hover:opacity-85 transition-opacity flex items-center">
-          {avatarSrc && !imgError ? (
+          {user.avatar_url ? (
             <img
               className="w-9 h-9 rounded-full object-cover border-2 border-[var(--primary)]/30 shadow-sm"
               alt={user.full_name}
-              src={avatarSrc}
-              onError={() => setImgError(true)}
+              src={user.avatar_url}
             />
           ) : (
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--primary)]/70 text-white flex items-center justify-center font-bold text-xs shadow-sm border-2 border-[var(--primary)]/30">
-              {initials}
+              {user.full_name}
             </div>
           )}
         </div>

@@ -128,6 +128,18 @@ export class AuthService {
     }
   }
 
+  async getProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user || user.status === UserStatus.DELETED) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return this.sanitizeUser(user);
+  }
+
   private async generateTokens(userId: string, email: string, role: string) {
     const payload = { sub: userId, email, role };
 
