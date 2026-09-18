@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Button, Input, useToast } from '@/components/ui';
-import { UploadCloud, X, Plus, Image as ImageIcon, Star } from 'lucide-react';
+import { UploadCloud, X, Plus, Image as ImageIcon, Star, Loader2 } from 'lucide-react';
+import { productsApi } from '../api/products.api';
 
 interface ProductImageUploaderProps {
   images: string[];
@@ -18,6 +19,7 @@ export function ProductImageUploader({
   const { toast } = useToast();
   const [urlInput, setUrlInput] = useState('');
   const [showUrlField, setShowUrlField] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleAddUrl = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +49,7 @@ export function ProductImageUploader({
     setShowUrlField(false);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -61,8 +63,8 @@ export function ProductImageUploader({
       return;
     }
 
-    const newUrls: string[] = [];
     const count = Math.min(files.length, remainingSlots);
+    const validFiles: File[] = [];
 
     for (let i = 0; i < count; i++) {
       const file = files[i];
@@ -74,13 +76,47 @@ export function ProductImageUploader({
         });
         continue;
       }
-      // Create local object URL for preview and payload
-      const objectUrl = URL.createObjectURL(file);
-      newUrls.push(objectUrl);
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: 'حجم الصورة كبير جداً',
+          description: 'الحد الأقصى لحجم كل صورة هو 5 ميجابايت',
+          type: 'error',
+        });
+        continue;
+      }
+      validFiles.push(file);
     }
 
-    if (newUrls.length > 0) {
-      onChange([...images, ...newUrls]);
+    if (validFiles.length === 0) return;
+
+    setIsUploading(true);
+    const uploadedUrls: string[] = [];
+
+    try {
+      for (const file of validFiles) {
+        const res = await productsApi.uploadMedia(file);
+        if (res && res.url) {
+          uploadedUrls.push(res.url);
+        }
+      }
+
+      if (uploadedUrls.length > 0) {
+        onChange([...images, ...uploadedUrls]);
+        toast({
+          title: 'تم رفع الصور بنجاح! 📸',
+          description: `تم رفع ${uploadedUrls.length} صورة بنجاح.`,
+          type: 'success',
+        });
+      }
+    } catch (err: any) {
+      toast({
+        title: 'تعذر رفع الصورة',
+        description: err?.message || 'حدث خطأ أثناء رفع الصورة إلى الخادم.',
+        type: 'error',
+      });
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -134,19 +170,31 @@ export function ProductImageUploader({
 
         {/* Upload placeholder button */}
         {images.length < maxImages && (
-          <label className="aspect-square rounded-xl border-2 border-dashed border-[var(--border)] hover:border-[var(--primary)] bg-[var(--surface)] hover:bg-[var(--primary)]/5 flex flex-col items-center justify-center p-2 text-center cursor-pointer transition-colors group">
-            <UploadCloud className="w-6 h-6 text-[var(--muted-foreground)] group-hover:text-[var(--primary)] transition-colors mb-1" />
-            <span className="text-[11px] font-semibold text-[var(--foreground)] group-hover:text-[var(--primary)]">
-              رفع صورة
-            </span>
-            <span className="text-[9px] text-[var(--muted-foreground)]">JPG, PNG, WEBP</span>
-            <input
-              type="file"
-              accept="image/png, image/jpeg, image/webp"
-              multiple
-              onChange={handleFileUpload}
-              className="hidden"
-            />
+          <label className={`aspect-square rounded-xl border-2 border-dashed border-[var(--border)] hover:border-[var(--primary)] bg-[var(--surface)] hover:bg-[var(--primary)]/5 flex flex-col items-center justify-center p-2 text-center transition-colors group ${isUploading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}>
+            {isUploading ? (
+              <>
+                <Loader2 className="w-6 h-6 text-[var(--primary)] animate-spin mb-1" />
+                <span className="text-[11px] font-semibold text-[var(--primary)]">
+                  جاري الرفع...
+                </span>
+              </>
+            ) : (
+              <>
+                <UploadCloud className="w-6 h-6 text-[var(--muted-foreground)] group-hover:text-[var(--primary)] transition-colors mb-1" />
+                <span className="text-[11px] font-semibold text-[var(--foreground)] group-hover:text-[var(--primary)]">
+                  رفع صورة
+                </span>
+                <span className="text-[9px] text-[var(--muted-foreground)]">JPG, PNG, WEBP</span>
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/webp"
+                  multiple
+                  disabled={isUploading}
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+              </>
+            )}
           </label>
         )}
       </div>

@@ -43,7 +43,10 @@ export class CreateProductDto {
 
   @IsArray()
   @IsString({ each: true })
-  @IsUrl(undefined, { each: true, message: 'Each image must be a valid URL' })
+  @Matches(/^(https?:\/\/|\/uploads\/)/, {
+    each: true,
+    message: 'Each image must be a valid URL or uploaded image path',
+  })
   media_urls!: string[];
 
 }

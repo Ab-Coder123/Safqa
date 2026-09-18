@@ -1,4 +1,5 @@
-import { IsString, IsOptional, MinLength, Matches } from 'class-validator';
+import { IsString, IsOptional, MinLength, Matches, IsEnum } from 'class-validator';
+import { UserGender } from '@safqa/types';
 
 export class UpdateProfileDto {
   @IsOptional()
@@ -16,4 +17,8 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsString()
   avatar_url?: string;
+
+  @IsOptional()
+  @IsEnum(UserGender, { message: 'Gender must be MALE or FEMALE' })
+  gender?: UserGender;
 }

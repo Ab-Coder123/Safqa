@@ -56,4 +56,14 @@ export const productsApi = {
       auth: true,
     });
   },
+
+  uploadMedia(file: File): Promise<{ url: string; filename: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient<{ url: string; filename: string }>('/media/upload', {
+      method: 'POST',
+      body: formData,
+      auth: true,
+    });
+  },
 };

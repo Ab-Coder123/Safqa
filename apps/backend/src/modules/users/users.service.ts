@@ -102,6 +102,7 @@ export class UsersService {
         full_name: dto.full_name || user.full_name,
         phone_number: dto.phone_number || user.phone_number,
         avatar_url: dto.avatar_url !== undefined ? dto.avatar_url : user.avatar_url,
+        gender: dto.gender || user.gender,
       },
       select: {
         id: true,
@@ -109,8 +110,11 @@ export class UsersService {
         email: true,
         phone_number: true,
         avatar_url: true,
+        gender: true,
+        birth_date: true,
         role: true,
         status: true,
+        created_at: true,
         updated_at: true,
       },
     });

@@ -1,15 +1,7 @@
 import { apiClient } from '@/lib/api';
-import type { IUser } from '@safqa/types';
-import type { Product } from '../../products/types/products.types';
+import type { UpdateProfileInput, UserProfileResponse } from '../types/users.types';
 
-export interface UserProfileResponse {
-  user: IUser & {
-    products?: Product[];
-    _count?: {
-      products: number;
-    };
-  };
-}
+export type { UserProfileResponse };
 
 export interface ChangePasswordInput {
   oldPassword?: string;
@@ -26,6 +18,24 @@ export const usersApi = {
   getMyProfile(): Promise<UserProfileResponse> {
     return apiClient<UserProfileResponse>('/users/me/profile', {
       method: 'GET',
+      auth: true,
+    });
+  },
+
+  updateProfile(input: UpdateProfileInput): Promise<UserProfileResponse> {
+    return apiClient<UserProfileResponse>('/users/me/profile', {
+      method: 'PATCH',
+      body: input,
+      auth: true,
+    });
+  },
+
+  uploadAvatar(file: File): Promise<{ url: string; filename: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient<{ url: string; filename: string }>('/media/upload', {
+      method: 'POST',
+      body: formData,
       auth: true,
     });
   },

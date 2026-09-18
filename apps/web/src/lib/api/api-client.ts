@@ -37,8 +37,9 @@ export async function apiClient<T>(
   { body, headers, auth = false, _isRetry = false, ...options }: ApiClientOptions = {},
 ): Promise<T> {
   const requestHeaders = new Headers(headers);
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
 
-  if (body !== undefined && !requestHeaders.has('Content-Type')) {
+  if (body !== undefined && !isFormData && !requestHeaders.has('Content-Type')) {
     requestHeaders.set('Content-Type', 'application/json');
   }
 
@@ -49,10 +50,16 @@ export async function apiClient<T>(
     }
   }
 
+  const requestBody = isFormData
+    ? (body as FormData)
+    : body === undefined
+      ? undefined
+      : JSON.stringify(body);
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
     headers: requestHeaders,
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: requestBody,
   });
 
   // ── 401 Auto-Refresh Interceptor ──────────────────────────────────────────
