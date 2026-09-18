@@ -17,13 +17,8 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
-  // PUBLIC: Anyone can view a user's public profile
-  @Get(':id/profile')
-  async getPublicProfile(@Param('id') userId: string) {
-    return this.usersService.getPublicProfile(userId);
-  }
 
   // PRIVATE: Only the authenticated user views their own full profile
   @UseGuards(JwtAuthGuard)
@@ -34,7 +29,7 @@ export class UsersController {
 
   // PRIVATE: Update own profile
   @UseGuards(JwtAuthGuard)
-  @Patch('me/profile')
+  @Patch('/me/profile')
   @HttpCode(HttpStatus.OK)
   async updateProfile(@CurrentUser() user: any, @Body() dto: UpdateProfileDto) {
     return this.usersService.updateProfile(user.sub, dto);
@@ -54,5 +49,11 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async deleteAccount(@CurrentUser() user: any) {
     return this.usersService.deleteAccount(user.sub);
+  }
+
+  // PUBLIC: Anyone can view a user's public profile
+  @Get(':id/profile')
+  async getPublicProfile(@Param('id') userId: string) {
+    return this.usersService.getPublicProfile(userId);
   }
 }

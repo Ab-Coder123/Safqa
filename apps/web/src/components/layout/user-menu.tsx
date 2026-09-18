@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { DropdownMenu, DropdownMenuItem, Avatar, Separator } from '../ui';
+import { DropdownMenu, DropdownMenuItem, Separator } from '../ui';
 import { User, Package, Heart, Settings, ShieldAlert, LogOut } from 'lucide-react';
 
 interface UserMenuProps {
@@ -11,18 +11,51 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user, onLogout }: UserMenuProps) {
+  const [imgError, setImgError] = useState(false);
+
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const resolveUrl = (url?: string | null) => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    return `${apiBase}${url}`;
+  };
+
+  const avatarSrc = resolveUrl(user?.avatar_url);
+
+  const initials = user?.full_name
+    ? user.full_name
+        .split(' ')
+        .map((n: string) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : '??';
+
   return (
     <DropdownMenu
       trigger={
-        <div className="cursor-pointer hover:opacity-85 transition-opacity">
-          <Avatar name={user.full_name} src={user.avatar_url} size="sm" statusDot="online" />
+        <div className="cursor-pointer hover:opacity-85 transition-opacity flex items-center">
+          {avatarSrc && !imgError ? (
+            <img
+              className="w-9 h-9 rounded-full object-cover border-2 border-[var(--primary)]/30 shadow-sm"
+              alt={user.full_name}
+              src={avatarSrc}
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--primary)]/70 text-white flex items-center justify-center font-bold text-xs shadow-sm border-2 border-[var(--primary)]/30">
+              {initials}
+            </div>
+          )}
         </div>
       }
       align="end"
     >
       <div className="px-4 py-3 border-b border-[var(--border)]">
         <p className="text-sm font-bold text-[var(--foreground)] truncate">{user.full_name}</p>
-        <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{user.role === 'SUPER_ADMIN' ? 'مدير النظام' : 'مستخدم'}</p>
+        <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+          {user.role === 'SUPER_ADMIN' ? 'مدير النظام' : 'مستخدم'}
+        </p>
       </div>
 
       <Link href="/settings">

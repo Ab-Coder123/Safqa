@@ -283,11 +283,10 @@ function PersonalInfoCard({ profile }: { profile: any }) {
                   key={val}
                   type="button"
                   onClick={() => setForm({ ...form, gender: val as 'MALE' | 'FEMALE' })}
-                  className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all cursor-pointer ${
-                    form.gender === val
-                      ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]'
-                      : 'border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)]'
-                  }`}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all cursor-pointer ${form.gender === val
+                    ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]'
+                    : 'border-[var(--border)] bg-[var(--background)] text-[var(--muted-foreground)]'
+                    }`}
                 >
                   {label}
                 </button>
@@ -379,14 +378,13 @@ function PasswordCard() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Current Password */}
         <div>
-          <label className="text-xs font-semibold text-[var(--foreground)] block mb-1.5">كلمة المرور الحالية</label>
+          <label className="text-xs font-semibold text-[var(--foreground)] block mb-1.5">ادخل كلمة المرور الخاصه بك</label>
           <div className="relative">
             <Input
-              type={show.current ? 'text' : 'password'}
               required
               value={form.current_password}
               onChange={(e) => setForm({ ...form, current_password: e.target.value })}
-              placeholder="أدخل كلمة المرور الحالية"
+              placeholder="يجب ادخال كلمه ال مرور ال حاليه "
               className="pl-10"
             />
             <button
