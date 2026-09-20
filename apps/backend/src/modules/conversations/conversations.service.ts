@@ -89,17 +89,132 @@ export class ConversationsService {
       },
     });
 
+    // Extract product IDs
+    const productIds = conversations
+      .map((c) => c.product_id)
+      .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+    const products = productIds.length > 0
+      ? await this.prisma.product.findMany({
+          where: { id: { in: productIds } },
+          select: { id: true, title: true, price: true, status: true },
+        })
+      : [];
+
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
+    // Batch-fetch media for all products in conversations to prevent N+1 queries
+    const media = productIds.length > 0
+      ? await this.prisma.media.findMany({
+          where: {
+            entity_type: 'PRODUCT',
+            entity_id: { in: productIds },
+          },
+          orderBy: { order: 'asc' },
+        })
+      : [];
+
+    const mediaMap = new Map<string, typeof media>();
+    for (const item of media) {
+      const list = mediaMap.get(item.entity_id) || [];
+      list.push(item);
+      mediaMap.set(item.entity_id, list);
+    }
+
+    // Batch-fetch unread message counts for all active conversations
+    const conversationIds = conversations.map((c) => c.id);
+    const unreadMessages = conversationIds.length > 0
+      ? await this.prisma.message.groupBy({
+          by: ['conversation_id'],
+          where: {
+            conversation_id: { in: conversationIds },
+            sender_id: { not: userId },
+            is_read: false,
+          },
+          _count: { id: true },
+        })
+      : [];
+
+    const unreadMap = new Map<string, number>();
+    for (const u of unreadMessages) {
+      unreadMap.set(u.conversation_id, u._count.id);
+    }
+
     return conversations.map((conv) => {
       const otherUser = conv.user_one_id === userId ? conv.user_two : conv.user_one;
       const lastMessage = conv.messages[0] || null;
+      const rawProduct = conv.product_id ? productMap.get(conv.product_id) : null;
+      const productWithMedia = rawProduct
+        ? { ...rawProduct, media: mediaMap.get(rawProduct.id) || [] }
+        : null;
+
       return {
         id: conv.id,
         product_id: conv.product_id,
+        product: productWithMedia,
         other_user: otherUser,
         last_message: lastMessage,
+        unread_count: unreadMap.get(conv.id) || 0,
         updated_at: conv.last_message_at || conv.created_at,
       };
     });
+  }
+
+  // ─── GET CONVERSATION BY ID (Single chat header/metadata) ──────────────────
+  async getConversationById(conversationId: string, userId: string) {
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
+      include: {
+        user_one: { select: { id: true, full_name: true, avatar_url: true } },
+        user_two: { select: { id: true, full_name: true, avatar_url: true } },
+      },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException('Conversation not found');
+    }
+
+    // Security Check: Participant Verification
+    if (conversation.user_one_id !== userId && conversation.user_two_id !== userId) {
+      throw new ForbiddenException('You do not have access to this conversation');
+    }
+
+    const otherUser = conversation.user_one_id === userId ? conversation.user_two : conversation.user_one;
+
+    let productWithMedia = null;
+    if (conversation.product_id) {
+      const product = await this.prisma.product.findUnique({
+        where: { id: conversation.product_id },
+        select: {
+          id: true,
+          title: true,
+          price: true,
+          status: true,
+          whatsapp_number: true,
+          category: { select: { id: true, name: true } },
+        },
+      });
+
+      if (product) {
+        const media = await this.prisma.media.findMany({
+          where: {
+            entity_type: 'PRODUCT',
+            entity_id: product.id,
+          },
+          orderBy: { order: 'asc' },
+        });
+        productWithMedia = { ...product, media };
+      }
+    }
+
+    return {
+      id: conversation.id,
+      product_id: conversation.product_id,
+      product: productWithMedia,
+      other_user: otherUser,
+      created_at: conversation.created_at,
+      last_message_at: conversation.last_message_at,
+    };
   }
 
   // ─── GET CONVERSATION MESSAGES ────────────────────────────────────────────

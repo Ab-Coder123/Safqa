@@ -35,6 +35,12 @@ export class ConversationsController {
     return this.conversationsService.getUserConversations(user.sub);
   }
 
+  // Get conversation metadata/header
+  @Get(':id')
+  async getConversation(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.conversationsService.getConversationById(id, user.sub);
+  }
+
   // Get all messages in a conversation
   @Get(':id/messages')
   async getMessages(@Param('id') id: string, @CurrentUser() user: any) {

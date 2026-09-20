@@ -1370,20 +1370,20 @@ Real-time messaging → future capability
 
 ### Completion Gate
 
-* [ ] Messages inbox
-* [ ] Conversation route
-* [ ] Send message
-* [ ] Message states
-* [ ] Unread state حسب API
-* [ ] Empty
-* [ ] Loading
-* [ ] Error
-* [ ] Authorization
-* [ ] Responsive
-* [ ] RTL
-* [ ] Accessibility
-* [ ] Query/cache synchronization
-* [ ] Tests/build
+* [x] ✅ Messages inbox
+* [x] ✅ Conversation route
+* [x] ✅ Send message
+* [x] ✅ Message states
+* [x] ✅ Unread state حسب API
+* [x] ✅ Empty
+* [x] ✅ Loading
+* [x] ✅ Error
+* [x] ✅ Authorization
+* [x] ✅ Responsive
+* [x] ✅ RTL
+* [x] ✅ Accessibility
+* [x] ✅ Query/cache synchronization
+* [x] ✅ Tests/build
 
 ### Commit
 
