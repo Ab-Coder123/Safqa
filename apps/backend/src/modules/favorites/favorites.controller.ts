@@ -24,6 +24,7 @@ export class FavoritesController {
 
   // Toggle favorite for a product (Add/Remove)
   @Post('toggle/:productId')
+  @Post(':productId/toggle')
   @HttpCode(HttpStatus.OK)
   async toggleFavorite(
     @Param('productId') productId: string,

@@ -13,8 +13,12 @@ describe('FavoritesService', () => {
       product: { findUnique: jest.fn() },
       favorite: {
         findUnique: jest.fn(),
+        findMany: jest.fn(),
         create: jest.fn(),
         delete: jest.fn(),
+      },
+      media: {
+        findMany: jest.fn(),
       },
     };
 
@@ -51,5 +55,31 @@ describe('FavoritesService', () => {
     const result = await service.toggleFavorite('user-1', 'prod-1');
     expect(result.is_favorited).toBe(true);
     expect(prismaMock.favorite.create).toHaveBeenCalled();
+  });
+
+  it('should return user favorites with attached media array', async () => {
+    prismaMock.favorite.findMany.mockResolvedValue([
+      {
+        product_id: 'prod-1',
+        created_at: new Date('2026-09-01'),
+        product: {
+          id: 'prod-1',
+          title: 'Favorite Car',
+          price: 50000,
+          category: { id: 'c-1', name: 'Cars', slug: 'cars' },
+          user: { id: 'u-2', full_name: 'Seller' },
+        },
+      },
+    ]);
+
+    prismaMock.media.findMany.mockResolvedValue([
+      { id: 'm-1', entity_id: 'prod-1', entity_type: 'PRODUCT', url: '/uploads/car.jpg', order: 0 },
+    ]);
+
+    const result = await service.getUserFavorites('user-1');
+    expect(result).toHaveLength(1);
+    expect(result[0].title).toBe('Favorite Car');
+    expect(result[0].media).toHaveLength(1);
+    expect(result[0].media[0].url).toBe('/uploads/car.jpg');
   });
 });

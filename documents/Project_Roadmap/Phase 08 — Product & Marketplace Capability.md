@@ -1193,18 +1193,18 @@ You haven't saved any products yet.
 
 ### Completion Gate
 
-* [ ] `/favorites`
-* [ ] Favorite products
-* [ ] Add/remove synchronization
-* [ ] Correct Query invalidation
-* [ ] Empty state
-* [ ] Error state
-* [ ] Auth handling
-* [ ] Responsive
-* [ ] RTL
-* [ ] Dark mode
-* [ ] Accessibility
-* [ ] Tests/build
+* [x] ✅ `/favorites`
+* [x] ✅ Favorite products
+* [x] ✅ Add/remove synchronization
+* [x] ✅ Correct Query invalidation
+* [x] ✅ Empty state
+* [x] ✅ Error state
+* [x] ✅ Auth handling
+* [x] ✅ Responsive
+* [x] ✅ RTL
+* [x] ✅ Dark mode
+* [x] ✅ Accessibility
+* [x] ✅ Tests/build
 
 ### Commit
 

@@ -89,8 +89,25 @@ export class FavoritesService {
       },
     });
 
+    const productIds = favorites.map((f) => f.product_id);
+    const media = await this.prisma.media.findMany({
+      where: {
+        entity_type: 'PRODUCT',
+        entity_id: { in: productIds },
+      },
+      orderBy: { order: 'asc' },
+    });
+
+    const mediaMap = new Map<string, typeof media>();
+    for (const item of media) {
+      const list = mediaMap.get(item.entity_id) || [];
+      list.push(item);
+      mediaMap.set(item.entity_id, list);
+    }
+
     return favorites.map((f) => ({
       ...f.product,
+      media: mediaMap.get(f.product.id) || [],
       favorited_at: f.created_at,
     }));
   }
