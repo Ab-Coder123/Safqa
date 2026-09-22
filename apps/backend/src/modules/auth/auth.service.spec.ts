@@ -111,4 +111,34 @@ describe('AuthService', () => {
       service.login({ email: 'wrong@example.com', password: 'wrong' }),
     ).rejects.toThrow(UnauthorizedException);
   });
+
+  it('should process forgotPassword, verifyOtp, and resetPassword successfully', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      email: 'user@example.com',
+      status: 'ACTIVE',
+    });
+    prismaMock.user.update = jest.fn().mockResolvedValue({ id: 'user-1' });
+
+    // 1. Forgot password
+    const res1 = await service.forgotPassword({ email: 'user@example.com' });
+    expect(res1.message).toContain('رمز التحقق');
+    expect(res1.debug_code).toBeDefined();
+
+    const code = res1.debug_code || '123456';
+
+    // 2. Verify OTP
+    const res2 = await service.verifyOtp({ email: 'user@example.com', code });
+    expect(res2.verified).toBe(true);
+
+    // 3. Reset password
+    const res3 = await service.resetPassword({
+      email: 'user@example.com',
+      code,
+      new_password: 'newPassword123',
+    });
+    expect(res3.message).toContain('تم تغيير كلمة المرور');
+    expect(prismaMock.user.update).toHaveBeenCalled();
+  });
 });
+

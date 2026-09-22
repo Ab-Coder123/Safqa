@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { isApiError } from '@/lib/api';
 import { useLogin } from '../hooks/use-login';
+import { ForgotPasswordModal } from './forgot-password-modal';
 import { Eye, EyeOff } from 'lucide-react';
 
 export function LoginForm() {
@@ -18,8 +19,10 @@ export function LoginForm() {
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState('');
+
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -200,13 +203,15 @@ export function LoginForm() {
                   <Label htmlFor="password" className="text-xs font-bold text-[var(--foreground)]">
                     كلمة المرور <span className="text-red-500">*</span>
                   </Label>
-                  <Link
-                    href="#"
-                    className="text-xs text-[var(--primary)] font-bold hover:underline"
+                  <button
+                    type="button"
+                    onClick={() => setIsForgotPasswordOpen(true)}
+                    className="text-xs text-[var(--primary)] font-bold hover:underline cursor-pointer focus:outline-none"
                   >
                     نسيت كلمة المرور؟
-                  </Link>
+                  </button>
                 </div>
+
                 <div className="relative">
                   <Input
                     id="password"
@@ -273,6 +278,19 @@ export function LoginForm() {
         </div>
 
       </div>
+
+      {/* Forgot Password OTP Modal */}
+
+      <ForgotPasswordModal
+        isOpen={isForgotPasswordOpen}
+        onClose={() => setIsForgotPasswordOpen(false)}
+        initialEmail={formData.email}
+        onSuccess={(email) => {
+          setFormData((f) => ({ ...f, email }));
+          setServerError('تم تحديث كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.');
+        }}
+      />
     </div>
   );
 }
+

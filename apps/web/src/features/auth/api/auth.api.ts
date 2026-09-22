@@ -36,5 +36,27 @@ export const authApi = {
       body: { refreshToken },
     });
   },
+
+  forgotPassword(email: string) {
+    return apiClient<{ message: string; debug_code?: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: { email },
+    });
+  },
+
+  verifyOtp(email: string, code: string) {
+    return apiClient<{ message: string; verified: boolean }>('/auth/verify-otp', {
+      method: 'POST',
+      body: { email, code },
+    });
+  },
+
+  resetPassword(email: string, code: string, new_password: string) {
+    return apiClient<{ message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: { email, code, new_password },
+    });
+  },
 };
+
 

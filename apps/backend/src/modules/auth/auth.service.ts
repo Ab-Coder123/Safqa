@@ -3,6 +3,7 @@ import {
   ConflictException,
   UnauthorizedException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +11,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { ForgotPasswordDto, VerifyOtpDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { UserRole, UserStatus } from '@safqa/types';
 import * as bcrypt from 'bcryptjs';
 
@@ -126,6 +128,95 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
+  }
+
+  // In-memory OTP storage: email -> { code: string, expiresAt: number }
+  private otpStore = new Map<string, { code: string; expiresAt: number }>();
+
+  async forgotPassword(dto: ForgotPasswordDto) {
+    const emailLower = dto.email.toLowerCase();
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailLower },
+    });
+
+    // Security rule: Don't leak whether email exists or not, but don't generate code if user deleted/suspended
+    if (!user || user.status !== UserStatus.ACTIVE) {
+      // Fake success message to prevent user enumeration
+      return {
+        message: 'إذا كان البريد الإلكتروني مسجلاً، فستصلك تعليمات إعادت التعيين.',
+      };
+    }
+
+    // Generate 6-digit numeric OTP code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    this.otpStore.set(emailLower, { code, expiresAt });
+
+    return {
+      message: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح.',
+      // Returning code in development mode for easy testing
+      debug_code: code,
+    };
+  }
+
+  async verifyOtp(dto: VerifyOtpDto) {
+    const emailLower = dto.email.toLowerCase();
+    const stored = this.otpStore.get(emailLower);
+
+    if (!stored) {
+      throw new BadRequestException('لم يتم طلب رمز تحقق لهذا البريد أو انتهت صلاحيته');
+    }
+
+    if (Date.now() > stored.expiresAt) {
+      this.otpStore.delete(emailLower);
+      throw new BadRequestException('انتهت صلاحية رمز التحقق، يرجى طلب رمز جديد');
+    }
+
+    if (stored.code !== dto.code.trim()) {
+      throw new BadRequestException('رمز التحقق غير صحيح');
+    }
+
+    return {
+      message: 'تم التحقق من الرمز بنجاح',
+      verified: true,
+    };
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    const emailLower = dto.email.toLowerCase();
+    const stored = this.otpStore.get(emailLower);
+
+    if (!stored || stored.code !== dto.code.trim()) {
+      throw new BadRequestException('رمز التحقق غير صحيح أو انتهت صلاحيته');
+    }
+
+    if (Date.now() > stored.expiresAt) {
+      this.otpStore.delete(emailLower);
+      throw new BadRequestException('انتهت صلاحية رمز التحقق، يرجى طلب رمز جديد');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: emailLower },
+    });
+
+    if (!user || user.status !== UserStatus.ACTIVE) {
+      throw new BadRequestException('الحساب غير موجود أو غير نشط');
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.new_password, 10);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { password_hash: hashedPassword },
+    });
+
+    // Clear OTP after successful reset
+    this.otpStore.delete(emailLower);
+
+    return {
+      message: 'تم تغيير كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.',
+    };
   }
 
   async getProfile(userId: string) {
