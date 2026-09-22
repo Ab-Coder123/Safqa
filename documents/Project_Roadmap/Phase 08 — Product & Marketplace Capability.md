@@ -1497,19 +1497,19 @@ Mark all as read
 
 ### Completion Gate
 
-* [ ] Notification center
-* [ ] Correct API payload handling
-* [ ] Unread count
-* [ ] Mark read
-* [ ] Mark all
-* [ ] Header synchronization
-* [ ] Related navigation
-* [ ] Empty/error/loading
-* [ ] Responsive
-* [ ] RTL
-* [ ] Dark mode
-* [ ] Accessibility
-* [ ] Tests/build
+* [x] ✅ Notification center
+* [x] ✅ Correct API payload handling
+* [x] ✅ Unread count
+* [x] ✅ Mark read
+* [x] ✅ Mark all
+* [x] ✅ Header synchronization
+* [x] ✅ Related navigation
+* [x] ✅ Empty/error/loading
+* [x] ✅ Responsive
+* [x] ✅ RTL
+* [x] ✅ Dark mode
+* [x] ✅ Accessibility
+* [x] ✅ Tests/build
 
 ### Commit
 

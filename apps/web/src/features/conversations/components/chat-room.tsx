@@ -46,11 +46,10 @@ const MessageBubble = memo(function MessageBubble({ message, isMine }: MessageBu
   return (
     <div className={`flex flex-col ${isMine ? 'items-end' : 'items-start'} my-1.5 transition-opacity duration-150`}>
       <div
-        className={`max-w-[80%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-xs break-words select-text ${
-          isMine
-            ? 'bg-[var(--primary)] text-white rounded-br-xs'
-            : 'bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-bl-xs'
-        }`}
+        className={`max-w-[80%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-xs break-words select-text ${isMine
+          ? 'bg-[var(--primary)] text-white rounded-br-xs'
+          : 'bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-bl-xs'
+          }`}
       >
         <p className="whitespace-pre-wrap">{message.content}</p>
       </div>

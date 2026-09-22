@@ -28,7 +28,6 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const user = userData?.user;
-  console.log(user)
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {

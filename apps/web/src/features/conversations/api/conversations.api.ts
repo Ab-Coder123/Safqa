@@ -74,10 +74,10 @@ export const conversationsApi = {
     });
   },
 
-  createConversation(productId: string): Promise<ConversationItem> {
+  createConversation(data: { productId: string }): Promise<ConversationItem> {
     return apiClient<ConversationItem>('/conversations', {
       method: 'POST',
-      body: { product_id: productId },
+      body: { product_id: data.productId }, // ✅
       auth: true,
     });
   },

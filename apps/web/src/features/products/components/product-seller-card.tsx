@@ -1,9 +1,12 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button, useToast } from '@/components/ui';
 import { Phone, MessageCircle, ShieldCheck, UserCheck, Copy, Check } from 'lucide-react';
+import { useCreateConversation } from '@/features/conversations/hooks/use-create-conversation';
+import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
+import { tokenStorage } from '@/lib/api';
 
 interface ProductSellerCardProps {
   user?: {
@@ -15,36 +18,27 @@ interface ProductSellerCardProps {
     created_at?: string;
     _count?: { products: number };
   };
-  productTitle: string;
+  productId: string;
+  productTitle?: string;
   whatsappNumber?: string;
   isSold?: boolean;
 }
 
 export function ProductSellerCard({
   user,
-  productTitle,
+  productId,
   whatsappNumber,
   isSold = false,
 }: ProductSellerCardProps) {
+  const router = useRouter();
+  const createConversation = useCreateConversation();
+  const { data: currentUser } = useCurrentUser();
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
 
   if (!user) return null;
 
   const phone = whatsappNumber || user.phone_number || '';
-  // Clean phone number for WhatsApp URL (Egyptian numbers: 01xxxxxxxxx -> 201xxxxxxxxx)
-  let cleanPhone = phone.replace(/[^0-9]/g, '');
-  if (cleanPhone.startsWith('01')) {
-    cleanPhone = '20' + cleanPhone.substring(1);
-  } else if (!cleanPhone.startsWith('20') && cleanPhone.length === 11) {
-    cleanPhone = '20' + cleanPhone;
-  }
-
-  const encodedMessage = encodeURIComponent(
-    `السلام عليكم، بخصوص إعلانك على صفقة:\n"${productTitle}"\nهل المنتج ما زال متاحاً؟`
-  );
-
-  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
 
   const handleCopyPhone = () => {
     if (!phone) return;
@@ -60,10 +54,44 @@ export function ProductSellerCard({
 
   const memberSince = user.created_at
     ? new Date(user.created_at).toLocaleDateString('ar-EG', {
-        month: 'long',
-        year: 'numeric',
-      })
+      month: 'long',
+      year: 'numeric',
+    })
     : '';
+
+  const handleContactSeller = async () => {
+    if (isSold || createConversation.isPending || !productId) return;
+
+    if (!tokenStorage.hasToken()) {
+      toast({
+        title: 'تسجيل الدخول مطلوب',
+        description: 'يرجى تسجيل الدخول لتتمكن من مراسلة البائع.',
+        type: 'error',
+      });
+      router.push(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
+    if (currentUser?.user?.id === user.id) {
+      toast({
+        title: 'غير مسموح',
+        description: 'لا يمكنك مراسلة نفسك بخصوص إعلانك الخاص.',
+        type: 'error',
+      });
+      return;
+    }
+
+    try {
+      const conversation = await createConversation.mutateAsync({ productId });
+      router.push(`/conversations/${conversation.id}`);
+    } catch (err: any) {
+      toast({
+        title: 'تعذر بدء المحادثة',
+        description: err?.message || 'حدث خطأ أثناء محاولة التواصل مع البائع.',
+        type: 'error',
+      });
+    }
+  };
 
   return (
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm space-y-4">
@@ -110,21 +138,22 @@ export function ProductSellerCard({
 
       {/* Action Triggers */}
       <div className="space-y-2 pt-2 border-t border-[var(--border)]/60">
-        {/* Direct WhatsApp Button */}
-        <a
-          href={isSold ? undefined : whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`w-full block ${isSold ? 'pointer-events-none opacity-50' : ''}`}
+        {/* Direct massage  Button */}
+
+        <Button
+          type="button"
+          onClick={handleContactSeller}
+          disabled={isSold || createConversation.isPending}
+          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11 gap-2 shadow-sm"
         >
-          <Button
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11 gap-2 shadow-sm"
-            disabled={isSold || !phone}
-          >
-            <MessageCircle className="w-4 h-4 fill-current" />
-            {isSold ? 'تم بيع الإعلان' : 'تواصل عبر الواتساب'}
-          </Button>
-        </a>
+          <MessageCircle className="w-4 h-4 fill-current" />
+
+          {isSold
+            ? 'تم بيع الإعلان'
+            : createConversation.isPending
+              ? 'جاري فتح المحادثة...'
+              : 'تواصل مع البائع'}
+        </Button>
 
         {/* Copy Phone Button */}
         {phone && (

@@ -23,6 +23,7 @@ describe('ProductSellerCard Component', () => {
     renderWithProviders(
       <ProductSellerCard
         user={mockUser}
+        productId="prod-123"
         productTitle="PlayStation 5 Slim 1TB"
         whatsappNumber="01012345678"
       />
@@ -31,27 +32,27 @@ describe('ProductSellerCard Component', () => {
     expect(screen.getByText('أحمد محمود')).toBeInTheDocument();
     expect(screen.getByText('بائع موثوق')).toBeInTheDocument();
     expect(screen.getByText(/5 إعلان نشط/)).toBeInTheDocument();
-    expect(screen.getByText('تواصل عبر الواتساب')).toBeInTheDocument();
+    expect(screen.getByText('تواصل مع البائع')).toBeInTheDocument();
   });
 
-  it('formats WhatsApp link properly with Egyptian country code and pre-filled message', () => {
+  it('renders phone copy button when phone number is provided', () => {
     renderWithProviders(
       <ProductSellerCard
         user={mockUser}
+        productId="prod-123"
         productTitle="PlayStation 5 Slim 1TB"
         whatsappNumber="01012345678"
       />
     );
 
-    const whatsappLink = screen.getByRole('link', { name: /تواصل عبر الواتساب/ });
-    expect(whatsappLink).toHaveAttribute('href', expect.stringContaining('https://wa.me/201012345678'));
-    expect(whatsappLink).toHaveAttribute('href', expect.stringContaining(encodeURIComponent('PlayStation 5 Slim 1TB')));
+    expect(screen.getByText('اتصال: 01012345678')).toBeInTheDocument();
   });
 
-  it('disables WhatsApp action when product is sold', () => {
+  it('disables action when product is sold', () => {
     renderWithProviders(
       <ProductSellerCard
         user={mockUser}
+        productId="prod-123"
         productTitle="PlayStation 5 Slim 1TB"
         whatsappNumber="01012345678"
         isSold={true}

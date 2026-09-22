@@ -324,6 +324,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             {/* Seller Contact Card */}
             <ProductSellerCard
               user={product.user}
+              productId={product.id}
               productTitle={product.title}
               whatsappNumber={(product as any).whatsapp_number}
               isSold={isSold || isArchived}
