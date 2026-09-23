@@ -1,0 +1,19 @@
+[providers]
+provider = "node"
+
+[phases.setup]
+nixPkgs = ["nodePackages.pnpm"]
+
+[phases.install]
+cmds = ["pnpm install"]
+
+[phases.build]
+cmds = [
+  "pnpm --filter @safqa/types build",
+  "pnpm --filter @safqa/utils build",
+  "pnpm --filter @safqa/backend db:generate",
+  "pnpm --filter @safqa/backend build"
+]
+
+[start]
+cmd = "pnpm --filter @safqa/backend start"
