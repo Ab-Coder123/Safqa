@@ -24,7 +24,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('me/profile')
   async getOwnProfile(@CurrentUser() user: any) {
-    return this.usersService.getOwnProfile(user.sub);
+    const profile = await this.usersService.getOwnProfile(user.sub);
+    return { user: profile };
   }
 
   // PRIVATE: Update own profile
@@ -54,6 +55,8 @@ export class UsersController {
   // PUBLIC: Anyone can view a user's public profile
   @Get(':id/profile')
   async getPublicProfile(@Param('id') userId: string) {
-    return this.usersService.getPublicProfile(userId);
+    const profile = await this.usersService.getPublicProfile(userId);
+    return { user: profile };
   }
 }
+

@@ -37,12 +37,13 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
         </p>
       </div>
 
-      <Link href="/settings">
+      <Link href="/profile">
         <DropdownMenuItem>
           <User className="w-4 h-4 text-[var(--muted-foreground)]" />
           الملف الشخصي
         </DropdownMenuItem>
       </Link>
+
 
       <Link href="/my-listings">
         <DropdownMenuItem>

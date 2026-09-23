@@ -45,7 +45,33 @@ export class UsersService {
       throw new NotFoundException('User profile not found');
     }
 
-    return user;
+    // Batch fetch media for products to prevent N+1 queries
+    const productIds = user.products.map((p) => p.id);
+    let mediaByProduct = new Map<string, any[]>();
+    if (productIds.length > 0) {
+      const mediaList = await this.prisma.media.findMany({
+        where: {
+          entity_type: 'PRODUCT',
+          entity_id: { in: productIds },
+        },
+        orderBy: { order: 'asc' },
+      });
+      mediaList.forEach((m) => {
+        const existing = mediaByProduct.get(m.entity_id) || [];
+        existing.push(m);
+        mediaByProduct.set(m.entity_id, existing);
+      });
+    }
+
+    const productsWithMedia = user.products.map((p) => ({
+      ...p,
+      media: mediaByProduct.get(p.id) || [],
+    }));
+
+    return {
+      ...user,
+      products: productsWithMedia,
+    };
   }
 
   // ─── PRIVATE: View own full profile ───────────────────────────────────────
@@ -75,8 +101,35 @@ export class UsersService {
       throw new NotFoundException('User profile not found');
     }
 
-    return user;
+    // Batch fetch media for own products
+    const productIds = user.products.map((p) => p.id);
+    let mediaByProduct = new Map<string, any[]>();
+    if (productIds.length > 0) {
+      const mediaList = await this.prisma.media.findMany({
+        where: {
+          entity_type: 'PRODUCT',
+          entity_id: { in: productIds },
+        },
+        orderBy: { order: 'asc' },
+      });
+      mediaList.forEach((m) => {
+        const existing = mediaByProduct.get(m.entity_id) || [];
+        existing.push(m);
+        mediaByProduct.set(m.entity_id, existing);
+      });
+    }
+
+    const productsWithMedia = user.products.map((p) => ({
+      ...p,
+      media: mediaByProduct.get(p.id) || [],
+    }));
+
+    return {
+      ...user,
+      products: productsWithMedia,
+    };
   }
+
 
   // ─── UPDATE: Update own profile ───────────────────────────────────────────
   async updateProfile(userId: string, dto: UpdateProfileDto) {
