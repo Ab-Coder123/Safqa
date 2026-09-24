@@ -1,33 +1,29 @@
-FROM node:20-alpine AS base
-RUN corepack enable && corepack prepare pnpm@latest --activate
+FROM node:20-alpine
+
+# Install OpenSSL and libc compatibility for Prisma Engine on Alpine Linux
+RUN apk add --no-cache openssl libc6-compat
 
 WORKDIR /app
 
-# Copy root configurations and package manifests
+# Enable pnpm via Corepack
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy workspace metadata and source files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
-COPY packages/types/package.json ./packages/types/
-COPY packages/utils/package.json ./packages/utils/
-COPY packages/config/package.json ./packages/config/
-COPY apps/backend/package.json ./apps/backend/
-COPY apps/backend/prisma ./apps/backend/prisma
+COPY packages ./packages
+COPY apps/backend ./apps/backend
 
-# Install all workspace dependencies
-RUN pnpm install --frozen-lockfile
+# Install workspace dependencies
+RUN pnpm install
 
-# Copy source code for types, utils, config, and backend
-COPY packages/ ./packages/
-COPY apps/backend/ ./apps/backend/
-
-# Build internal packages, generate Prisma client, and build backend
+# Build internal packages, generate Prisma Client, and build NestJS backend
 RUN pnpm --filter @safqa/types build && \
     pnpm --filter @safqa/utils build && \
     pnpm --filter @safqa/backend db:generate && \
     pnpm --filter @safqa/backend build
 
-# Set environment variables and expose port
 ENV PORT=10000
 ENV NODE_ENV=production
 EXPOSE 10000
 
-# Start backend application
 CMD ["pnpm", "--filter", "@safqa/backend", "start"]

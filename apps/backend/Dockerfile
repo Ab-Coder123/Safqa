@@ -1,18 +1,22 @@
 FROM node:20-alpine
 
+# Install OpenSSL and libc compatibility for Prisma Engine on Alpine Linux
+RUN apk add --no-cache openssl libc6-compat
+
 WORKDIR /app
 
-# Copy package manifests from monorepo
+# Enable pnpm via Corepack
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy workspace metadata and source files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
-COPY packages/types ./packages/types
-COPY packages/utils ./packages/utils
-COPY packages/config ./packages/config
+COPY packages ./packages
 COPY apps/backend ./apps/backend
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
-RUN pnpm install --frozen-lockfile
+# Install workspace dependencies
+RUN pnpm install
 
-# Build internal packages & generate prisma client & build backend
+# Build internal packages, generate Prisma Client, and build NestJS backend
 RUN pnpm --filter @safqa/types build && \
     pnpm --filter @safqa/utils build && \
     pnpm --filter @safqa/backend db:generate && \
