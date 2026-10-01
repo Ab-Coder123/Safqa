@@ -13,8 +13,11 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY packages ./packages
 COPY apps/backend ./apps/backend
 
-# Install workspace dependencies
-RUN pnpm install
+# Install workspace dependencies safely
+RUN pnpm install --no-frozen-lockfile
+
+# Dummy DATABASE_URL for build-time prisma generate (runtime uses actual Railway variable)
+ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/safqa"
 
 # Build internal packages, generate Prisma Client, and build NestJS backend
 RUN pnpm --filter @safqa/types build && \
