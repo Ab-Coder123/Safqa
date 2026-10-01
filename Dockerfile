@@ -6,7 +6,7 @@ RUN apk add --no-cache openssl libc6-compat
 WORKDIR /app
 
 # Enable pnpm via Corepack
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10 --activate
 
 # Copy workspace metadata and source files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
