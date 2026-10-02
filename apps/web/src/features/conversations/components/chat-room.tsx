@@ -9,6 +9,7 @@ import { useConversationMessages } from '../hooks/use-conversation-messages';
 import { useSendMessage } from '../hooks/use-send-message';
 import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
 import type { MessageItem } from '../api/conversations.api';
+import { playMessageSentSound } from '@/lib/sound';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -249,6 +250,7 @@ export function ChatRoom({ conversationId }: ChatRoomProps) {
 
   const handleSendMessage = useCallback(
     (content: string) => {
+      playMessageSentSound();
       sendMessageMutation.mutate(content);
     },
     [sendMessageMutation]
