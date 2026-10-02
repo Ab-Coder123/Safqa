@@ -6,13 +6,15 @@ import { cn } from '../../lib/cn';
 export interface PopoverProps {
   trigger: React.ReactNode;
   children: React.ReactNode;
-  align?: 'start' | 'end';
+  align?: 'start' | 'end' | 'left' | 'right';
+  className?: string;
 }
 
 export const Popover: React.FC<PopoverProps> = ({
   trigger,
   children,
-  align = 'start',
+  align = 'end',
+  className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -35,8 +37,9 @@ export const Popover: React.FC<PopoverProps> = ({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-50 mt-2 p-4 w-72 rounded-xl border border-[var(--border)] bg-[var(--popover)] text-[var(--popover-foreground)] shadow-xl animate-fade-in',
-            align === 'start' ? 'right-0' : 'left-0'
+            'absolute z-50 mt-2 p-4 w-80 sm:w-88 rounded-2xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] shadow-2xl animate-fade-in backdrop-blur-xl',
+            align === 'start' || align === 'right' ? 'right-0' : 'left-0',
+            className
           )}
         >
           {children}
