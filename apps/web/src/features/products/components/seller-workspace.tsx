@@ -7,6 +7,7 @@ import { useMyListings } from '../hooks/use-my-listings';
 import { useMarkProductSold } from '../hooks/use-mark-product-sold';
 import { useDeleteProduct } from '../hooks/use-delete-product';
 import type { Product } from '../types/products.types';
+import { getMediaUrl } from '@/lib/media';
 import {
   Package,
   Plus,
@@ -326,10 +327,12 @@ export function SellerWorkspace() {
         /* Products List */
         <div className="space-y-3.5">
           {filteredProducts.map((product) => {
-            const mediaUrl =
+            const rawMediaUrl =
               product.media && product.media.length > 0
                 ? (product.media[0] as any).url || (product.media[0] as any).file_url
                 : null;
+            const mediaUrl = getMediaUrl(rawMediaUrl);
+            const hasMedia = Boolean(rawMediaUrl);
             const statusConfig = STATUS_BADGES[product.status] || STATUS_BADGES.PUBLISHED;
             const createdDate = new Date(product.created_at).toLocaleDateString('ar-EG', {
               day: 'numeric',
@@ -346,7 +349,7 @@ export function SellerWorkspace() {
                 <div className="flex items-start sm:items-center gap-4 w-full lg:w-auto">
                   {/* Thumbnail */}
                   <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-[var(--muted)] overflow-hidden shrink-0 flex items-center justify-center border border-[var(--border)]">
-                    {mediaUrl ? (
+                    {hasMedia ? (
                       <img
                         src={mediaUrl}
                         alt={product.title}

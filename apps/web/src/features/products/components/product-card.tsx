@@ -6,6 +6,7 @@ import { Card, CardContent, Badge, useToast } from '@/components/ui';
 import { Heart, MapPin, Tag } from 'lucide-react';
 import { useToggleFavorite } from '@/features/favorites/hooks/use-toggle-favorite';
 import { tokenStorage } from '@/lib/api';
+import { getMediaUrl } from '@/lib/media';
 
 export interface ProductCardProps {
   product: {
@@ -56,7 +57,8 @@ function ProductCardComponent({ product, initialFavorited = false }: ProductCard
     });
   };
 
-  const mainImage = product.media && product.media.length > 0 ? product.media[0].url : DEFAULT_IMAGE;
+  const rawUrl = product.media && product.media.length > 0 ? product.media[0].url : null;
+  const mainImage = getMediaUrl(rawUrl);
 
   return (
     <Link href={`/products/${product.id}`} className="block group">

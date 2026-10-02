@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Maximize2, X, Image as ImageIcon } from 'lucide-react';
 import { Badge } from '@/components/ui';
+import { getMediaUrl } from '@/lib/media';
 
 interface ProductGalleryProps {
   media?: { id?: string; url: string; order?: number }[];
@@ -14,7 +15,7 @@ export function ProductGallery({ media = [], title, status }: ProductGalleryProp
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const images = media.length > 0 ? media.map((m) => m.url) : [];
+  const images = media.length > 0 ? media.map((m) => getMediaUrl(m.url)) : [];
   const currentImage = images[selectedIndex] || 'https://placehold.co/800x600/f1f5f9/94a3b8?text=No+Image';
 
   const isSold = status === 'SOLD';

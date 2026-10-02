@@ -7,6 +7,7 @@ import { Phone, MessageCircle, ShieldCheck, UserCheck, Copy, Check } from 'lucid
 import { useCreateConversation } from '@/features/conversations/hooks/use-create-conversation';
 import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
 import { tokenStorage } from '@/lib/api';
+import { getMediaUrl } from '@/lib/media';
 
 interface ProductSellerCardProps {
   user?: {
@@ -113,7 +114,7 @@ export function ProductSellerCard({
       >
         <div className="relative w-12 h-12 rounded-full bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center overflow-hidden flex-shrink-0">
           {user.avatar_url ? (
-            <img src={user.avatar_url} alt={user.full_name} className="w-full h-full object-cover" />
+            <img src={getMediaUrl(user.avatar_url)} alt={user.full_name} className="w-full h-full object-cover" />
           ) : (
             <span className="text-lg font-bold text-[var(--primary)]">
               {user.full_name.charAt(0)}

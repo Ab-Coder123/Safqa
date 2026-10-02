@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Button, Input, useToast } from '@/components/ui';
 import { UploadCloud, X, Plus, Image as ImageIcon, Star, Loader2 } from 'lucide-react';
 import { productsApi } from '../api/products.api';
+import { getMediaUrl } from '@/lib/media';
 
 interface ProductImageUploaderProps {
   images: string[];
@@ -147,7 +148,7 @@ export function ProductImageUploader({
             className="relative aspect-square rounded-xl overflow-hidden border-2 border-[var(--border)] bg-[var(--muted)] group shadow-sm"
           >
             <img
-              src={url}
+              src={getMediaUrl(url)}
               alt={`صورة ${idx + 1}`}
               className="w-full h-full object-cover"
             />

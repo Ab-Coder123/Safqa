@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { DropdownMenu, DropdownMenuItem, Separator } from '../ui';
 import { User, Package, Heart, Settings, ShieldAlert, LogOut } from 'lucide-react';
+import { getMediaUrl } from '@/lib/media';
 
 interface UserMenuProps {
   user: { id: string; full_name: string; role: string; avatar_url?: string | null };
@@ -19,7 +20,7 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
             <img
               className="w-9 h-9 rounded-full object-cover border-2 border-[var(--primary)]/30 shadow-sm"
               alt={user.full_name}
-              src={user.avatar_url}
+              src={getMediaUrl(user.avatar_url)}
             />
           ) : (
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--primary)]/70 text-white flex items-center justify-center font-bold text-xs shadow-sm border-2 border-[var(--primary)]/30">
