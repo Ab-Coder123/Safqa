@@ -2,7 +2,11 @@ import type { IApiErrorResponse } from '@safqa/types';
 import { ApiError } from './api-error';
 import { tokenStorage } from './token-storage';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_BASE_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL environment variable is not defined');
+}
 
 type ApiClientOptions = Omit<RequestInit, 'body'> & {
   body?: unknown;
