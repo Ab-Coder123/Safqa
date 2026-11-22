@@ -11,6 +11,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    env: {
+      NEXT_PUBLIC_API_URL: 'http://localhost:3001',
+    },
     alias: {
       '@': path.resolve(__dirname, './src'),
     },

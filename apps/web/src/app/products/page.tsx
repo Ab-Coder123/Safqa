@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { MobileNav } from '@/components/layout/mobile-nav';
@@ -27,6 +27,15 @@ export default function ProductsPage() {
   const [filters, setFilters] = useState<ProductFiltersState>(INITIAL_FILTERS);
   const [page, setPage] = useState(1);
 
+  // Sync ?q= search parameter on client mount without breaking Next.js static generation
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const urlQuery = new URLSearchParams(window.location.search).get('q');
+    if (urlQuery && urlQuery.trim()) {
+      setFilters((prev) => ({ ...prev, q: urlQuery.trim() }));
+    }
+  }, []);
+
   // Debounce search query 400ms to avoid API flooding
   const debouncedQ = useDebounce(filters.q, 400);
 
@@ -48,15 +57,15 @@ export default function ProductsPage() {
     limit: 12,
   });
 
-  const handleFilterChange = (updated: Partial<ProductFiltersState>) => {
+  const handleFilterChange = useCallback((updated: Partial<ProductFiltersState>) => {
     setFilters((prev) => ({ ...prev, ...updated }));
     setPage(1);
-  };
+  }, []);
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setFilters(INITIAL_FILTERS);
     setPage(1);
-  };
+  }, []);
 
   const products = result?.data || [];
   const totalPages = result?.totalPages || 1;

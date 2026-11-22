@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AppController } from './app.controller';
 import { PrismaService } from './prisma/prisma.service';
 import { ThrottlerGuard } from './common/guards/throttler.guard';
 import { AuthModule } from './modules/auth/auth.module';
@@ -26,6 +27,7 @@ import { AdminModule } from './modules/admin/admin.module';
       serveStaticOptions: {
         index: false,
         dotfiles: 'deny',
+        maxAge: '7d',
       },
     }),
     AuthModule,
@@ -39,6 +41,7 @@ import { AdminModule } from './modules/admin/admin.module';
     ReportsModule,
     AdminModule,
   ],
+  controllers: [AppController],
   providers: [
     PrismaService,
     {

@@ -2,10 +2,12 @@ import type { IApiErrorResponse } from '@safqa/types';
 import { ApiError } from './api-error';
 import { tokenStorage } from './token-storage';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_BASE_URL) {
-  throw new Error('NEXT_PUBLIC_API_URL environment variable is not defined');
+function getApiBaseUrl(): string {
+  const url = process.env.NEXT_PUBLIC_API_URL;
+  if (!url) {
+    throw new Error('NEXT_PUBLIC_API_URL environment variable is not defined');
+  }
+  return url;
 }
 
 type ApiClientOptions = Omit<RequestInit, 'body'> & {
@@ -60,7 +62,8 @@ export async function apiClient<T>(
       ? undefined
       : JSON.stringify(body);
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const apiBaseUrl = getApiBaseUrl();
+  const response = await fetch(`${apiBaseUrl}${path}`, {
     ...options,
     headers: requestHeaders,
     body: requestBody,
@@ -77,7 +80,7 @@ export async function apiClient<T>(
     if (refreshToken) {
       try {
         // Call /auth/refresh directly (no auth flag — uses body, not header)
-        const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        const refreshResponse = await fetch(`${apiBaseUrl}/auth/refresh`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ refreshToken }),
