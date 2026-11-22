@@ -1,0 +1,10 @@
+node_modules
+.next
+.turbo
+.git
+documents
+scripts
+apps/web/.next
+apps/backend/dist
+apps/backend/coverage
+apps/backend/uploads
