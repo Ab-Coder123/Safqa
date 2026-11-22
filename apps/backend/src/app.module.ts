@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { AppController } from './app.controller';
 import { PrismaService } from './prisma/prisma.service';
 import { ThrottlerGuard } from './common/guards/throttler.guard';
+import { getUploadsDir } from './common/utils/upload-path.util';
 import { AuthModule } from './modules/auth/auth.module';
 import { MediaModule } from './modules/media/media.module';
 import { CategoriesModule } from './modules/categories/categories.module';
@@ -21,7 +21,7 @@ import { AdminModule } from './modules/admin/admin.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'uploads'),
+      rootPath: getUploadsDir(),
       serveRoot: '/uploads',
       exclude: ['/uploads/(.*)'],
       serveStaticOptions: {

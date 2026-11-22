@@ -9,18 +9,23 @@ import { AttachMediaDto } from './dto/attach-media.dto';
 import { ReorderMediaDto } from './dto/reorder-media.dto';
 import { MediaEntityType, MediaType } from '@safqa/types';
 import { CONSTANTS } from '@safqa/utils';
+import { getUploadsDir } from '../../common/utils/upload-path.util';
 import * as path from 'path';
 import * as fs from 'fs';
 import { randomUUID } from 'crypto';
 
 @Injectable()
 export class MediaService {
-  private readonly uploadDir = path.join(process.cwd(), 'uploads');
+  private readonly uploadDir = getUploadsDir();
 
   constructor(private prisma: PrismaService) {
-    // Ensure upload directory exists
-    if (!fs.existsSync(this.uploadDir)) {
-      fs.mkdirSync(this.uploadDir, { recursive: true });
+    // Ensure upload directory exists when base path is writable
+    try {
+      if (!fs.existsSync(this.uploadDir)) {
+        fs.mkdirSync(this.uploadDir, { recursive: true });
+      }
+    } catch {
+      // Directory creation deferred until upload if base path is temporarily read-only
     }
   }
 
@@ -112,7 +117,10 @@ export class MediaService {
       throw new BadRequestException('Invalid upload path');
     }
 
-    // 6. Save file to disk
+    // 6. Ensure upload directory exists and save file to disk
+    if (typeof fs.promises.mkdir === 'function') {
+      await fs.promises.mkdir(resolvedUploadDir, { recursive: true });
+    }
     await fs.promises.writeFile(filePath, file.buffer);
 
     // 7. Construct public URL

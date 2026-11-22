@@ -11,6 +11,7 @@ dist/
 
 # Turbo cache
 .turbo/
+.vercel/
 
 # Environment files
 .env
