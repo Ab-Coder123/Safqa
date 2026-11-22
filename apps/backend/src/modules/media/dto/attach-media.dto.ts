@@ -1,4 +1,4 @@
-import { IsEnum, IsUUID, IsUrl, IsOptional, IsInt, Min } from 'class-validator';
+import { IsEnum, IsUUID, Matches, IsOptional, IsInt, Min } from 'class-validator';
 import { MediaEntityType, MediaType } from '@safqa/types';
 
 export class AttachMediaDto {
@@ -8,7 +8,9 @@ export class AttachMediaDto {
   @IsUUID('4', { message: 'entity_id must be a valid UUID' })
   entity_id!: string;
 
-  @IsUrl({}, { message: 'url must be a valid URL string' })
+  @Matches(/^(https?:\/\/[^\s"'<>]+|\/uploads\/(?!.*\.\.)[a-zA-Z0-9._-]+)$/, {
+    message: 'url must be a valid URL or safe uploaded image path',
+  })
   url!: string;
 
   @IsOptional()

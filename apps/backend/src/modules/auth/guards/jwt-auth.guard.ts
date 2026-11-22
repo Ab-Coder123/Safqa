@@ -20,7 +20,15 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const secret = this.configService.get<string>('JWT_ACCESS_SECRET', 'safqa-access-secret');
-      const payload = await this.jwtService.verifyAsync(token, { secret });
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret,
+        algorithms: ['HS256'],
+      });
+
+      if (payload.type && payload.type !== 'access') {
+        throw new UnauthorizedException('Invalid token type');
+      }
+
       (request as any)['user'] = payload;
     } catch {
       throw new UnauthorizedException('Invalid or expired authentication token');

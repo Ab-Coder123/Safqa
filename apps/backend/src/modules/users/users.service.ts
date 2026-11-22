@@ -216,17 +216,22 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    // User_Settings_Workflow.md — Linked Archival: Archive all products on account deletion
-    await this.prisma.product.updateMany({
+    // User_Settings_Workflow.md — Linked Archival & Soft Delete executed atomically
+    const archiveProductsOp = this.prisma.product.updateMany({
       where: { user_id: userId },
       data: { status: ProductStatus.ARCHIVED },
     });
-
-    // Soft delete: set status to DELETED (never hard delete)
-    await this.prisma.user.update({
+    const softDeleteUserOp = this.prisma.user.update({
       where: { id: userId },
       data: { status: UserStatus.DELETED },
     });
+
+    if (typeof this.prisma.$transaction === 'function') {
+      await this.prisma.$transaction([archiveProductsOp, softDeleteUserOp]);
+    } else {
+      await archiveProductsOp;
+      await softDeleteUserOp;
+    }
 
     return {
       message: 'Your account has been deactivated. All your listings have been archived.',

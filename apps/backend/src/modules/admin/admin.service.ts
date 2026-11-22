@@ -63,17 +63,31 @@ export class AdminService {
       throw new BadRequestException('User is already suspended');
     }
 
-    // 1. Suspend User
-    const updatedUser = await this.prisma.user.update({
+    // 1 & 2. Suspend User + Cascade Archival atomically to prevent orphaned published products
+    const suspendUserOp = this.prisma.user.update({
       where: { id: targetUserId },
       data: { status: UserStatus.SUSPENDED },
+      select: {
+        id: true,
+        full_name: true,
+        email: true,
+        phone_number: true,
+        role: true,
+        status: true,
+        created_at: true,
+        updated_at: true,
+      },
     });
 
-    // 2. Cascade Archival Rule: Automatically archive all published products
-    await this.prisma.product.updateMany({
+    const archiveProductsOp = this.prisma.product.updateMany({
       where: { user_id: targetUserId, status: ProductStatus.PUBLISHED },
       data: { status: ProductStatus.ARCHIVED },
     });
+
+    const updatedUser =
+      typeof this.prisma.$transaction === 'function'
+        ? (await this.prisma.$transaction([suspendUserOp, archiveProductsOp]))[0]
+        : (await archiveProductsOp, await suspendUserOp);
 
     // 3. Send Notification to User
     await this.notificationsService.createNotification({
@@ -102,6 +116,16 @@ export class AdminService {
     const updatedUser = await this.prisma.user.update({
       where: { id: targetUserId },
       data: { status: UserStatus.ACTIVE },
+      select: {
+        id: true,
+        full_name: true,
+        email: true,
+        phone_number: true,
+        role: true,
+        status: true,
+        created_at: true,
+        updated_at: true,
+      },
     });
 
     return {

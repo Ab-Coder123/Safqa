@@ -5,6 +5,7 @@ import {
   IsDateString,
   IsOptional,
   MinLength,
+  MaxLength,
   Matches,
 } from 'class-validator';
 import { UserGender } from '@safqa/types';
@@ -12,6 +13,7 @@ import { UserGender } from '@safqa/types';
 export class RegisterDto {
   @IsString()
   @MinLength(3, { message: 'Full name must be at least 3 characters long' })
+  @MaxLength(100, { message: 'Full name cannot exceed 100 characters' })
   full_name!: string;
 
   @IsEmail({}, { message: 'Invalid email address format' })
@@ -19,6 +21,7 @@ export class RegisterDto {
 
   @IsString()
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @MaxLength(128, { message: 'Password cannot exceed 128 characters' })
   password!: string;
 
   @IsString()
@@ -35,5 +38,8 @@ export class RegisterDto {
 
   @IsOptional()
   @IsString()
+  @Matches(/^(https?:\/\/|\/uploads\/)/, {
+    message: 'Avatar URL must be a valid web URL or uploaded image path',
+  })
   avatar_url?: string;
 }

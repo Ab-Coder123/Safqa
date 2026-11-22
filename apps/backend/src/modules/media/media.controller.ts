@@ -18,15 +18,25 @@ import { AttachMediaDto } from './dto/attach-media.dto';
 import { ReorderMediaDto } from './dto/reorder-media.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { Throttle } from '../../common/decorators/throttle.decorator';
 import { MediaEntityType, UserRole } from '@safqa/types';
+import { CONSTANTS } from '@safqa/utils';
 
 @Controller('media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
+  @Throttle({ limit: 20, ttl: 60 })
   @UseGuards(JwtAuthGuard)
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: {
+        fileSize: CONSTANTS.MAX_FILE_SIZE_BYTES,
+        files: 1,
+      },
+    }),
+  )
   @HttpCode(HttpStatus.CREATED)
   async uploadFile(@UploadedFile() file: any) {
     return this.mediaService.uploadFile(file);
@@ -35,8 +45,9 @@ export class MediaController {
   @UseGuards(JwtAuthGuard)
   @Post('attach')
   @HttpCode(HttpStatus.CREATED)
-  async attachMedia(@Body() dto: AttachMediaDto) {
-    return this.mediaService.attachMedia(dto);
+  async attachMedia(@Body() dto: AttachMediaDto, @CurrentUser() user: any) {
+    const isSuperAdmin = user.role === UserRole.SUPER_ADMIN;
+    return this.mediaService.attachMedia(dto, user.sub, isSuperAdmin);
   }
 
   @Get(':entityType/:entityId')

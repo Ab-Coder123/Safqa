@@ -24,52 +24,125 @@ export class MediaService {
     }
   }
 
+  private detectImageMimeFromMagicBytes(buffer: Buffer): string | null {
+    if (!buffer || buffer.length < 12) {
+      return null;
+    }
+
+    // JPEG: FF D8 FF
+    if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+      return 'image/jpeg';
+    }
+
+    // PNG: 89 50 4E 47 0D 0A 1A 0A
+    if (
+      buffer[0] === 0x89 &&
+      buffer[1] === 0x50 &&
+      buffer[2] === 0x4e &&
+      buffer[3] === 0x47 &&
+      buffer[4] === 0x0d &&
+      buffer[5] === 0x0a &&
+      buffer[6] === 0x1a &&
+      buffer[7] === 0x0a
+    ) {
+      return 'image/png';
+    }
+
+    // WEBP: RIFF....WEBP
+    if (
+      buffer.subarray(0, 4).toString('ascii') === 'RIFF' &&
+      buffer.subarray(8, 12).toString('ascii') === 'WEBP'
+    ) {
+      return 'image/webp';
+    }
+
+    return null;
+  }
+
   async uploadFile(file: any) {
-    if (!file) {
+    if (!file || !file.buffer || !Buffer.isBuffer(file.buffer) || file.buffer.length === 0) {
       throw new BadRequestException('No file uploaded');
     }
 
-    // 1. File Size Verification (Max 5MB)
-    if (file.size > CONSTANTS.MAX_FILE_SIZE_BYTES) {
+    // 1. File Size Verification (Max 5MB — verify both declared size and actual buffer byte length)
+    const actualSize = file.buffer.length;
+    if (file.size > CONSTANTS.MAX_FILE_SIZE_BYTES || actualSize > CONSTANTS.MAX_FILE_SIZE_BYTES) {
       throw new BadRequestException('File size exceeds maximum limit of 5MB');
     }
 
-    // 2. Mime-Type Validation
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedMimeTypes.includes(file.mimetype)) {
+    // 2. Strict MIME-Type Whitelist
+    const mimeToExtension: Record<string, string> = {
+      'image/jpeg': '.jpg',
+      'image/png': '.png',
+      'image/webp': '.webp',
+    };
+
+    if (!mimeToExtension[file.mimetype]) {
       throw new BadRequestException(
         'Unsupported file format. Please upload JPEG, PNG, or WEBP images',
       );
     }
 
-    // 3. Security: Generate random UUID filename to prevent directory traversal attacks
-    const fileExt = path.extname(file.originalname).toLowerCase() || '.webp';
-    const filename = `${randomUUID()}${fileExt}`;
-    const filePath = path.join(this.uploadDir, filename);
+    // 3. Reject dangerous client extensions (e.g. disguised .php, .exe, .svg, .html, .js)
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+    const rawOriginalName = typeof file.originalname === 'string' ? file.originalname : '';
+    const baseOriginalName = path.basename(rawOriginalName.replace(/\\/g, '/'));
+    const clientExt = path.extname(baseOriginalName).toLowerCase();
+    if (clientExt && !allowedExtensions.includes(clientExt)) {
+      throw new BadRequestException(
+        'Unsupported file extension. Only JPEG, PNG, and WEBP images are allowed',
+      );
+    }
 
-    // 4. Save file to disk
+    // 4. Content Validation (Magic Bytes Inspection) to block spoofed MIME types / polyglots
+    const detectedMime = this.detectImageMimeFromMagicBytes(file.buffer);
+    if (!detectedMime || detectedMime !== file.mimetype) {
+      throw new BadRequestException(
+        'Invalid image content. File binary signature does not match an allowed image format',
+      );
+    }
+
+    // 5. Security: Discard client filename completely & assign cryptographically secure UUID + canonical extension
+    const safeExt = mimeToExtension[detectedMime];
+    const filename = `${randomUUID()}${safeExt}`;
+    const resolvedUploadDir = path.resolve(this.uploadDir);
+    const filePath = path.resolve(resolvedUploadDir, filename);
+
+    if (!filePath.startsWith(resolvedUploadDir + path.sep)) {
+      throw new BadRequestException('Invalid upload path');
+    }
+
+    // 6. Save file to disk
     await fs.promises.writeFile(filePath, file.buffer);
 
-    // 5. Construct public URL
+    // 7. Construct public URL
     const publicUrl = `/uploads/${filename}`;
 
     return {
       message: 'File uploaded successfully',
       url: publicUrl,
       filename,
-      size: file.size,
-      mimetype: file.mimetype,
+      size: actualSize,
+      mimetype: detectedMime,
     };
   }
 
-  async attachMedia(dto: AttachMediaDto) {
-    // 1. Verify target entity exists if required
+  async attachMedia(
+    dto: AttachMediaDto,
+    userId?: string,
+    isSuperAdmin: boolean = false,
+  ) {
+    // 1. Verify target entity exists and enforce ownership
     if (dto.entity_type === MediaEntityType.PRODUCT) {
       const product = await this.prisma.product.findUnique({
         where: { id: dto.entity_id },
       });
       if (!product) {
         throw new NotFoundException('Target Product entity not found');
+      }
+
+      if (userId && !isSuperAdmin && product.user_id !== userId) {
+        throw new ForbiddenException('You do not have permission to attach media to this product');
       }
 
       // Check max photos constraint (Max 5 images per product)
@@ -85,6 +158,10 @@ export class MediaService {
       });
       if (!user) {
         throw new NotFoundException('Target User entity not found');
+      }
+
+      if (userId && !isSuperAdmin && user.id !== userId) {
+        throw new ForbiddenException('You do not have permission to attach media to another user profile');
       }
     }
 
@@ -113,6 +190,32 @@ export class MediaService {
   }
 
   async reorderMedia(dto: ReorderMediaDto, userId: string, isSuperAdmin: boolean = false) {
+    if (!isSuperAdmin && dto.items.length > 0) {
+      const mediaIds = dto.items.map((item) => item.id);
+      const mediaRecords = await this.prisma.media.findMany({
+        where: { id: { in: mediaIds } },
+      });
+
+      if (mediaRecords.length !== mediaIds.length) {
+        throw new NotFoundException('One or more media assets not found');
+      }
+
+      for (const media of mediaRecords) {
+        if (media.entity_type === MediaEntityType.PRODUCT) {
+          const product = await this.prisma.product.findUnique({
+            where: { id: media.entity_id },
+          });
+          if (!product || product.user_id !== userId) {
+            throw new ForbiddenException('You do not have permission to reorder this media asset');
+          }
+        } else if (media.entity_type === MediaEntityType.USER) {
+          if (media.entity_id !== userId) {
+            throw new ForbiddenException('You do not have permission to reorder this media asset');
+          }
+        }
+      }
+    }
+
     // Update order for each media item
     const updates = dto.items.map((item) =>
       this.prisma.media.update({
@@ -137,13 +240,19 @@ export class MediaService {
       throw new NotFoundException('Media asset not found');
     }
 
-    // Ownership check if attached to product
-    if (media.entity_type === MediaEntityType.PRODUCT && !isSuperAdmin) {
-      const product = await this.prisma.product.findUnique({
-        where: { id: media.entity_id },
-      });
-      if (product && product.user_id !== userId) {
-        throw new ForbiddenException('You do not have permission to delete this media asset');
+    // Ownership check if attached to product or user
+    if (!isSuperAdmin) {
+      if (media.entity_type === MediaEntityType.PRODUCT) {
+        const product = await this.prisma.product.findUnique({
+          where: { id: media.entity_id },
+        });
+        if (product && product.user_id !== userId) {
+          throw new ForbiddenException('You do not have permission to delete this media asset');
+        }
+      } else if (media.entity_type === MediaEntityType.USER) {
+        if (media.entity_id !== userId) {
+          throw new ForbiddenException('You do not have permission to delete this media asset');
+        }
       }
     }
 

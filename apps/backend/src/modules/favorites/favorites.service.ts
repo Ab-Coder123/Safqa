@@ -41,27 +41,44 @@ export class FavoritesService {
     });
 
     if (existing) {
-      // Remove from favorites
-      await this.prisma.favorite.delete({
-        where: {
-          user_id_product_id: {
-            user_id: userId,
-            product_id: productId,
+      // Remove from favorites (idempotent under concurrent delete race P2025)
+      try {
+        await this.prisma.favorite.delete({
+          where: {
+            user_id_product_id: {
+              user_id: userId,
+              product_id: productId,
+            },
           },
-        },
-      });
+        });
+      } catch (err: any) {
+        if (err?.code !== 'P2025') {
+          throw err;
+        }
+      }
       return {
         message: 'Product removed from favorites',
         is_favorited: false,
       };
     } else {
-      // Add to favorites
-      await this.prisma.favorite.create({
-        data: {
-          user_id: userId,
-          product_id: productId,
-        },
-      });
+      // Cannot add a new favorite on a SOLD listing
+      if (product.status === ProductStatus.SOLD) {
+        throw new BadRequestException('Cannot favorite a product that is already sold');
+      }
+
+      // Add to favorites (idempotent under concurrent insert race P2002)
+      try {
+        await this.prisma.favorite.create({
+          data: {
+            user_id: userId,
+            product_id: productId,
+          },
+        });
+      } catch (err: any) {
+        if (err?.code !== 'P2002') {
+          throw err;
+        }
+      }
       return {
         message: 'Product added to favorites',
         is_favorited: true,

@@ -4,6 +4,8 @@ import {
   UnauthorizedException,
   ForbiddenException,
   BadRequestException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -110,7 +112,14 @@ export class AuthService {
         'JWT_REFRESH_SECRET',
         'safqa-refresh-secret',
       );
-      const payload = await this.jwtService.verifyAsync(dto.refreshToken, { secret });
+      const payload = await this.jwtService.verifyAsync(dto.refreshToken, {
+        secret,
+        algorithms: ['HS256'],
+      });
+
+      if (payload.type && payload.type !== 'refresh') {
+        throw new UnauthorizedException('Invalid token type for refresh');
+      }
 
       const user = await this.prisma.user.findUnique({
         where: { id: payload.sub },
@@ -130,8 +139,17 @@ export class AuthService {
     }
   }
 
-  // In-memory OTP storage: email -> { code: string, expiresAt: number }
-  private otpStore = new Map<string, { code: string; expiresAt: number }>();
+  // In-memory OTP storage: email -> OtpRecord
+  private otpStore = new Map<
+    string,
+    {
+      code: string;
+      expiresAt: number;
+      lastRequestedAt: number;
+      attempts: number;
+      verified: boolean;
+    }
+  >();
 
   async forgotPassword(dto: ForgotPasswordDto) {
     const emailLower = dto.email.toLowerCase();
@@ -147,16 +165,39 @@ export class AuthService {
       };
     }
 
+    const now = Date.now();
+    const existing = this.otpStore.get(emailLower);
+    const COOLDOWN_MS = 60 * 1000; // 60-second cooldown between OTP requests
+
+    if (existing && now - existing.lastRequestedAt < COOLDOWN_MS) {
+      const remainingSeconds = Math.ceil((COOLDOWN_MS - (now - existing.lastRequestedAt)) / 1000);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.TOO_MANY_REQUESTS,
+          message: `يرجى الانتظار ${remainingSeconds} ثانية قبل طلب رمز تحقق جديد.`,
+          retryAfter: remainingSeconds,
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+
     // Generate 6-digit numeric OTP code
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const expiresAt = now + 10 * 60 * 1000; // 10 minutes
 
-    this.otpStore.set(emailLower, { code, expiresAt });
+    this.otpStore.set(emailLower, {
+      code,
+      expiresAt,
+      lastRequestedAt: now,
+      attempts: 0,
+      verified: false,
+    });
+
+    const isDev = process.env.NODE_ENV !== 'production';
 
     return {
       message: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح.',
-      // Returning code in development mode for easy testing
-      debug_code: code,
+      ...(isDev ? { debug_code: code } : {}),
     };
   }
 
@@ -174,8 +215,22 @@ export class AuthService {
     }
 
     if (stored.code !== dto.code.trim()) {
-      throw new BadRequestException('رمز التحقق غير صحيح');
+      stored.attempts = (stored.attempts || 0) + 1;
+      if (stored.attempts >= 5) {
+        this.otpStore.delete(emailLower);
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.TOO_MANY_REQUESTS,
+            message: 'تم تجاوز الحد الأقصى للمحاولات غير الصحيحة (5 محاولات). تم إبطال الرمز لحمايتك، يرجى طلب رمز جديد.',
+          },
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+      const remainingAttempts = 5 - stored.attempts;
+      throw new BadRequestException(`رمز التحقق غير صحيح. المحاولات المتبقية: ${remainingAttempts}`);
     }
+
+    stored.verified = true;
 
     return {
       message: 'تم التحقق من الرمز بنجاح',
@@ -194,6 +249,10 @@ export class AuthService {
     if (Date.now() > stored.expiresAt) {
       this.otpStore.delete(emailLower);
       throw new BadRequestException('انتهت صلاحية رمز التحقق، يرجى طلب رمز جديد');
+    }
+
+    if (!stored.verified) {
+      throw new BadRequestException('يجب التحقق من رمز التأكيد أولاً قبل تعيين كلمة مرور جديدة');
     }
 
     const user = await this.prisma.user.findUnique({
@@ -232,16 +291,19 @@ export class AuthService {
   }
 
   private async generateTokens(userId: string, email: string, role: string) {
-    const payload = { sub: userId, email, role };
+    const accessPayload = { sub: userId, email, role, type: 'access' };
+    const refreshPayload = { sub: userId, email, role, type: 'refresh' };
 
-    const accessToken = await this.jwtService.signAsync(payload, {
+    const accessToken = await this.jwtService.signAsync(accessPayload, {
       secret: this.configService.get<string>('JWT_ACCESS_SECRET', 'safqa-access-secret'),
       expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRES_IN', '15m'),
+      algorithm: 'HS256',
     });
 
-    const refreshToken = await this.jwtService.signAsync(payload, {
+    const refreshToken = await this.jwtService.signAsync(refreshPayload, {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET', 'safqa-refresh-secret'),
       expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN', '7d'),
+      algorithm: 'HS256',
     });
 
     return {

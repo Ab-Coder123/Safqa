@@ -112,14 +112,23 @@ export class ProductsService {
     if (dto.category_id) where.category_id = dto.category_id;
     if (dto.condition) where.condition = dto.condition;
 
-    // Price range validation & normalization
+    // Price range validation & normalization (defense against NaN / negative / inverted bounds)
     if (dto.min_price !== undefined || dto.max_price !== undefined) {
-      where.price = {};
-      const min = dto.min_price || 0;
-      const max = dto.max_price || Number.MAX_SAFE_INTEGER;
-      // Normalize if min > max
-      where.price.gte = Math.min(min, max);
-      where.price.lte = Math.max(min, max);
+      const rawMin = dto.min_price !== undefined ? Number(dto.min_price) : 0;
+      const rawMax =
+        dto.max_price !== undefined ? Number(dto.max_price) : Number.MAX_SAFE_INTEGER;
+
+      if (!Number.isFinite(rawMin) || !Number.isFinite(rawMax)) {
+        throw new BadRequestException('Invalid numeric price range');
+      }
+
+      const safeMin = Math.max(0, rawMin);
+      const safeMax = Math.max(0, rawMax);
+
+      where.price = {
+        gte: Math.min(safeMin, safeMax),
+        lte: Math.max(safeMin, safeMax),
+      };
     }
 
     const [total, products] = await Promise.all([
@@ -252,6 +261,16 @@ export class ProductsService {
       throw new ForbiddenException('You do not have permission to edit this product');
     }
 
+    // State Integrity: Cannot modify SOLD or ARCHIVED listings
+    if (product.status === ProductStatus.SOLD || product.status === ProductStatus.ARCHIVED) {
+      throw new BadRequestException('Cannot edit a product that is already sold or archived');
+    }
+
+    // Numeric integrity check for price
+    if (dto.price !== undefined && (!Number.isFinite(dto.price) || dto.price < 0)) {
+      throw new BadRequestException('Product price must be a valid non-negative number');
+    }
+
     const updated = await this.prisma.product.update({
       where: { id },
       data: {
@@ -285,15 +304,30 @@ export class ProductsService {
       throw new ForbiddenException('You do not have permission to update this product');
     }
 
-    // One-way transition: cannot revert from SOLD to PUBLISHED
+    // One-way transition: cannot mark SOLD or ARCHIVED products as sold
     if (product.status === ProductStatus.SOLD) {
       throw new BadRequestException('Product is already marked as sold');
     }
 
-    await this.prisma.product.update({
-      where: { id },
-      data: { status: ProductStatus.SOLD },
-    });
+    if (product.status === ProductStatus.ARCHIVED) {
+      throw new BadRequestException('Archived products cannot be marked as sold');
+    }
+
+    // Atomic conditional update to prevent concurrent double-mark-sold race conditions
+    if (typeof this.prisma.product.updateMany === 'function') {
+      const updated = await this.prisma.product.updateMany({
+        where: { id, status: ProductStatus.PUBLISHED },
+        data: { status: ProductStatus.SOLD },
+      });
+      if (updated.count === 0) {
+        throw new BadRequestException('Product is already marked as sold or unavailable');
+      }
+    } else {
+      await this.prisma.product.update({
+        where: { id },
+        data: { status: ProductStatus.SOLD },
+      });
+    }
 
     return {
       message: 'Product marked as sold successfully',

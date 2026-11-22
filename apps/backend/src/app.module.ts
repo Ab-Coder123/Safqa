@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { PrismaService } from './prisma/prisma.service';
+import { ThrottlerGuard } from './common/guards/throttler.guard';
 import { AuthModule } from './modules/auth/auth.module';
 import { MediaModule } from './modules/media/media.module';
 import { CategoriesModule } from './modules/categories/categories.module';
@@ -20,6 +22,11 @@ import { AdminModule } from './modules/admin/admin.module';
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
+      exclude: ['/uploads/(.*)'],
+      serveStaticOptions: {
+        index: false,
+        dotfiles: 'deny',
+      },
     }),
     AuthModule,
     MediaModule,
@@ -32,7 +39,13 @@ import { AdminModule } from './modules/admin/admin.module';
     ReportsModule,
     AdminModule,
   ],
-  providers: [PrismaService],
+  providers: [
+    PrismaService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
   exports: [PrismaService],
 })
 export class AppModule {}

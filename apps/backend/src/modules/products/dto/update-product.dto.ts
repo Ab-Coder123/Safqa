@@ -8,6 +8,7 @@ import {
   MinLength,
   MaxLength,
   Matches,
+  Max,
 } from 'class-validator';
 import { ProductCondition } from '@safqa/types';
 import { Type } from 'class-transformer';
@@ -29,6 +30,7 @@ export class UpdateProductDto {
   @Type(() => Number)
   @IsNumber()
   @IsPositive({ message: 'Price must be greater than zero' })
+  @Max(999999999.99, { message: 'Price cannot exceed 999,999,999.99' })
   price?: number;
 
   @IsOptional()

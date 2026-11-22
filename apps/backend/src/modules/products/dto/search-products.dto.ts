@@ -8,6 +8,7 @@ import {
   IsInt,
   Min,
   Max,
+  MaxLength,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ProductCondition } from '@safqa/types';
@@ -15,6 +16,7 @@ import { ProductCondition } from '@safqa/types';
 export class SearchProductsDto {
   @IsOptional()
   @IsString()
+  @MaxLength(100, { message: 'Search query cannot exceed 100 characters' })
   q?: string; // Full-text search query
 
   @IsOptional()

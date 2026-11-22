@@ -13,6 +13,7 @@ import { CreateConversationDto } from './dto/create-conversation.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { Throttle } from '../../common/decorators/throttle.decorator';
 
 @Controller('conversations')
 @UseGuards(JwtAuthGuard)
@@ -20,6 +21,7 @@ export class ConversationsController {
   constructor(private readonly conversationsService: ConversationsService) {}
 
   // Find or create a conversation for a product
+  @Throttle({ limit: 10, ttl: 60 })
   @Post()
   @HttpCode(HttpStatus.OK)
   async findOrCreateConversation(
@@ -48,6 +50,7 @@ export class ConversationsController {
   }
 
   // Send a message in a conversation
+  @Throttle({ limit: 30, ttl: 60 })
   @Post(':id/messages')
   @HttpCode(HttpStatus.CREATED)
   async sendMessage(

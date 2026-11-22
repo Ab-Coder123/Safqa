@@ -9,6 +9,7 @@ import {
   Matches,
   IsArray,
   IsUrl,
+  Max,
 } from 'class-validator';
 import { ProductCondition } from '@safqa/types';
 import { Type } from 'class-transformer';
@@ -27,6 +28,7 @@ export class CreateProductDto {
   @Type(() => Number)
   @IsNumber({}, { message: 'Price must be a number' })
   @IsPositive({ message: 'Price must be greater than zero' })
+  @Max(999999999.99, { message: 'Price cannot exceed 999,999,999.99' })
   price!: number;
 
   @IsEnum(ProductCondition, { message: 'Condition must be NEW, USED, or REFURBISHED' })

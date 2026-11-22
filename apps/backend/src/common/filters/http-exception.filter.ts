@@ -17,15 +17,25 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const exceptionResponse =
       exception instanceof HttpException ? exception.getResponse() : null;
 
-    let message = 'An unexpected server error occurred';
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    let message = 'Internal server error';
     let error = 'Internal Server Error';
 
-    if (typeof exceptionResponse === 'string') {
-      message = exceptionResponse;
-    } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
-      const respObj = exceptionResponse as Record<string, any>;
-      message = respObj.message || message;
-      error = respObj.error || error;
+    if (status < 500 || !isProduction) {
+      if (typeof exceptionResponse === 'string') {
+        message = exceptionResponse;
+      } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
+        const respObj = exceptionResponse as Record<string, any>;
+        message = respObj.message || message;
+        error = respObj.error || error;
+      }
+    }
+
+    // Never leak stack traces, Prisma internals, or 5xx exception details in production
+    if (status >= 500 && isProduction) {
+      message = 'Internal server error';
+      error = 'Internal Server Error';
     }
 
     const errorPayload: IApiErrorResponse = {

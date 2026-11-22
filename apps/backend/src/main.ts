@@ -3,14 +3,25 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import {
+  buildCorsOptions,
+  securityHeadersMiddleware,
+} from './common/security/http-security.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  });
+  // Disable X-Powered-By fingerprinting on Express adapter
+  const expressApp = app.getHttpAdapter().getInstance();
+  if (expressApp && typeof expressApp.disable === 'function') {
+    expressApp.disable('x-powered-by');
+  }
+
+  // Enforce OWASP HTTP security headers & block dangerous HTTP methods
+  app.use(securityHeadersMiddleware);
+
+  // Enforce strict CORS whitelist
+  app.enableCors(buildCorsOptions());
 
   app.useGlobalPipes(
     new ValidationPipe({
