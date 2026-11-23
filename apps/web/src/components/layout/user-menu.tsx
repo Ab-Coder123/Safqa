@@ -15,7 +15,7 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
   return (
     <DropdownMenu
       trigger={
-        <div className="cursor-pointer hover:opacity-85 transition-opacity flex items-center">
+        <div className="hover-icon cursor-pointer rounded-full hover:opacity-90 flex items-center">
           {user.avatar_url ? (
             <img
               className="w-9 h-9 rounded-full object-cover border-2 border-[var(--primary)]/30 shadow-sm"

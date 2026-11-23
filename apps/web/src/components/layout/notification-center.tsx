@@ -55,7 +55,7 @@ const PopoverRow = memo(function PopoverRow({ item, onMarkRead }: PopoverRowProp
       onClick={handleClick}
       onKeyDown={(e) => e.key === 'Enter' && handleClick()}
       aria-label={item.title}
-      className={`py-2.5 px-2 flex items-start gap-2.5 rounded-lg transition-colors cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[var(--primary)] ${
+      className={`hover-row py-2.5 px-2 flex items-start gap-2.5 rounded-lg cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-[var(--primary)] ${
         !item.is_read
           ? 'bg-[var(--primary)]/[0.04] font-medium'
           : 'hover:bg-[var(--accent)]/40'

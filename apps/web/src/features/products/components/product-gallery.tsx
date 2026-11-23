@@ -85,14 +85,14 @@ export function ProductGallery({ media = [], title, status }: ProductGalleryProp
             <button
               type="button"
               onClick={handlePrev}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10 cursor-pointer"
+              className="hover-icon absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10 cursor-pointer"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
             <button
               type="button"
               onClick={handleNext}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10 cursor-pointer"
+              className="hover-icon absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10 cursor-pointer"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -108,7 +108,7 @@ export function ProductGallery({ media = [], title, status }: ProductGalleryProp
               key={idx}
               type="button"
               onClick={() => setSelectedIndex(idx)}
-              className={`relative flex-shrink-0 w-20 aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
+              className={`hover-pill relative flex-shrink-0 w-20 aspect-[4/3] rounded-xl overflow-hidden border-2 cursor-pointer ${
                 selectedIndex === idx
                   ? 'border-[var(--primary)] ring-2 ring-[var(--primary)]/30 scale-102 shadow-sm'
                   : 'border-[var(--border)] opacity-70 hover:opacity-100'
@@ -129,7 +129,7 @@ export function ProductGallery({ media = [], title, status }: ProductGalleryProp
           <button
             type="button"
             onClick={() => setIsModalOpen(false)}
-            className="absolute top-5 right-5 text-white/80 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all z-20 cursor-pointer"
+            className="hover-icon absolute top-5 right-5 text-white/80 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 z-20 cursor-pointer"
           >
             <X className="w-6 h-6" />
           </button>
@@ -149,14 +149,14 @@ export function ProductGallery({ media = [], title, status }: ProductGalleryProp
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-all cursor-pointer"
+                  className="hover-icon absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center cursor-pointer"
                 >
                   <ChevronRight className="w-6 h-6" />
                 </button>
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-all cursor-pointer"
+                  className="hover-icon absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center cursor-pointer"
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>

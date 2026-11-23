@@ -106,12 +106,12 @@ export default function LandingPage() {
 
             {/* CTAs */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '2.5rem' }}>
-              <Link href="/register" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 2rem', borderRadius: '12px', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 800, fontSize: '1rem', textDecoration: 'none', boxShadow: 'var(--shadow-md)' }}>
+              <Link href="/register" className="hover-btn group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 2rem', borderRadius: '12px', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 800, fontSize: '1rem', textDecoration: 'none', boxShadow: 'var(--shadow-md)' }}>
                 ابدأ الآن
-                <ArrowLeft size={18} />
+                <ArrowLeft size={18} className="transition-transform duration-200 group-hover:-translate-x-1" />
               </Link>
 
-              <Link href="/products" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 2rem', borderRadius: '12px', border: '2px solid var(--border)', color: 'var(--foreground)', fontWeight: 700, fontSize: '1rem', textDecoration: 'none', backgroundColor: 'var(--card)' }}>
+              <Link href="/products" className="hover-btn" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 2rem', borderRadius: '12px', border: '2px solid var(--border)', color: 'var(--foreground)', fontWeight: 700, fontSize: '1rem', textDecoration: 'none', backgroundColor: 'var(--card)' }}>
                 استكشف صفقة
               </Link>
             </div>
@@ -123,7 +123,7 @@ export default function LandingPage() {
                 { icon: <Zap size={16} color="var(--primary)" />, title: 'سهل الاستخدام', sub: 'تجربة بسيطة وسريعة' },
                 { icon: <Users size={16} color="var(--primary)" />, title: 'موثوق للمجتمع', sub: 'آلاف الأعضاء السعداء' },
               ].map((b) => (
-                <div key={b.title}>
+                <div key={b.title} className="hover-pill rounded-xl p-2 -m-2 hover:bg-[var(--card)]/70">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.78rem', color: 'var(--foreground)', marginBottom: '0.2rem' }}>
                     {b.icon} {b.title}
                   </div>
@@ -137,7 +137,7 @@ export default function LandingPage() {
           <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
             <div style={{ position: 'absolute', width: '280px', height: '280px', borderRadius: '50%', background: 'var(--primary)', opacity: 0.08, filter: 'blur(60px)', zIndex: 0 }} />
 
-            <div style={{ position: 'relative', width: '280px', borderRadius: '36px', border: '8px solid var(--border)', backgroundColor: 'var(--card)', padding: '12px', boxShadow: 'var(--shadow-lg)', zIndex: 1, transform: 'rotate(-2deg)' }}>
+            <div className="hover-showcase -rotate-2 hover:rotate-0" style={{ position: 'relative', width: '280px', borderRadius: '36px', border: '8px solid var(--border)', backgroundColor: 'var(--card)', padding: '12px', boxShadow: 'var(--shadow-lg)', zIndex: 1 }}>
               {/* Notch */}
               <div style={{ width: '100px', height: '14px', backgroundColor: 'var(--foreground)', opacity: 0.8, borderRadius: '0 0 10px 10px', margin: '0 auto 12px' }} />
 
@@ -156,7 +156,7 @@ export default function LandingPage() {
               {/* Categories */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
                 {['🚗 سيارات', '📱 إلكترو.', '🛋️ أثاث', '👕 أزياء'].map(c => (
-                  <div key={c} style={{ padding: '5px 2px', borderRadius: '8px', backgroundColor: 'var(--surface)', textAlign: 'center', fontSize: '0.5rem', fontWeight: 600, color: 'var(--muted-foreground)' }}>{c}</div>
+                  <div key={c} className="hover-pill cursor-default" style={{ padding: '5px 2px', borderRadius: '8px', backgroundColor: 'var(--surface)', textAlign: 'center', fontSize: '0.5rem', fontWeight: 600, color: 'var(--muted-foreground)' }}>{c}</div>
                 ))}
               </div>
 
@@ -167,7 +167,7 @@ export default function LandingPage() {
                 { img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=120&auto=format&fit=crop', title: 'أريكة مودرن', price: '3,250 ج.م' },
                 { img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=120&auto=format&fit=crop', title: 'آيفون 14 Pro Max', price: '32,000 ج.م' },
               ].map(p => (
-                <div key={p.title} style={{ display: 'flex', gap: '8px', padding: '7px', borderRadius: '10px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', marginBottom: '6px', alignItems: 'center' }}>
+                <div key={p.title} className="hover-row cursor-default" style={{ display: 'flex', gap: '8px', padding: '7px', borderRadius: '10px', border: '1px solid var(--border)', backgroundColor: 'var(--surface)', marginBottom: '6px', alignItems: 'center' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, backgroundColor: 'var(--muted)' }}>
                     <img src={p.img} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
@@ -180,7 +180,7 @@ export default function LandingPage() {
             </div>
 
             {/* Floating card top right */}
-            <div style={{ position: 'absolute', top: '-10px', right: '-10px', display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 12px', borderRadius: '16px', backgroundColor: 'var(--card)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)', maxWidth: '180px', zIndex: 2 }}>
+            <div className="hover-showcase cursor-pointer" style={{ position: 'absolute', top: '-10px', right: '-10px', display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 12px', borderRadius: '16px', backgroundColor: 'var(--card)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)', maxWidth: '180px', zIndex: 2 }}>
               <div style={{ width: '40px', height: '40px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, backgroundColor: 'var(--muted)' }}>
                 <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=120&auto=format&fit=crop" alt="sofa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
@@ -192,7 +192,7 @@ export default function LandingPage() {
             </div>
 
             {/* Floating card bottom left */}
-            <div style={{ position: 'absolute', bottom: '-20px', left: '-10px', display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 12px', borderRadius: '16px', backgroundColor: 'var(--card)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)', maxWidth: '195px', zIndex: 2 }}>
+            <div className="hover-showcase cursor-pointer" style={{ position: 'absolute', bottom: '-20px', left: '-10px', display: 'flex', gap: '10px', alignItems: 'center', padding: '10px 12px', borderRadius: '16px', backgroundColor: 'var(--card)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)', maxWidth: '195px', zIndex: 2 }}>
               <div style={{ width: '40px', height: '40px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, backgroundColor: 'var(--muted)' }}>
                 <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=120&auto=format&fit=crop" alt="phone" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
@@ -219,8 +219,8 @@ export default function LandingPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
             {HOW_IT_WORKS.map((item) => (
-              <div key={item.step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                <div style={{ width: '64px', height: '64px', borderRadius: '16px', backgroundColor: 'var(--accent)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
+              <div key={item.step} className="group rounded-2xl p-4 transition-colors hover:bg-[var(--surface)]/70" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                <div className="hover-step" style={{ width: '64px', height: '64px', borderRadius: '16px', backgroundColor: 'var(--accent)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
                   {item.icon}
                 </div>
                 <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.35rem' }}>الخطوة {item.step}</span>
@@ -245,8 +245,8 @@ export default function LandingPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem' }}>
             {FEATURES.map((f) => (
-              <div key={f.title} style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem 1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: 'var(--shadow-sm)', transition: 'box-shadow var(--transition-fast)' }}>
-                <div style={{ width: '52px', height: '52px', borderRadius: '14px', backgroundColor: f.bg, color: f.color, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+              <div key={f.title} className="hover-card group" style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem 1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', boxShadow: 'var(--shadow-sm)' }}>
+                <div className="transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3" style={{ width: '52px', height: '52px', borderRadius: '14px', backgroundColor: f.bg, color: f.color, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
                   {f.icon}
                 </div>
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--foreground)', marginBottom: '0.5rem' }}>{f.title}</h3>
@@ -280,7 +280,7 @@ export default function LandingPage() {
             {PREVIEW_PRODUCTS.map((p) => (
               <div
                 key={p.id}
-                className="group"
+                className="group hover-card"
                 style={{
                   position: 'relative',
                   backgroundColor: 'var(--card)',
@@ -288,19 +288,7 @@ export default function LandingPage() {
                   borderRadius: '18px',
                   overflow: 'hidden',
                   boxShadow: 'var(--shadow-sm)',
-                  transition:
-                    'transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease',
                   cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-6px)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                  e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--primary) 30%, var(--border))';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                  e.currentTarget.style.borderColor = 'var(--border)';
                 }}
               >
                 {/* Image */}
@@ -360,6 +348,7 @@ export default function LandingPage() {
                   <button
                     type="button"
                     aria-label={`إضافة ${p.title} للمفضلة`}
+                    className="hover-icon hover:bg-white"
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
@@ -378,16 +367,6 @@ export default function LandingPage() {
                       justifyContent: 'center',
                       backdropFilter: 'blur(10px)',
                       WebkitBackdropFilter: 'blur(10px)',
-                      transition:
-                        'transform 180ms ease, background-color 180ms ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.1)';
-                      e.currentTarget.style.backgroundColor = '#fff';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.9)';
                     }}
                   >
                     <Heart size={15} color="var(--primary)" strokeWidth={2.2} />
@@ -453,9 +432,9 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <Link href="/products" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 2rem', borderRadius: '12px', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 700, textDecoration: 'none', boxShadow: 'var(--shadow-md)', fontSize: '0.95rem' }}>
+          <Link href="/products" className="hover-btn group" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 2rem', borderRadius: '12px', backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)', fontWeight: 700, textDecoration: 'none', boxShadow: 'var(--shadow-md)', fontSize: '0.95rem' }}>
             عرض جميع الإعلانات في المتجر
-            <ArrowLeft size={16} />
+            <ArrowLeft size={16} className="transition-transform duration-200 group-hover:-translate-x-1" />
           </Link>
         </div>
       </section>
@@ -468,7 +447,7 @@ export default function LandingPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem', alignItems: 'center', backgroundColor: 'var(--card)', borderRadius: '24px', border: '1px solid var(--border)', padding: '3rem 2.5rem', boxShadow: 'var(--shadow-md)' }}>
             {/* Icon Section */}
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <div style={{ position: 'relative', width: '140px', height: '140px', borderRadius: '50%', backgroundColor: 'var(--accent)', border: '4px solid var(--primary)', opacity: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)' }}>
+              <div className="hover-showcase" style={{ position: 'relative', width: '140px', height: '140px', borderRadius: '50%', backgroundColor: 'var(--accent)', border: '4px solid var(--primary)', opacity: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)' }}>
                 <ShieldCheck size={70} color="var(--primary)" />
                 <div style={{ position: 'absolute', bottom: '4px', right: '4px', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-md)' }}>
                   <Lock size={17} color="var(--primary-foreground)" />
@@ -491,7 +470,7 @@ export default function LandingPage() {
                   'نظام بلاغات فوري لمعالجة المخالفات',
                   'مراقبة دورية وحماية البيانات 24/7',
                 ].map((item) => (
-                  <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                  <div key={item} className="hover-row rounded-lg px-2 py-1 -mx-2 hover:bg-[var(--surface)]" style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
                     <CheckCircle2 size={16} color="var(--primary)" style={{ marginTop: '2px', flexShrink: 0 }} />
                     <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--foreground)' }}>{item}</span>
                   </div>
@@ -522,13 +501,13 @@ export default function LandingPage() {
             </div>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.85rem', position: 'relative', zIndex: 1 }}>
-              <Link href="/register" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 1.75rem', borderRadius: '12px', backgroundColor: '#fff', color: 'var(--primary)', fontWeight: 800, fontSize: '0.9rem', textDecoration: 'none', boxShadow: 'var(--shadow-md)' }}>
+              <Link href="/register" className="hover-btn" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 1.75rem', borderRadius: '12px', backgroundColor: '#fff', color: 'var(--primary)', fontWeight: 800, fontSize: '0.9rem', textDecoration: 'none', boxShadow: 'var(--shadow-md)' }}>
                 إنشاء حساب جديد
               </Link>
 
-              <Link href="/login" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 1.75rem', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.6)', color: '#fff', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>
+              <Link href="/login" className="hover-btn group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.8rem 1.75rem', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.6)', color: '#fff', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>
                 تسجيل الدخول
-                <ArrowLeft size={15} />
+                <ArrowLeft size={15} className="transition-transform duration-200 group-hover:-translate-x-1" />
               </Link>
             </div>
           </div>

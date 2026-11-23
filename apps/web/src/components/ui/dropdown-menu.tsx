@@ -54,7 +54,7 @@ export const DropdownMenuItem: React.FC<
     disabled={disabled}
     onClick={onClick}
     className={cn(
-      'w-full flex items-center gap-2 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--secondary)] transition-colors text-right disabled:opacity-50 disabled:pointer-events-none cursor-pointer',
+      'w-full flex items-center gap-2 px-4 py-2.5 text-sm text-[var(--foreground)] hover:bg-[var(--secondary)] hover-row text-right disabled:opacity-50 disabled:pointer-events-none cursor-pointer',
       className
     )}
     {...props}

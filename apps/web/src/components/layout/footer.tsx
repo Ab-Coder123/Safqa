@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export function Footer() {
   return (
-    <footer className="w-full border-t bohrder-[var(--border)] bg-[var(--card)] text-[var(--foreground)] mt-16 transition-colors">
+    <footer className="w-full border-t border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] mt-16 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Col */}
@@ -23,10 +23,10 @@ export function Footer() {
           <div>
             <h4 className="font-bold text-sm mb-3">روابط سريعة</h4>
             <ul className="space-y-2 text-xs text-[var(--muted-foreground)]">
-              <li><Link href="/" className="hover:text-[var(--primary)] transition-colors">الرئيسية</Link></li>
-              <li><Link href="/categories" className="hover:text-[var(--primary)] transition-colors">التصنيفات</Link></li>
-              <li><Link href="/products/create" className="hover:text-[var(--primary)] transition-colors">أضف إعلانك</Link></li>
-              <li><Link href="/favorites" className="hover:text-[var(--primary)] transition-colors">المفضلة</Link></li>
+              <li><Link href="/" className="hover-link hover:text-[var(--primary)]">الرئيسية</Link></li>
+              <li><Link href="/categories" className="hover-link hover:text-[var(--primary)]">التصنيفات</Link></li>
+              <li><Link href="/products/create" className="hover-link hover:text-[var(--primary)]">أضف إعلانك</Link></li>
+              <li><Link href="/favorites" className="hover-link hover:text-[var(--primary)]">المفضلة</Link></li>
             </ul>
           </div>
 
@@ -34,10 +34,10 @@ export function Footer() {
           <div>
             <h4 className="font-bold text-sm mb-3">حسابك</h4>
             <ul className="space-y-2 text-xs text-[var(--muted-foreground)]">
-              <li><Link href="/login" className="hover:text-[var(--primary)] transition-colors">تسجيل الدخول</Link></li>
-              <li><Link href="/register" className="hover:text-[var(--primary)] transition-colors">حساب جديد</Link></li>
-              <li><Link href="/my-listings" className="hover:text-[var(--primary)] transition-colors">إعلاناتي</Link></li>
-              <li><Link href="/settings" className="hover:text-[var(--primary)] transition-colors">الإعدادات</Link></li>
+              <li><Link href="/login" className="hover-link hover:text-[var(--primary)]">تسجيل الدخول</Link></li>
+              <li><Link href="/register" className="hover-link hover:text-[var(--primary)]">حساب جديد</Link></li>
+              <li><Link href="/my-listings" className="hover-link hover:text-[var(--primary)]">إعلاناتي</Link></li>
+              <li><Link href="/settings" className="hover-link hover:text-[var(--primary)]">الإعدادات</Link></li>
             </ul>
           </div>
 
@@ -45,7 +45,7 @@ export function Footer() {
           <div>
             <h4 className="font-bold text-sm mb-3">الأمان والدعم</h4>
             <ul className="space-y-2 text-xs text-[var(--muted-foreground)]">
-              <li><Link href="/reports/new" className="hover:text-[var(--primary)] transition-colors">تقديم بلاغ</Link></li>
+              <li><Link href="/reports/new" className="hover-link hover:text-[var(--primary)]">تقديم بلاغ</Link></li>
               <li><span className="opacity-70">شروط الاستخدام</span></li>
               <li><span className="opacity-70">سياسة الخصوصية</span></li>
             </ul>

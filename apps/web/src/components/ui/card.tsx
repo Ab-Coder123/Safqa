@@ -1,10 +1,15 @@
 import React from 'react';
 import { cn } from '../../lib/cn';
 
-export const Card: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => (
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  interactive?: boolean;
+}
+
+export const Card: React.FC<CardProps> = ({ className, interactive = false, ...props }) => (
   <div
     className={cn(
-      'rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] shadow-sm transition-all hover:shadow-md',
+      'rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] shadow-sm',
+      interactive ? 'hover-card cursor-pointer' : 'transition-all hover:shadow-md',
       className
     )}
     {...props}

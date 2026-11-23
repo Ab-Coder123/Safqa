@@ -51,10 +51,10 @@ export function Header() {
 
           {/* Quick Links */}
           <nav className="hidden md:flex items-center gap-1">
-            <Link href="/products" className="px-3 py-2 text-sm font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors rounded-lg hover:bg-[var(--accent)]">
+            <Link href="/products" className="hover-pill px-3 py-2 text-sm font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] rounded-lg hover:bg-[var(--accent)]">
               تصفح الإعلانات
             </Link>
-            <Link href="/categories" className="px-3 py-2 text-sm font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors rounded-lg hover:bg-[var(--accent)]">
+            <Link href="/categories" className="hover-pill px-3 py-2 text-sm font-semibold text-[var(--muted-foreground)] hover:text-[var(--primary)] rounded-lg hover:bg-[var(--accent)]">
               الأقسام
             </Link>
           </nav>
@@ -69,7 +69,7 @@ export function Header() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full h-10 pl-10 pr-4 rounded-xl border border-[var(--border)] bg-[var(--background)] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--primary)] transition-colors"
           />
-          <button type="submit" className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--primary)]">
+          <button type="submit" className="hover-icon absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--primary)]">
             <Search className="w-4 h-4" />
           </button>
         </form>
@@ -87,7 +87,7 @@ export function Header() {
           {/* Theme Toggle */}
           <button
             onClick={() => setTheme(theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light')}
-            className="w-9 h-9 rounded-xl border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)] transition-colors"
+            className="hover-icon w-9 h-9 rounded-xl border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]"
             title="تبديل المظهر"
           >
             {theme === 'light' ? <Sun className="w-4 h-4" /> : theme === 'dark' ? <Moon className="w-4 h-4" /> : <Laptop className="w-4 h-4" />}
@@ -96,11 +96,11 @@ export function Header() {
           {user ? (
             <>
               {/* Authenticated Icons */}
-              <Link href="/favorites" className="w-9 h-9 rounded-xl border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)] transition-colors" title="المفضلة">
+              <Link href="/favorites" className="hover-icon w-9 h-9 rounded-xl border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]" title="المفضلة">
                 <Bookmark className="w-4 h-4" />
               </Link>
 
-              <Link href="/conversations" className="w-9 h-9 rounded-xl border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)] transition-colors" title="الرسائل">
+              <Link href="/conversations" className="hover-icon w-9 h-9 rounded-xl border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)]" title="الرسائل">
                 <MessageSquare className="w-4 h-4" />
               </Link>
 

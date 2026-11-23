@@ -26,9 +26,9 @@ export default function CategoriesPage() {
             {categories.map((cat) => (
               <div
                 key={cat.id}
-                className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 text-center shadow-sm hover:border-[var(--primary)]/50 transition-all cursor-pointer group"
+                className="hover-card bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 text-center shadow-sm cursor-pointer group"
               >
-                <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">
+                <div className="text-3xl mb-3 transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-rotate-3">
                   {cat.icon_url || '📦'}
                 </div>
                 <h2 className="text-sm font-bold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">

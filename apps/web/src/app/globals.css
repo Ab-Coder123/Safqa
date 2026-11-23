@@ -66,9 +66,14 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
-  /* Transition Token */
+  /* Transition & Motion Tokens */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-hover: 260ms var(--ease-spring);
+  --transition-pop: 220ms var(--ease-pop);
+  --shadow-hover: 0 14px 28px -10px color-mix(in srgb, var(--primary) 18%, rgb(0 0 0 / 0.12)), 0 4px 10px -4px rgb(0 0 0 / 0.06);
 }
 
 /* Dark Mode Tokens */
@@ -122,6 +127,7 @@
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+  --shadow-hover: 0 16px 32px -10px color-mix(in srgb, var(--primary) 26%, rgb(0 0 0 / 0.55)), 0 4px 12px -4px rgb(0 0 0 / 0.35);
 }
 
 /* ─── BASE RESET & RTL TYPOGRAPHY (Tier 3) ────────────────────────────────── */
@@ -220,4 +226,197 @@ html, body {
 
 .animate-fade-in {
   animation: fadeIn 200ms ease-out forwards;
+}
+
+/* ─── SAFQA INTERACTIVE HOVER MOTION SYSTEM ────────────────────────────────── */
+
+.hover-card {
+  transition:
+    translate var(--transition-hover),
+    scale var(--transition-hover),
+    box-shadow var(--transition-hover),
+    border-color var(--transition-hover);
+  will-change: transform;
+}
+
+.hover-card:hover,
+.hover-card:focus-visible,
+.group:hover .hover-card,
+.group:focus-visible .hover-card {
+  translate: 0 -6px;
+  box-shadow: var(--shadow-hover);
+  border-color: color-mix(in srgb, var(--primary) 42%, var(--border));
+}
+
+.hover-card:active,
+.group:active .hover-card {
+  translate: 0 -2px;
+  scale: 0.99;
+}
+
+.hover-showcase {
+  transition:
+    translate 340ms var(--ease-spring),
+    scale 340ms var(--ease-spring),
+    rotate 340ms var(--ease-spring),
+    box-shadow 340ms var(--ease-spring),
+    border-color 340ms var(--ease-spring);
+  will-change: transform;
+}
+
+.hover-showcase:hover {
+  translate: 0 -7px;
+  scale: 1.02;
+  box-shadow: var(--shadow-hover);
+  border-color: color-mix(in srgb, var(--primary) 36%, var(--border));
+}
+
+.hover-btn {
+  transition:
+    translate var(--transition-hover),
+    scale var(--transition-pop),
+    box-shadow var(--transition-hover),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.hover-btn:not(:disabled):hover,
+.hover-btn:not(:disabled):focus-visible {
+  translate: 0 -2px;
+  box-shadow: var(--shadow-md);
+}
+
+.hover-btn:not(:disabled):active {
+  translate: 0 1px;
+  scale: 0.975;
+}
+
+.hover-icon {
+  transition:
+    scale var(--transition-pop),
+    translate var(--transition-pop),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.hover-icon:not(:disabled):hover,
+.hover-icon:not(:disabled):focus-visible {
+  scale: 1.1;
+  box-shadow: var(--shadow-sm);
+}
+
+.hover-icon:not(:disabled):active {
+  scale: 0.92;
+}
+
+.hover-pill {
+  transition:
+    translate var(--transition-hover),
+    scale var(--transition-pop),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.hover-pill:hover,
+.hover-pill:focus-visible {
+  translate: 0 -2px;
+}
+
+.hover-pill:active {
+  translate: 0 0;
+  scale: 0.96;
+}
+
+.hover-step {
+  transition:
+    translate var(--transition-pop),
+    scale var(--transition-pop),
+    rotate var(--transition-pop),
+    box-shadow var(--transition-hover),
+    background-color var(--transition-fast);
+}
+
+.group:hover .hover-step,
+.group:focus-visible .hover-step,
+.hover-step:hover {
+  translate: 0 -6px;
+  scale: 1.07;
+  rotate: -4deg;
+  box-shadow: var(--shadow-md);
+}
+
+.hover-link {
+  display: inline-block;
+  transition:
+    translate var(--transition-hover),
+    color var(--transition-fast);
+}
+
+.hover-link:hover,
+.hover-link:focus-visible {
+  translate: -4px 0;
+}
+
+.hover-row {
+  transition:
+    translate var(--transition-hover),
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.hover-row:not(:disabled):hover,
+.hover-row:not(:disabled):focus-visible {
+  translate: -3px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-card,
+  .hover-showcase,
+  .hover-btn,
+  .hover-icon,
+  .hover-pill,
+  .hover-step,
+  .hover-link,
+  .hover-row,
+  .animate-spin,
+  .animate-pulse,
+  .animate-fade-in {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+
+  .hover-card:hover,
+  .hover-card:focus-visible,
+  .hover-card:active,
+  .group:hover .hover-card,
+  .group:focus-visible .hover-card,
+  .group:active .hover-card,
+  .hover-showcase:hover,
+  .hover-btn:not(:disabled):hover,
+  .hover-btn:not(:disabled):focus-visible,
+  .hover-btn:not(:disabled):active,
+  .hover-icon:not(:disabled):hover,
+  .hover-icon:not(:disabled):focus-visible,
+  .hover-icon:not(:disabled):active,
+  .hover-pill:hover,
+  .hover-pill:focus-visible,
+  .hover-pill:active,
+  .group:hover .hover-step,
+  .group:focus-visible .hover-step,
+  .hover-step:hover,
+  .hover-link:hover,
+  .hover-link:focus-visible,
+  .hover-row:not(:disabled):hover,
+  .hover-row:not(:disabled):focus-visible {
+    translate: none !important;
+    scale: none !important;
+    rotate: none !important;
+  }
 }

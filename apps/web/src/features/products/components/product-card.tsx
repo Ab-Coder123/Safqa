@@ -61,8 +61,8 @@ function ProductCardComponent({ product, initialFavorited = false }: ProductCard
   const mainImage = getMediaUrl(rawUrl);
 
   return (
-    <Link href={`/products/${product.id}`} className="block group">
-      <Card className="overflow-hidden hover:border-[var(--primary)]/50 transition-all duration-200 h-full flex flex-col">
+    <Link href={`/products/${product.id}`} className="block group rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]">
+      <Card interactive className="overflow-hidden h-full flex flex-col">
         {/* Media Preview */}
         <div className="relative aspect-[4/3] w-full bg-[var(--muted)] overflow-hidden">
           <img
@@ -70,7 +70,7 @@ function ProductCardComponent({ product, initialFavorited = false }: ProductCard
             alt={product.title}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />
 
           {/* Condition Badge */}
@@ -85,7 +85,7 @@ function ProductCardComponent({ product, initialFavorited = false }: ProductCard
             type="button"
             onClick={toggleFavorite}
             disabled={toggleFavoriteMutation.isPending}
-            className="absolute top-3 left-3 w-8 h-8 rounded-full bg-[var(--card)]/80 backdrop-blur-md flex items-center justify-center text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-[var(--card)] transition-all shadow-sm cursor-pointer disabled:opacity-50"
+            className="hover-icon absolute top-3 left-3 w-8 h-8 rounded-full bg-[var(--card)]/85 backdrop-blur-md flex items-center justify-center text-[var(--muted-foreground)] hover:text-rose-500 hover:bg-[var(--card)] shadow-sm cursor-pointer disabled:opacity-50"
             title={isFavorited ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}
           >
             <Heart className={`w-4 h-4 ${isFavorited ? 'fill-rose-500 text-rose-500' : ''}`} />

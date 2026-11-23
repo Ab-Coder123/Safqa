@@ -110,7 +110,7 @@ export function ProductSellerCard({
       {/* Seller Snippet */}
       <Link
         href={`/users/${user.id}`}
-        className="flex items-center gap-3.5 p-2 -mx-2 rounded-xl hover:bg-[var(--muted)]/50 transition-colors group"
+        className="hover-row flex items-center gap-3.5 p-2 -mx-2 rounded-xl hover:bg-[var(--muted)]/50 group"
       >
         <div className="relative w-12 h-12 rounded-full bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center overflow-hidden flex-shrink-0">
           {user.avatar_url ? (

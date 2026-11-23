@@ -25,7 +25,7 @@ export function MobileNav() {
         if (item.highlight) {
           return (
             <Link key={item.href} href={item.href} className="flex flex-col items-center -mt-5">
-              <div className="w-12 h-12 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
+              <div className="hover-icon w-12 h-12 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] flex items-center justify-center shadow-lg">
                 <Icon className="w-6 h-6" />
               </div>
               <span className="text-[10px] font-bold text-[var(--primary)] mt-1">{item.label}</span>
@@ -37,7 +37,7 @@ export function MobileNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex flex-col items-center gap-1 p-1 text-[11px] font-medium transition-colors ${
+            className={`hover-pill flex flex-col items-center gap-1 p-1 text-[11px] font-medium ${
               isActive ? 'text-[var(--primary)] font-bold' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
             }`}
           >

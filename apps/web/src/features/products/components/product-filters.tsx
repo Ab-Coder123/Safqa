@@ -61,7 +61,7 @@ export function ProductFilters({
           <button
             type="button"
             onClick={() => onFilterChange({ q: '' })}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] p-1 rounded-full hover:bg-[var(--muted)] transition-colors"
+            className="hover-icon absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] p-1 rounded-full hover:bg-[var(--muted)]"
           >
             <X className="w-4 h-4" />
           </button>
