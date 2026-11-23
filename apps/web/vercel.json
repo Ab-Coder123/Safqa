@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "framework": "nextjs",
+  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && pnpm --filter @safqa/types build && pnpm --filter @safqa/utils build && pnpm --filter @safqa/ui build && pnpm --filter @safqa/web build"
+}
